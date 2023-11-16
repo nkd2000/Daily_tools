@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Online Tools</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      animation: fadeInDown 1s ease;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    nav {
+      margin-top: 20px;
+      background-color: #1a1a1a; /* New background color */
+      padding: 10px;
+      border-radius: 5px; /* Add some border radius for style */
+    }
+
+    .burger-menu, .nav-btn {
+      display: none;
+      cursor: pointer;
+    }
+
+    nav ul {
+      list-style-type: none;
+      padding: 0;
+      text-align: center;
+    }
+
+    nav ul li {
+      display: inline-block;
+      margin-right: 20px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #fff; /* Text color is white */
+      font-weight: bold;
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
+
+    nav ul li a:hover {
+      color: #ffd700; /* Change color on hover, for example, gold/yellow */
+    }
+
+    section {
+      padding: 50px;
+      text-align: center;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    /* New style for the clickable div */
+    .clickable-content {
+      cursor: pointer;
+      padding: 20px;
+      background-color: #fff; /* Background color for the clickable div */
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .clickable-content:hover {
+      background-color: #f0f0f0; /* Change background color on hover */
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="burger-menu" onclick="toggleNav()">&#9776;</div>
+    <h1>Free Online Tools</h1>
+    <div class="nav-btn" onclick="toggleNav()">Navigation</div>
+    <p>Explore our online tools for everyday use</p>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="page1.html">Page 1</a></li>
+        <li><a href="page2.html">Page 2</a></li>
+        <!-- Add links for your other pages -->
+      </ul>
+    </nav>
+  </header>
+
+  <!-- New clickable div for future webpage -->
+  <div class="clickable-content" onclick="openLinkedPage('futurePage.html')">
+    <h2>Future Webpage</h2>
+    <p>Click to visit the future webpage</p>
+  </div>
+
+  <section>
+    <h2>Featured Tools</h2>
+    <!-- Add your featured tools content here -->
+  </section>
+
+  <footer>
+    <p>&copy; 2023 Free Online Tools. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function toggleNav() {
+      const nav = document.querySelector('nav');
+      nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function openLinkedPage(link) {
+      window.location.href = link;
+    }
+  </script>
+
+</body>
+</html>
