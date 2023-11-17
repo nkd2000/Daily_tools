@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(136deg, #3498db, #e74c3c);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .converter {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #333;
+        }
+
+        input, select, button {
+            margin-top: 8px;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            cursor: pointer;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #result {
+            font-weight: bold;
+            margin-top: 15px;
+            color: #27ae60;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        #history {
+            margin-top: 20px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        #historyTitle {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        #historyList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            color: #555;
+        }
+
+        #historyList li {
+            margin: 5px 0;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <title>Unit Converter</title>
+</head>
+<body>
+    <div class="converter">
+        <h1 style="color: #3498db;">Unit Converter</h1>
+        <label for="inputValue">Enter Value:</label>
+        <input type="number" id="inputValue" placeholder="Enter value">
+
+        <label for="category">Select Category:</label>
+        <select id="category" onchange="populateUnits()">
+            <option value="length">Length</option>
+            <option value="weight">Weight</option>
+            <option value="temperature">Temperature</option>
+            <option value="volume">Volume</option>
+            <option value="speed">Speed</option>
+            <!-- Add more categories based on your needs -->
+        </select>
+
+        <label for="fromUnit">From:</label>
+        <select id="fromUnit"></select>
+
+        <label for="toUnit">To:</label>
+        <select id="toUnit"></select>
+
+        <button onclick="convert()">Convert</button>
+
+        <p id="result">Result: </p>
+        <p id="error" class="error"></p>
+
+        <!-- New feature: Conversion history -->
+        <div id="history">
+            <h2 id="historyTitle">Conversion History</h2>
+            <ul id="historyList"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Units data for each category
+        const unitsData = {
+            length: ["meter", "kilometer", "mile"],
+            weight: ["gram", "kilogram", "pound"],
+            temperature: ["celsius", "fahrenheit", "kelvin"],
+            volume: ["liter", "milliliter", "gallon"],
+            speed: ["milesPerHour", "kilometersPerHour"]
+            // Add more categories and units based on your needs
+        };
+
+        // Function to populate units based on selected category
+        function populateUnits() {
+            const category = document.getElementById("category").value;
+            const fromUnitSelect = document.getElementById("fromUnit");
+            const toUnitSelect = document.getElementById("toUnit");
+
+            // Clear previous options
+            fromUnitSelect.innerHTML = "";
+            toUnitSelect.innerHTML = "";
+
+            // Populate units based on selected category
+            unitsData[category].forEach(unit => {
+                addOption(fromUnitSelect, unit);
+                addOption(toUnitSelect, unit);
+            });
+        }
+
+        // Function to add an option to a select element
+        function addOption(selectElement, value) {
+            const option = document.createElement("option");
+            option.value = value;
+            option.text = value.charAt(0).toUpperCase() + value.slice(1); // Capitalize first letter
+            selectElement.add(option);
+        }
+
+        // Function to perform unit conversion
+        function convert() {
+            const inputValue = parseFloat(document.getElementById("inputValue").value);
+
+            // Check if the input is a valid number
+            if (isNaN(inputValue)) {
+                document.getElementById("error").innerText = "Please enter a valid number.";
+                return;
+            }
+
+            document.getElementById("error").innerText = ""; // Clear previous errors
+
+            const fromUnit = document.getElementById("fromUnit").value;
+            const toUnit = document.getElementById("toUnit").value;
+
+            const result = performConversion(inputValue, fromUnit, toUnit);
+
+            if (result !== null) {
+                document.getElementById("result").innerText = `Result: ${result.toFixed(4)} ${toUnit}`;
+                
+                // Update conversion history
+                updateConversionHistory(inputValue, fromUnit, toUnit, result);
+            }
+        }
+
+        // Function to perform the actual unit conversion
+        function performConversion(value, fromUnit, toUnit) {
+            // Length conversions
+            if (fromUnit === "meter" && toUnit === "kilometer") {
+                return value / 1000;
+            } else if (fromUnit === "kilometer" && toUnit === "meter") {
+                return value * 1000;
+            } else if (fromUnit === "meter" && toUnit === "mile") {
+                return value / 1609.34;
+            } else if (fromUnit === "mile" && toUnit === "meter") {
+                return value * 1609.34;
+            }
+            // Add more length conversions based on your needs
+
+            // Weight conversions
+            else if (fromUnit === "gram" && toUnit === "kilogram") {
+                return value / 1000;
+            } else if (fromUnit === "kilogram" && toUnit === "gram") {
+                return value * 1000;
+            } else if (fromUnit === "gram" && toUnit === "pound") {
+                return value / 453.592;
+            } else if (fromUnit === "pound" && toUnit === "gram") {
+                return value * 453.592;
+            }
+            // Add more weight conversions based on your needs
+
+            // Temperature conversions
+            else if (fromUnit === "celsius" && toUnit === "fahrenheit") {
+                return (value * 9/5) + 32;
+            } else if (fromUnit === "fahrenheit" && toUnit === "celsius") {
+                return (value - 32) * 5/9;
+            } else if (fromUnit === "celsius" && toUnit === "kelvin") {
+                return value + 273.15;
+            } else if (fromUnit === "kelvin" && toUnit === "celsius") {
+                return value - 273.15;
+            }
+            // Add more temperature conversions based on your needs
+
+            // Volume conversions
+            else if (fromUnit === "liter" && toUnit === "milliliter") {
+                return value * 1000;
+            } else if (fromUnit === "milliliter" && toUnit === "liter") {
+                return value / 1000;
+            } else if (fromUnit === "liter" && toUnit === "gallon") {
+                return value / 3.78541;
+            } else if (fromUnit === "gallon" && toUnit === "liter") {
+                return value * 3.78541;
+            }
+            // Add more volume conversions based on your needs
+
+            // Speed conversions
+            else if (fromUnit === "milesPerHour" && toUnit === "kilometersPerHour") {
+                return value * 1.60934;
+            } else if (fromUnit === "kilometersPerHour" && toUnit === "milesPerHour") {
+                return value / 1.60934;
+            }
+            // Add more speed conversions based on your needs
+
+            // If no conversion is matched, return null
+            return null;
+        }
+
+        // Function to update conversion history
+        function updateConversionHistory(inputValue, fromUnit, toUnit, result) {
+            const historyList = document.getElementById("historyList");
+
+            // Check if the result is not null before updating the history
+            if (result !== null) {
+                const historyItem = document.createElement("li");
+                historyItem.textContent = `${inputValue} ${fromUnit} to ${result.toFixed(4)} ${toUnit}`;
+                historyList.appendChild(historyItem);
+            }
+        }
+
+        // Initialize units based on the default category
+        populateUnits();
+    </script>
+</body>
+</html>
