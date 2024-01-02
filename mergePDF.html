@@ -19,7 +19,7 @@
         }
 
         #container {
-            max-width: 600px;
+            max-width: 80%;
             margin: 0 auto;
             padding: 20px;
             background-color: #ffffff;
@@ -79,11 +79,16 @@
             transition: width 0.5s ease-in-out;
         }
 
-        /* Styling for mobile devices */
-        @media screen and (max-width: 480px) {
-            input {
-                width: 100%;
-            }
+        #previewContainer {
+            margin-top: 20px;
+        }
+
+        #pdfPreview {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #3498db;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.15.0/dist/pdf-lib.js"></script>
@@ -98,6 +103,9 @@
         <a id="downloadLink" download="MergedPDF.pdf">Download Merged PDF</a>
         <div id="progressBarContainer">
             <div id="progressBar"></div>
+        </div>
+        <div id="previewContainer">
+            <iframe id="pdfPreview" src="" frameborder="0"></iframe>
         </div>
     </div>
 
@@ -128,12 +136,19 @@
             }
 
             const downloadLink = document.getElementById('downloadLink');
+            const previewContainer = document.getElementById('previewContainer');
+            const pdfPreview = document.getElementById('pdfPreview');
+
             const mergedPdfBytes = await mergedPdf.save();
             downloadLink.href = URL.createObjectURL(new Blob([mergedPdfBytes], { type: 'application/pdf' }));
             downloadLink.style.display = 'inline-block';
             setTimeout(() => {
                 downloadLink.style.opacity = '1';
             }, 100); // Delay the opacity transition for a smoother effect
+
+            // Display the preview
+            previewContainer.style.display = 'block';
+            pdfPreview.src = URL.createObjectURL(new Blob([mergedPdfBytes], { type: 'application/pdf' }));
         }
 
         function readFile(file) {
