@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Merger</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input {
+            margin: 10px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        a {
+            display: none;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #3498db;
+        }
+
+        #progressBar {
+            width: 0;
+            height: 20px;
+            background-color: #3498db;
+            transition: width 0.3s ease-in-out;
+        }
+    </style>
+    <!-- Include the jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <h1>PDF Merger</h1>
+    <input type="file" id="fileInput" multiple accept=".pdf">
+    <button onclick="mergePDF()">Merge PDFs</button>
+    <a id="downloadLink" download="MergedPDF.pdf">Download Merged PDF</a>
+    <div id="progressBar"></div>
+
+    <script>
+        function mergePDF() {
+            const fileInput = document.getElementById('fileInput');
+            const files = fileInput.files;
+
+            if (files.length < 2) {
+                alert("Please select at least two PDF files to merge.");
+                return;
+            }
+
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = '0%';
+
+            const mergedPdf = new jsPDF();
+
+            function processFile(index) {
+                if (index < files.length) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const pdfData = new Uint8Array(convertDataURIToArrayBuffer(e.target.result));
+                        mergedPdf.appendPagesOf(pdfData);
+
+                        const progress = ((index + 1) / files.length) * 100;
+                        progressBar.style.width = `${progress}%`;
+
+                        processFile(index + 1);
+                    };
+                    reader.readAsDataURL(files[index]);
+                } else {
+                    const downloadLink = document.getElementById('downloadLink');
+                    const blob = mergedPdf.output('blob');
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.style.display = 'block';
+                }
+            }
+
+            processFile(0);
+        }
+
+        function convertDataURIToArrayBuffer(dataURI) {
+            const byteString = atob(dataURI.split(',')[1]);
+            const arrayBuffer = new ArrayBuffer(byteString.length);
+            const uint8Array = new Uint8Array(arrayBuffer);
+
+            for (let i = 0; i < byteString.length; i++) {
+                uint8Array[i] = byteString.charCodeAt(i);
+            }
+
+            return arrayBuffer;
+        }
+    </script>
+</body>
+</html>
