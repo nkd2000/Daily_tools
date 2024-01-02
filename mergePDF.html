@@ -23,7 +23,7 @@
             margin: 0 auto;
             padding: 20px;
             background-color: #ffffff;
-            border: 5px solid transparent;
+            border: 2px solid transparent;
             border-image: linear-gradient(135deg, #3498db, #9b59b6);
             border-image-slice: 1;
             border-radius: 10px;
@@ -109,6 +109,48 @@
             border-radius: 4px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
+
+        #feedbackContainer {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #feedbackInput {
+            margin: 10px;
+            padding: 10px;
+            border: 2px solid #3498db;
+            border-radius: 4px;
+            width: 80%;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+        #submitFeedback {
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .userFeedback {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .deleteFeedback {
+            cursor: pointer;
+            color: #e74c3c;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.15.0/dist/pdf-lib.js"></script>
 </head>
@@ -126,6 +168,13 @@
         </div>
         <div id="previewContainer">
             <iframe id="pdfPreview" src="" frameborder="0"></iframe>
+        </div>
+
+        <div id="feedbackContainer">
+            <h2>Feedback Section 📝</h2>
+            <input type="text" id="feedbackInput" placeholder="Leave your feedback (alphanumeric only)">
+            <button id="submitFeedback" onclick="submitFeedback()">Submit Feedback</button>
+            <div id="feedbackList"></div>
         </div>
     </div>
 
@@ -171,15 +220,45 @@
                 downloadLink.style.display = 'inline-block';
                 setTimeout(() => {
                     downloadLink.style.opacity = '1';
-                }, 100); // Delay the opacity transition for a smoother effect
+                }, 100);
 
-                // Display the preview
                 previewContainer.style.display = 'block';
                 pdfPreview.src = URL.createObjectURL(new Blob([mergedPdfBytes], { type: 'application/pdf' }));
             } catch (error) {
                 console.error("Error during PDF merge:", error.message);
                 alert(`An error occurred during PDF merge:\n\n${error.message}`);
             }
+        }
+
+        function submitFeedback() {
+            const feedbackInput = document.getElementById('feedbackInput');
+            const feedbackList = document.getElementById('feedbackList');
+
+            const feedbackText = feedbackInput.value.trim();
+
+            if (/[^a-zA-Z0-9\s]/.test(feedbackText)) {
+                alert("Feedback can only contain alphanumeric characters and spaces.");
+                return;
+            }
+
+            const feedbackEntry = document.createElement('div');
+            feedbackEntry.className = 'userFeedback';
+
+            const feedbackTextElement = document.createElement('span');
+            feedbackTextElement.textContent = feedbackText;
+
+            const deleteButton = document.createElement('span');
+            deleteButton.className = 'deleteFeedback';
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = function () {
+                feedbackList.removeChild(feedbackEntry);
+            };
+
+            feedbackEntry.appendChild(feedbackTextElement);
+            feedbackEntry.appendChild(deleteButton);
+            feedbackList.appendChild(feedbackEntry);
+
+            feedbackInput.value = '';
         }
 
         function readFile(file) {
