@@ -10,28 +10,32 @@
             text-align: center;
             margin: 20px;
             background-color: #f5f5f5;
+            color: #333;
         }
 
         h1 {
             color: #3498db;
+            margin-bottom: 20px;
         }
 
         input {
             margin: 10px;
             padding: 10px;
-            border: 1px solid #3498db;
+            border: 2px solid #3498db;
             border-radius: 4px;
             width: 80%;
             display: inline-block;
+            font-size: 16px;
         }
 
         button {
-            padding: 10px;
+            padding: 15px 20px;
             background-color: #2ecc71;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 18px;
             transition: background-color 0.3s ease-in-out;
         }
 
@@ -42,13 +46,14 @@
         a {
             display: none;
             margin-top: 20px;
-            padding: 10px;
+            padding: 15px 20px;
             text-decoration: none;
             color: white;
-            background-color: #e74c3c;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
             border-radius: 4px;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
+            font-size: 18px;
         }
 
         #progressBarContainer {
@@ -60,7 +65,7 @@
         #progressBar {
             width: 0;
             height: 20px;
-            background-color: #e74c3c;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
             transition: width 0.5s ease-in-out;
         }
 
@@ -74,9 +79,11 @@
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.15.0/dist/pdf-lib.js"></script>
 </head>
 <body>
-    <h1>PDF Merger</h1>
+    <h1>PDF Merger 🚀</h1>
     <input type="file" id="fileInput" multiple accept=".pdf">
+    <br>
     <button onclick="mergePDF()">Merge PDFs</button>
+    <br>
     <a id="downloadLink" download="MergedPDF.pdf">Download Merged PDF</a>
     <div id="progressBarContainer">
         <div id="progressBar"></div>
