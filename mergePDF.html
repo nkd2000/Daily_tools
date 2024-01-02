@@ -75,30 +75,24 @@
         #progressBar {
             width: 0;
             height: 20px;
-            background: repeating-linear-gradient(
-                -45deg,
-                #3498db,
-                #3498db 10px,
-                #9b59b6 10px,
-                #9b59b6 20px
-            );
-            animation: magicalProgress 2s linear infinite;
-            transition: width 0.5s ease-in-out;
-            border-radius: 4px;
+            background: linear-gradient(135deg, #3498db, #9b59b6);
+            transition: width 0.5s ease-in-out, background-position 1s linear;
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
         }
 
         #progressText {
             margin-top: 10px;
             font-size: 18px;
-        }
-
-        @keyframes magicalProgress {
-            0% {
-                background-position: 0% 0;
-            }
-            100% {
-                background-position: 200% 0;
-            }
         }
 
         #previewContainer {
