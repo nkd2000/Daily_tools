@@ -37,6 +37,8 @@
             margin-top: 20px;
             text-decoration: none;
             color: #3498db;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
 
         #progressBar {
@@ -44,6 +46,13 @@
             height: 20px;
             background-color: #3498db;
             transition: width 0.3s ease-in-out;
+            margin-top: 10px;
+        }
+
+        #loadingText {
+            display: none;
+            margin-top: 10px;
+            color: #777;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.15.0/dist/pdf-lib.js"></script>
@@ -54,6 +63,7 @@
     <button onclick="mergePDF()">Merge PDFs</button>
     <a id="downloadLink" download="MergedPDF.pdf">Download Merged PDF</a>
     <div id="progressBar"></div>
+    <div id="loadingText">Merging...</div>
 
     <script>
         async function mergePDF() {
@@ -66,7 +76,9 @@
             }
 
             const progressBar = document.getElementById('progressBar');
+            const loadingText = document.getElementById('loadingText');
             progressBar.style.width = '0%';
+            loadingText.style.display = 'block';
 
             const mergedPdf = await PDFLib.PDFDocument.create();
 
@@ -84,7 +96,14 @@
             const downloadLink = document.getElementById('downloadLink');
             const mergedPdfBytes = await mergedPdf.save();
             downloadLink.href = URL.createObjectURL(new Blob([mergedPdfBytes], { type: 'application/pdf' }));
-            downloadLink.style.display = 'block';
+            
+            // Add a delay to allow the user to see the progress bar reaching 100%
+            setTimeout(() => {
+                progressBar.style.width = '100%';
+                loadingText.style.display = 'none';
+                downloadLink.style.display = 'inline-block';
+                downloadLink.style.opacity = '1';
+            }, 500);
         }
 
         function readFile(file) {
