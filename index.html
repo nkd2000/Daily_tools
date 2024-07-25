@@ -20,48 +20,37 @@
       background-color: var(--background-color);
       color: var(--text-color);
       line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
     }
 
     header {
       background-color: var(--primary-color);
       color: #fff;
-      padding: 20px 0;
+      padding: 20px;
       text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     h1 {
       margin: 0;
-      font-size: 2.5em;
-      animation: fadeInDown 1s ease;
-    }
-
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      font-size: 2em;
     }
 
     nav {
+      width: 250px;
       background-color: var(--secondary-color);
-      padding: 10px 0;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     nav ul {
       list-style-type: none;
       padding: 0;
       margin: 0;
-      display: flex;
-      justify-content: center;
     }
 
     nav ul li {
-      margin: 0 15px;
+      margin-bottom: 10px;
     }
 
     nav ul li a {
@@ -69,119 +58,110 @@
       text-decoration: none;
       font-weight: bold;
       transition: color 0.3s ease;
+      display: block;
+      padding: 10px;
+      border-radius: 5px;
     }
 
-    nav ul li a:hover {
-      color: var(--accent-color);
+    nav ul li a:hover, nav ul li a.active {
+      background-color: var(--primary-color);
     }
 
-    .tools-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+    main {
+      flex-grow: 1;
       padding: 20px;
-      max-width: 1200px;
-      margin: 0 auto;
+      box-sizing: border-box;
     }
 
-    .tool-card {
+    .tool-content {
       background-color: #fff;
       border-radius: 8px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      margin: 15px;
       padding: 20px;
-      width: calc(33.333% - 30px);
-      min-width: 250px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-    }
-
-    .tool-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
-
-    .tool-card h2 {
-      color: var(--primary-color);
-      margin-top: 0;
-    }
-
-    .tool-card p {
-      margin-bottom: 0;
     }
 
     footer {
       background-color: var(--secondary-color);
       color: #fff;
       text-align: center;
-      padding: 10px 0;
+      padding: 10px;
       position: fixed;
       bottom: 0;
       width: 100%;
     }
 
     @media (max-width: 768px) {
-      .tool-card {
-        width: calc(50% - 30px);
+      body {
+        flex-direction: column;
       }
-    }
-
-    @media (max-width: 480px) {
-      .tool-card {
+      nav {
         width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Free Online Tools</h1>
-    <p>Explore our collection of useful online tools</p>
-  </header>
-
   <nav>
+    <header>
+      <h1>Free Online Tools</h1>
+    </header>
     <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="imageCompressor.html">Image Tools</a></li>
-      <li><a href="unitConverter.html">Converters</a></li>
-      <li><a href="ageCalculator.html">Calculators</a></li>
+      <li><a href="#" data-tool="image_compressor">Image Compression</a></li>
+      <li><a href="#" data-tool="smart_image_processor">Smart Image Processor</a></li>
+      <li><a href="#" data-tool="age_calculator">Age Calculator</a></li>
+      <li><a href="#" data-tool="unit_converter">Unit Converter</a></li>
+      <li><a href="#" data-tool="merge_pdf">PDF Merger</a></li>
+      <li><a href="#" data-tool="signature_compressor">Signature Resizer</a></li>
     </ul>
   </nav>
 
-  <div class="tools-container">
-    <div class="tool-card" onclick="openLinkedPage('imageCompressor.html')">
-      <h2>Image Compression</h2>
-      <p>Reduce image size without losing quality.</p>
+  <main>
+    <div id="toolContent" class="tool-content">
+      <h2>Welcome to Free Online Tools</h2>
+      <p>Select a tool from the navigation menu to get started.</p>
     </div>
-    <div class="tool-card" onclick="openLinkedPage('smart_image_processor.html')">
-      <h2>Smart Image Processor</h2>
-      <p>Resize and optimize images with ease.</p>
-    </div>
-    <div class="tool-card" onclick="openLinkedPage('ageCalculator.html')">
-      <h2>Age Calculator</h2>
-      <p>Calculate your exact age online.</p>
-    </div>
-    <div class="tool-card" onclick="openLinkedPage('unitConverter.html')">
-      <h2>Unit Converter</h2>
-      <p>Convert between various units effortlessly.</p>
-    </div>
-    <div class="tool-card" onclick="openLinkedPage('mergePDF.html')">
-      <h2>PDF Merger</h2>
-      <p>Combine multiple PDF files into one document.</p>
-    </div>
-    <div class="tool-card" onclick="openLinkedPage('signature_compressor.html')">
-      <h2>Signature Resizer</h2>
-      <p>Resize and compress signatures for official use.</p>
-    </div>
-  </div>
+  </main>
 
   <footer>
     <p>&copy; 2023 Free Online Tools. All rights reserved.</p>
   </footer>
 
   <script>
-    function openLinkedPage(link) {
-      window.location.href = link;
+    const toolContent = document.getElementById('toolContent');
+    const navLinks = document.querySelectorAll('nav a');
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const tool = this.getAttribute('data-tool');
+        loadToolContent(tool);
+        setActiveLink(this);
+      });
+    });
+
+    function loadToolContent(tool) {
+      fetch(`${tool}.html`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(html => {
+          toolContent.innerHTML = html;
+        })
+        .catch(error => {
+          console.error('Error loading tool content:', error);
+          toolContent.innerHTML = `
+            <h2>Error</h2>
+            <p>Sorry, we couldn't load the content for ${tool}. Please try again later.</p>
+          `;
+        });
+    }
+
+    function setActiveLink(activeLink) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      activeLink.classList.add('active');
     }
   </script>
 </body>
