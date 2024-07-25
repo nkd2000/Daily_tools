@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Resizer</title>
+    <style>
+        body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+}
+
+.container {
+    text-align: center;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 100%;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 2em;
+    font-weight: bold;
+    color: #333;
+}
+
+h2,h6 {
+    color: #000000;
+}
+
+input[type="file"] {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    border: 2px solid #764ba2;
+    border-radius: 5px;
+    background: #fff;
+    color: #764ba2;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+}
+
+input[type="file"]:hover {
+    background: #764ba2;
+    color: #fff;
+}
+
+.preview-container {
+    margin: 20px 0;
+    display: none;
+}
+
+#preview {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid #ddd;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+#imageInfo {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #333;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #667eea;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background-color: #4a63d6;
+}
+
+.back-btn {
+    margin-top: 20px;
+    background-color: #e53935;
+}
+
+.back-btn:hover {
+    background-color: #c62828;
+}
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Signature Resizer</h1>
+        <h6> This resize signature for ssc (6cm width and 2cm hight)</h6>
+        <input type="file" id="imageUpload" accept="image/*">
+        <div class="preview-container">
+            <h2>Processed Signature</h2>
+            <img id="preview" alt="Image preview" />
+            <p id="imageInfo"></p>
+        </div>
+        <canvas id="canvas" style="display: none;"></canvas>
+        <a id="downloadBtn" class="btn" style="display: none;">Download Resized Image</a>
+        <a id="backBtn" class="btn back-btn">Back</a>
+    </div>
+    <script>
+        document.getElementById('imageUpload').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas dimensions to the desired size
+            canvas.width = 640;
+            canvas.height = 276;
+
+            // Draw the image to the canvas
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Compress the image to a size around 25KB
+            let quality = 1.0;
+            let imageDataUrl = canvas.toDataURL('image/jpeg', quality);
+
+            // Reduce the quality until the image is around 25KB
+            while (imageDataUrl.length / 1024 > 25 && quality > 0.1) {
+                quality -= 0.05;
+                imageDataUrl = canvas.toDataURL('image/jpeg', quality);
+            }
+
+            // Update preview
+            const preview = document.getElementById('preview');
+            preview.src = imageDataUrl;
+            preview.style.display = 'block';
+
+            // Update image info
+            const imageInfo = document.getElementById('imageInfo');
+            imageInfo.textContent = `New Dimensions: ${canvas.width}x${canvas.height}px, Size: ${Math.round(imageDataUrl.length / 1024)}KB`;
+
+            // Show the preview container
+            document.querySelector('.preview-container').style.display = 'block';
+
+            // Show the download button and set its href to the resized image
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.style.display = 'inline-block';
+            downloadBtn.href = imageDataUrl;
+            downloadBtn.download = 'resized-image.jpg';
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+
+// Add event listener to the back button
+document.getElementById('backBtn').addEventListener('click', function() {
+    window.location.href = 'index.html';
+});
+    </script>
+</body>
+</html>
