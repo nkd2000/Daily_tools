@@ -5,20 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Free Online Tools</title>
   <style>
+    :root {
+      --primary-color: #3498db;
+      --secondary-color: #2c3e50;
+      --accent-color: #e74c3c;
+      --background-color: #ecf0f1;
+      --text-color: #333;
+    }
+
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
-      overflow-x: hidden; /* Prevent horizontal scroll */
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
     }
 
     header {
-      background-color: #333;
+      background-color: var(--primary-color);
       color: #fff;
-      padding: 20px;
+      padding: 20px 0;
       text-align: center;
-      position: relative;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.5em;
       animation: fadeInDown 1s ease;
     }
 
@@ -34,145 +48,141 @@
     }
 
     nav {
-      margin-top: 20px;
-      background-color: #1a1a1a; /* New background color */
-      padding: 10px;
-      border-radius: 5px; /* Add some border radius for style */
-    }
-
-    .burger-menu, .nav-btn {
-      display: none;
-      cursor: pointer;
+      background-color: var(--secondary-color);
+      padding: 10px 0;
     }
 
     nav ul {
       list-style-type: none;
       padding: 0;
-      text-align: center;
+      margin: 0;
+      display: flex;
+      justify-content: center;
     }
 
     nav ul li {
-      display: inline-block;
-      margin-right: 20px;
+      margin: 0 15px;
     }
 
     nav ul li a {
+      color: #fff;
       text-decoration: none;
-      color: #fff; /* Text color is white */
       font-weight: bold;
-      font-size: 16px;
       transition: color 0.3s ease;
     }
 
     nav ul li a:hover {
-      color: #ffd700; /* Change color on hover, for example, gold/yellow */
+      color: var(--accent-color);
     }
 
-    section {
-      padding: 50px;
-      text-align: center;
+    .tools-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .tool-card {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin: 15px;
+      padding: 20px;
+      width: calc(33.333% - 30px);
+      min-width: 250px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .tool-card h2 {
+      color: var(--primary-color);
+      margin-top: 0;
+    }
+
+    .tool-card p {
+      margin-bottom: 0;
     }
 
     footer {
-      background-color: #333;
+      background-color: var(--secondary-color);
       color: #fff;
-      padding: 10px;
       text-align: center;
+      padding: 10px 0;
       position: fixed;
       bottom: 0;
       width: 100%;
     }
 
-    /* New style for the clickable div */
-    .clickable-content {
-      cursor: pointer;
-      padding: 20px;
-      background-color: #fff; /* Background color for the clickable div */
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin: 20px;
-      transition: background-color 0.3s ease;
+    @media (max-width: 768px) {
+      .tool-card {
+        width: calc(50% - 30px);
+      }
     }
 
-    .clickable-content:hover {
-      background-color: #f0f0f0; /* Change background color on hover */
+    @media (max-width: 480px) {
+      .tool-card {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-
   <header>
-    <div class="burger-menu" onclick="toggleNav()">&#9776;</div>
     <h1>Free Online Tools</h1>
-    <div class="nav-btn" onclick="toggleNav()">Navigation</div>
-    <p>Explore our online tools for everyday use</p>
-    <nav>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="imageCompressor.html">Compress Image</a></li>
-        <li><a href="page2.html">Page 2</a></li>
-        <!-- Add links for your other pages -->
-      </ul>
-    </nav>
+    <p>Explore our collection of useful online tools</p>
   </header>
 
-  <!-- New clickable div for future webpage -->
-  <div class="clickable-content" onclick="openLinkedPage('imageCompressor.html')">
-    <h2>Image Compression</h2>
-    <p>Reduce image size as you want.</p>
-  </div>
-  <div class="clickable-content" onclick="openLinkedPage('smart_image_processor.html')">
-    <h2>Increase or Reduce size of an image</h2>
-    <p>Reduce or increase image size as you want.Try this new looking tool for daily work.</p>
-  </div>
-<!-- age calculator-->
-  <div class="clickable-content" onclick="openLinkedPage('ageCalculator.html')">
-    <h2>Online age Calculator</h2>
-    <p>Now calculate your age online .</p>
-  </div>
-<!-- unit converter -->
-  <div class="clickable-content" onclick="openLinkedPage('unitConverter.html')">
-    <h2>Unit Converter </h2>
-    <p>Try our online unit converter you will surprised</p>
-  </div>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="imageCompressor.html">Image Tools</a></li>
+      <li><a href="unitConverter.html">Converters</a></li>
+      <li><a href="ageCalculator.html">Calculators</a></li>
+    </ul>
+  </nav>
 
-   <!-- merge your pdf-->
-  <div class="clickable-content" onclick="openLinkedPage('mergePDF.html')">
-    <h2>Merge your pdf </h2>
-    <p>describe </p>
+  <div class="tools-container">
+    <div class="tool-card" onclick="openLinkedPage('imageCompressor.html')">
+      <h2>Image Compression</h2>
+      <p>Reduce image size without losing quality.</p>
+    </div>
+    <div class="tool-card" onclick="openLinkedPage('smart_image_processor.html')">
+      <h2>Smart Image Processor</h2>
+      <p>Resize and optimize images with ease.</p>
+    </div>
+    <div class="tool-card" onclick="openLinkedPage('ageCalculator.html')">
+      <h2>Age Calculator</h2>
+      <p>Calculate your exact age online.</p>
+    </div>
+    <div class="tool-card" onclick="openLinkedPage('unitConverter.html')">
+      <h2>Unit Converter</h2>
+      <p>Convert between various units effortlessly.</p>
+    </div>
+    <div class="tool-card" onclick="openLinkedPage('mergePDF.html')">
+      <h2>PDF Merger</h2>
+      <p>Combine multiple PDF files into one document.</p>
+    </div>
+    <div class="tool-card" onclick="openLinkedPage('signature_compressor.html')">
+      <h2>Signature Resizer</h2>
+      <p>Resize and compress signatures for official use.</p>
+    </div>
   </div>
-   
-   <!-- signature resizer -->
-  <div class="clickable-content" onclick="openLinkedPage('signature_compressor.html')">
-    <h2>Signature Resizer </h2>
-    <p>Resize and compress your signature. this is best for SSC signature uploading</p>
-  </div>
-
-
-    <div class="clickable-content" style ="display:none;" onclick="openLinkedPage('ageCalculator.html')">
-    <h2>Online age Calculator</h2>
-    <p>describe </p>
-  </div>
-  
-  <section>
-    <h2>Featured Tools</h2>
-    <!-- Add your featured tools content here -->
-  </section>
 
   <footer>
     <p>&copy; 2023 Free Online Tools. All rights reserved.</p>
   </footer>
 
   <script>
-    function toggleNav() {
-      const nav = document.querySelector('nav');
-      nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
-    }
-
     function openLinkedPage(link) {
       window.location.href = link;
     }
   </script>
-
 </body>
 </html>
