@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="google-adsense-account" content="ca-pub-3793390054330330">
     <title>PDF Merger</title>
     <style>
         body {
@@ -112,7 +110,6 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
     </style>
-   
 </head>
 <body>
     <div id="container">
@@ -131,11 +128,17 @@
         </div>
     </div>
 
-<div style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; border-radius: 5px; cursor: pointer;" onclick="history.back()">
-  Back
-</div>
-
+    <!-- Load PDF-Lib from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    
     <script>
+        // Wait for PDF-Lib to load
+        window.onload = function() {
+            if (typeof PDFLib === 'undefined') {
+                alert('PDF-Lib failed to load. Please check your internet connection.');
+            }
+        };
+
         async function mergePDF() {
             try {
                 const fileInput = document.getElementById('fileInput');
@@ -173,15 +176,18 @@
                     throw new Error("Failed to generate merged PDF.");
                 }
 
-                downloadLink.href = URL.createObjectURL(new Blob([mergedPdfBytes], { type: 'application/pdf' }));
+                const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                
+                downloadLink.href = url;
                 downloadLink.style.display = 'inline-block';
                 setTimeout(() => {
                     downloadLink.style.opacity = '1';
-                }, 100); // Delay the opacity transition for a smoother effect
+                }, 100);
 
                 // Display the preview
                 previewContainer.style.display = 'block';
-                pdfPreview.src = URL.createObjectURL(new Blob([mergedPdfBytes], { type: 'application/pdf' }));
+                pdfPreview.src = url;
             } catch (error) {
                 console.error("Error during PDF merge:", error.message);
                 alert(`An error occurred during PDF merge:\n\n${error.message}`);
