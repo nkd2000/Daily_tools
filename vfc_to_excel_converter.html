@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCF to Excel Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        #loading {
+            display: none;
+            color: #555;
+            font-style: italic;
+        }
+        #excelTable {
+            display: none;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        #excelTable th, #excelTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #excelTable th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        #downloadLink {
+            display: block;
+            margin-top: 20px;
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        #downloadLink:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>VCF to Excel Converter</h1>
+    <form id="uploadForm">
+        <input type="file" id="vcfFile" accept=".vcf" required>
+        <button type="submit">Upload and Convert</button>
+    </form>
+    <div id="loading">Converting... Please wait.</div>
+    <table id="excelTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <a id="downloadLink" style="display:none;">Download Excel</a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('vcfFile');
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            // Show loading message
+            document.getElementById('loading').style.display = 'block';
+
+            reader.onload = function(e) {
+                const vcfContent = e.target.result;
+
+                // Parse VCF data
+                const lines = vcfContent.split('\n');
+                const contacts = [];
+                let contact = {};
+
+                lines.forEach(line => {
+                    if (line.startsWith('BEGIN:VCARD')) {
+                        contact = {}; // Reset for new contact
+                    } else if (line.startsWith('END:VCARD')) {
+                        contacts.push(contact); // Add contact to list
+                    } else {
+                        const parts = line.split(':', 2);
+                        if (parts.length === 2) {
+                            const key = parts[0].split(';')[0]; // Remove any parameters (e.g., TEL;TYPE=HOME)
+                            contact[key] = parts[1];
+                        }
+                    }
+                });
+
+                // Map to structured data for Excel and table display
+                const data = contacts.map(contact => ({
+                    Name: contact['FN'] || '',
+                    Phone: contact['TEL'] || '',
+                    Email: contact['EMAIL'] || ''
+                }));
+
+                // Generate Excel file
+                const worksheet = XLSX.utils.json_to_sheet(data);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Contacts');
+                const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+
+                // Update download link
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = url;
+                downloadLink.download = 'contacts.xlsx';
+                downloadLink.style.display = 'block';
+                downloadLink.innerText = 'Download Excel';
+
+                // Hide loading message
+                document.getElementById('loading').style.display = 'none';
+
+                // Display data in table format
+                const tableBody = document.getElementById('excelTable').querySelector('tbody');
+                tableBody.innerHTML = ''; // Clear previous entries
+
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${row.Name}</td><td>${row.Phone}</td><td>${row.Email}</td>`;
+                    tableBody.appendChild(tr);
+                });
+
+                // Show the table
+                document.getElementById('excelTable').style.display = 'table';
+            };
+
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>
