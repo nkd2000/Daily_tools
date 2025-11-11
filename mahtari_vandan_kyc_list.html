@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>महतारी वंदन योजना - KYC लिस्ट सेजबहार</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .search-section {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #667eea;
+        }
+
+        .stats {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .table-container {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: all 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f0f4ff;
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-results-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .no-results h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .header p {
+                font-size: 14px;
+            }
+
+            .search-section {
+                padding: 20px;
+            }
+
+            th, td {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #667eea;
+            color: white;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 महतारी वंदन योजना - KYC सूची</h1>
+            <p>सेजबहार क्षेत्र के लाभार्थियों की सूची</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="नाम, ID या पति का नाम टाइप करें (हिंदी या अंग्रेजी में)..."
+                    autocomplete="off"
+                >
+                <span class="search-icon">🔍</span>
+            </div>
+            <div class="stats">
+                <span id="resultCount"></span>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>क्रमांक</th>
+                        <th>MVY ID</th>
+                        <th>लाभार्थी का नाम</th>
+                        <th>पति का नाम</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+            <div id="noResults" class="no-results" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <h3>कोई परिणाम नहीं मिला</h3>
+                <p>कृपया अपनी खोज बदलकर पुनः प्रयास करें</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>महतारी वंदन योजना</strong> - सेजबहार, रायपुर, छत्तीसगढ़</p>
+            <p style="margin-top: 8px; font-size: 12px;">कुल लाभार्थी: <span id="totalCount"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Data from images
+        const data = [{"mvy_id": "MVY003517972", "beneficary_name": "Arpana jha", "husband_name": "Prasant Kumar"}, {"mvy_id": "MVY005190707", "beneficary_name": "SHUBHDA SIDHANTY", "husband_name": "UMESHCHANDRA SIDHANTY"}, {"mvy_id": "MVY003918789", "beneficary_name": "SUPRITI RAY", "husband_name": "ABHIJIT BISWAS"}, {"mvy_id": "MVY004052096", "beneficary_name": "Subarna Ghosh", "husband_name": "Sandeep Roy"}, {"mvy_id": "MVY003804936", "beneficary_name": "RINKI KUSHWAHA", "husband_name": "SANDEEP SINGH"}, {"mvy_id": "MVY002949691", "beneficary_name": "surbhi tiwari", "husband_name": "sanket tiwari"}, {"mvy_id": "MVY004560201", "beneficary_name": "AARTI YASHPAL BURDE", "husband_name": "YASHPAL BURDE"}, {"mvy_id": "MVY004774509", "beneficary_name": "MALTI DAS", "husband_name": "NAVKRISHNA DAS"}, {"mvy_id": "MVY003429570", "beneficary_name": "Manju Dewangan", "husband_name": "Balkumar Dewangan"}, {"mvy_id": "MVY005851359", "beneficary_name": "SUMAN TIWARI", "husband_name": "MUKESH TIWARI"}, {"mvy_id": "MVY006271315", "beneficary_name": "Kiran Gupta", "husband_name": "Anubhav Gupta"}, {"mvy_id": "MVY006285724", "beneficary_name": "GYANTI SINGH", "husband_name": "KRISHNA NAND SINGH"}, {"mvy_id": "MVY006306896", "beneficary_name": "CHITRAREKHA SAHU", "husband_name": "VIRENDRA KUMAR SAHU"}, {"mvy_id": "MVY006750015", "beneficary_name": "DWIJ BAI SAHU", "husband_name": "LOKNATH SAHU"}, {"mvy_id": "MVY006555661", "beneficary_name": "ARPANA SANDHYA SINGH", "husband_name": "NAVDEEP SINGH"}, {"mvy_id": "MVY006645084", "beneficary_name": "SHAKUNTALA CHOUHAN", "husband_name": "YOGESHWAR SINGH CHOUHAN"}, {"mvy_id": "MVY006667595", "beneficary_name": "rukaiya khatoon", "husband_name": "muhammd riyaz"}, {"mvy_id": "MVY006841882", "beneficary_name": "Priyanka banchthor", "husband_name": "Shital Kumar banchthor"}, {"mvy_id": "MVY006807285", "beneficary_name": "Ritu dhiwar", "husband_name": "Om Kumar"}, {"mvy_id": "MVY005521636", "beneficary_name": "SONIYA PARMAR", "husband_name": "MAHESH KUMAR AAJARE"}, {"mvy_id": "MVY005876854", "beneficary_name": "DEVANTI KUMARI PAINKRA", "husband_name": "GOVIND PAINKRA"}, {"mvy_id": "MVY006427871", "beneficary_name": "ASTHA PANDEY", "husband_name": "KRISHNA PANDEY"}, {"mvy_id": "MVY006142350", "beneficary_name": "Ganeshiya kurre", "husband_name": "Prahalad kurre"}, {"mvy_id": "MVY001200979", "beneficary_name": "\u092d\u093e\u0930\u0924\u0940 \u092c\u093e\u0908 \u092f\u0926\u0942", "husband_name": "\u0939\u0930\u0940\u0932\u093e\u0932"}, {"mvy_id": "MVY002355135", "beneficary_name": "\u0930\u0942\u092a\u0915\u0941\u092e\u093e\u0930\u0940 \u092c\u0902\u091c\u093e\u0930\u0947", "husband_name": "\u0926\u093f\u0932\u0947\u0936 \u0915\u0941\u092e\u093e\u0930"}, {"mvy_id": "MVY002366071", "beneficary_name": "\u0935\u093f\u0926\u092f\u093e \u0927\u0940\u0935\u0930", "husband_name": "\u0930\u093e\u092e\u092c\u0930\u0923"}, {"mvy_id": "MVY000011794", "beneficary_name": "\u0938\u094b\u0928\u093e\u092c\u093e\u0908 \u092c\u0938\u093e\u0915", "husband_name": "\u0935\u093f\u0939\u093e\u0930\u0940 \u0932\u093e\u0932 \u092c\u0938\u093e\u0915"}, {"mvy_id": "MVY000031258", "beneficary_name": "JANKI BAI SAHU", "husband_name": "CHUNURAM SAHU"}, {"mvy_id": "MVY000001576", "beneficary_name": "SRUTHI S RAJ", "husband_name": "JISHNU VASAVAN"}, {"mvy_id": "MVY000172777", "beneficary_name": "BHAGIRAJI KHUBNANI", "husband_name": "AMUNDAS KHUBNANI"}, {"mvy_id": "MVY000575921", "beneficary_name": "NAMRATA SONI", "husband_name": "SANJU SONI"}, {"mvy_id": "MVY000674347", "beneficary_name": "GITA SARKAR", "husband_name": "LATE SANTOSH SARKAR"}, {"mvy_id": "MVY000659856", "beneficary_name": "BANDANA RANI DAS", "husband_name": "SANJAY SARKAR"}, {"mvy_id": "MVY002968496", "beneficary_name": "KAMLESHWARI DHRUW", "husband_name": "VIDESH DHRUW"}, {"mvy_id": "MVY003064928", "beneficary_name": "KUSUM SAHU", "husband_name": "MEGHNATH SAHU"}, {"mvy_id": "MVY002895529", "beneficary_name": "Tikeshwari sahu", "husband_name": "Jaykishan sahu"}, {"mvy_id": "MVY002907672", "beneficary_name": "\u092a\u094d\u0930\u093f\u092f\u093e \u0938\u093e\u0939\u0942", "husband_name": "\u0930\u093e\u092e \u0938\u093e\u0939\u0942"}, {"mvy_id": "MVY005249328", "beneficary_name": "PARANIYA", "husband_name": "MEHATTAR NISHAD"}, {"mvy_id": "MVY005277737", "beneficary_name": "DEVKUMARI NISHAD", "husband_name": "DULESHWAR NISHAD"}, {"mvy_id": "MVY004489444", "beneficary_name": "Anju jangde", "husband_name": "Shivkumar jangde"}, {"mvy_id": "MVY004673377", "beneficary_name": "BABLI BHARTI", "husband_name": "DHARAM DAS BHARTI"}, {"mvy_id": "MVY005241241", "beneficary_name": "KRITI NISHAD", "husband_name": "JITENDRA NISHAD"}, {"mvy_id": "MVY004991610", "beneficary_name": "kirti dhruwanshi", "husband_name": "govardhar dhruwanshi"}, {"mvy_id": "MVY004442511", "beneficary_name": "Kuleshwari", "husband_name": "Pradeep koshle"}, {"mvy_id": "MVY004475461", "beneficary_name": "Rameshwari gendare", "husband_name": "Sanjay sonwani"}, {"mvy_id": "MVY000635221", "beneficary_name": "Florina john", "husband_name": "joyal john"}, {"mvy_id": "MVY000132702", "beneficary_name": "\u0913\u092e\u0947\u0936\u094d\u0935\u0930\u0940 \u092c\u0902\u091c\u093e\u0930\u0947", "husband_name": "\u092e\u0941\u0928\u0947\u0936\u094d\u0935\u0930 \u092c\u0902\u091c\u093e\u0930\u0947"}, {"mvy_id": "MVY004688539", "beneficary_name": "Pratima Devi Tamrakar", "husband_name": "Nohar Prasad"}, {"mvy_id": "MVY004861395", "beneficary_name": "Kirti Bansod", "husband_name": "Kishor Bansod"}, {"mvy_id": "MVY004865512", "beneficary_name": "BaratninDhruv", "husband_name": "Sundaru Lal"}, {"mvy_id": "MVY004566055", "beneficary_name": "rohini sahu", "husband_name": "gungeshwar shau"}, {"mvy_id": "MVY004652575", "beneficary_name": "Suman Banchhor", "husband_name": "Rakesh Banchhor"}, {"mvy_id": "MVY003447977", "beneficary_name": "Pooja Dwivedi", "husband_name": "Pritam kumar"}, {"mvy_id": "MVY003428916", "beneficary_name": "Saroj Jayswal", "husband_name": "Anuj Ram"}, {"mvy_id": "MVY004120213", "beneficary_name": "\u0905\u0902\u091c\u0932\u0940 \u0924\u093f\u0935\u093e\u0930\u0940", "husband_name": "\u0938\u0902\u091c\u092f"}, {"mvy_id": "MVY004123725", "beneficary_name": "\u0938\u0928\u094d\u092f\u093e \u0926\u0947\u0935\u093e\u0902\u0917\u0928", "husband_name": "\u092d\u0942\u0937\u0923 \u0932\u093e\u0932"}, {"mvy_id": "MVY004392401", "beneficary_name": "Aneeta Kurre", "husband_name": "Rajendra Kurre"}, {"mvy_id": "MVY004142253", "beneficary_name": "DipikAY Yadaw", "husband_name": "Gajendra Yadaw"}, {"mvy_id": "MVY004174722", "beneficary_name": "Shukla Chakraborty", "husband_name": "Nand Lal"}, {"mvy_id": "MVY004289143", "beneficary_name": "\u0938\u0940\u092e\u093e \u0938\u093e\u0939\u0942", "husband_name": "\u0927\u0928\u0902\u091c\u092f \u0938\u093e\u0939\u0942"}, {"mvy_id": "MVY005601889", "beneficary_name": "Jageshwari manhare", "husband_name": "Kanhaiya lal"}, {"mvy_id": "MVY005486000", "beneficary_name": "Madhuri agrawal", "husband_name": "Prakash agrawal"}, {"mvy_id": "MVY005513756", "beneficary_name": "Priyanka Kumari", "husband_name": "Mukesh"}, {"mvy_id": "MVY005226943", "beneficary_name": "DEVKI YADAV", "husband_name": "KHELAN"}, {"mvy_id": "MVY004984136", "beneficary_name": "Savitri Gupta", "husband_name": "Kamalnath Gupta"}, {"mvy_id": "MVY002696450", "beneficary_name": "Dasmat Gendre", "husband_name": "Deepak"}, {"mvy_id": "MVY003407276", "beneficary_name": "Pritee Gendre", "husband_name": "Komal Gendre"}, {"mvy_id": "MVY004612640", "beneficary_name": "BINDU", "husband_name": "DOMAR SINGH BHARTI"}, {"mvy_id": "MVY004810342", "beneficary_name": "Shyam Kunwar rathore", "husband_name": "Lakhan lal rathore"}, {"mvy_id": "MVY004548911", "beneficary_name": "Sunita chelak", "husband_name": "Dauu chelak"}, {"mvy_id": "MVY006833522", "beneficary_name": "Bundeshwri tandan", "husband_name": "Sunil markande"}, {"mvy_id": "MVY006820519", "beneficary_name": "Rajvati ratre", "husband_name": "Budharu ratre"}, {"mvy_id": "MVY006842632", "beneficary_name": "Mamta sao", "husband_name": "Poonam sao"}, {"mvy_id": "MVY006847386", "beneficary_name": "Rajeshwari kosare", "husband_name": "Ashutosh kosare"}, {"mvy_id": "MVY006850306", "beneficary_name": "Eva singh", "husband_name": "Vidas singh"}, {"mvy_id": "MVY006851739", "beneficary_name": "Preeti tripathi", "husband_name": "Manoj Kumar"}, {"mvy_id": "MVY006853394", "beneficary_name": "Anita dardsena", "husband_name": "Kartik ram"}, {"mvy_id": "MVY006872643", "beneficary_name": "Jyoti gayakwad", "husband_name": "Govind"}, {"mvy_id": "MVY006666179", "beneficary_name": "diksha sonwani", "husband_name": "virendra"}, {"mvy_id": "MVY006703075", "beneficary_name": "shikha sahu", "husband_name": "rahul sahu"}, {"mvy_id": "MVY006711366", "beneficary_name": "SUMAN DEVI", "husband_name": "JAYESH NISHAD"}, {"mvy_id": "MVY006330196", "beneficary_name": "Gulbsha", "husband_name": "Sabir khan"}, {"mvy_id": "MVY006340723", "beneficary_name": "ANKITA PANDEY", "husband_name": "MANISH PANDEY"}, {"mvy_id": "MVY006342535", "beneficary_name": "PURNIMA YADAV", "husband_name": "PARMANAND YADAV"}, {"mvy_id": "MVY006343864", "beneficary_name": "FARHAD JABIN KHAN", "husband_name": "HANIF KHAN"}, {"mvy_id": "MVY006314357", "beneficary_name": "Sakshi upadhayay", "husband_name": "Ajay dube"}, {"mvy_id": "MVY006229162", "beneficary_name": "Geeta sahu", "husband_name": "Dev Prasad sahu"}, {"mvy_id": "MVY006233652", "beneficary_name": "Anita Rana", "husband_name": "Lakhpat"}, {"mvy_id": "MVY005747707", "beneficary_name": "SHAHIN PARVIN", "husband_name": "SHEKH SADDAM"}, {"mvy_id": "MVY005733814", "beneficary_name": "vijay lakshmi devi", "husband_name": "parmatama drivedi"}, {"mvy_id": "MVY005738950", "beneficary_name": "mamta chopkar", "husband_name": "devendra tiwari"}, {"mvy_id": "MVY005760186", "beneficary_name": "putul devi", "husband_name": "sumit kumar singh"}, {"mvy_id": "MVY005817503", "beneficary_name": "Seema vishwakarma", "husband_name": "Tarun Kumar"}, {"mvy_id": "MVY005821336", "beneficary_name": "SUKH BAI", "husband_name": "RAMADHIN"}, {"mvy_id": "MVY005805710", "beneficary_name": "ritu patel", "husband_name": "ajay patel"}, {"mvy_id": "MVY002555458", "beneficary_name": "\u0939\u0930\u092d\u0902\u092f\u093e \u092c\u0921\u093c\u0947", "husband_name": "\u091c\u092f\u0902\u0924\u0940 \u0932\u093e\u0932"}, {"mvy_id": "MVY002571661", "beneficary_name": "\u092c\u093f\u0902\u0926\u093e \u0916\u094b\u0938\u0940\u092f\u093e", "husband_name": "\u0926\u0940\u092a\u0932\u093e\u0932"}, {"mvy_id": "MVY002544997", "beneficary_name": "\u0926\u0941\u0930\u094d\u0917\u093e \u092e\u0939\u0902\u0924", "husband_name": "\u092d\u0942\u092a\u0947\u0936"}, {"mvy_id": "MVY002557442", "beneficary_name": "\u0932\u0940\u092e\u0947\u0936\u094d\u0935\u0930\u0940", "husband_name": "\u0932\u094b\u091a\u0928 \u092a\u094d\u0930\u0938\u093e\u0926"}, {"mvy_id": "MVY002559773", "beneficary_name": "\u0915\u0947\u0938\u0930\u0940 \u0926\u0947\u0935\u093e\u0902\u0917\u0928", "husband_name": "\u0915\u0941\u0938\u093e\u0932"}, {"mvy_id": "MVY000636604", "beneficary_name": "\u0938\u0902\u0917\u0940\u0924\u093e \u0921\u0915\u092c\u093e\u0930\u0940", "husband_name": "\u0935\u093f\u0915\u093e\u0938 \u0915\u0941\u092e\u093e\u0930"}, {"mvy_id": "MVY002091571", "beneficary_name": "Laxmi dewangan", "husband_name": "Omprakash dewangan"}, {"mvy_id": "MVY002093664", "beneficary_name": "Kamaljeet gupta", "husband_name": "Vijay Kumar gupta"}, {"mvy_id": "MVY002086141", "beneficary_name": "Babita sarkar roy", "husband_name": "Amitesh roy"}, {"mvy_id": "MVY000949964", "beneficary_name": "\u0926\u0941\u0930\u094d\u0917\u093e\u0928\u0940 \u0927\u0941\u0928", "husband_name": "\u092e\u093e\u0930\u094d\u0917\u0930\u0947 \u0927\u0941\u0928"}, {"mvy_id": "MVY001072965", "beneficary_name": "vandana govani", "husband_name": "jitendra kumar bhawani"}, {"mvy_id": "MVY001091198", "beneficary_name": "mamta thakur", "husband_name": "puttu ram thakur"}, {"mvy_id": "MVY001098979", "beneficary_name": "laxmi yadav", "husband_name": "mangalu ram yadav"}, {"mvy_id": "MVY001409124", "beneficary_name": "rahi yadu", "husband_name": "rampal yadu"}, {"mvy_id": "MVY001605617", "beneficary_name": "Gudiya devi", "husband_name": "Sudhir jangde"}, {"mvy_id": "MVY001594089", "beneficary_name": "Sabya Pravin", "husband_name": "Abdul vahid"}, {"mvy_id": "MVY001598192", "beneficary_name": "Rajkumari jangda", "husband_name": "Girish jangda"}, {"mvy_id": "MVY004063815", "beneficary_name": "Sonal tandan", "husband_name": "Manrakhn tandan"}];
+
+        let currentData = [...data];
+
+        // Initialize the table
+        function renderTable(dataToRender = data) {
+            const tbody = document.getElementById('tableBody');
+            const noResults = document.getElementById('noResults');
+
+            tbody.innerHTML = '';
+
+            if (dataToRender.length === 0) {
+                noResults.style.display = 'block';
+                document.querySelector('table').style.display = 'none';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            document.querySelector('table').style.display = 'table';
+
+            dataToRender.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><strong>${item.mvy_id}</strong></td>
+                    <td>${item.beneficary_name}</td>
+                    <td>${item.husband_name}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updateStats(dataToRender.length);
+        }
+
+        // Update statistics
+        function updateStats(count) {
+            document.getElementById('resultCount').innerHTML = 
+                `<strong>${count}</strong> में से <strong>${data.length}</strong> परिणाम दिखाए जा रहे हैं`;
+            document.getElementById('totalCount').textContent = data.length;
+        }
+
+        // Normalize text for better search (handles Hindi and English)
+        function normalizeText(text) {
+            return text.toLowerCase().trim();
+        }
+
+        // Search function with highlighting
+        function searchTable(searchTerm) {
+            const normalizedSearch = normalizeText(searchTerm);
+
+            if (!normalizedSearch) {
+                currentData = [...data];
+                renderTable(currentData);
+                return;
+            }
+
+            const filtered = data.filter(item => {
+                const mvy_id = normalizeText(item.mvy_id);
+                const beneficiary = normalizeText(item.beneficary_name);
+                const husband = normalizeText(item.husband_name);
+
+                return mvy_id.includes(normalizedSearch) ||
+                       beneficiary.includes(normalizedSearch) ||
+                       husband.includes(normalizedSearch);
+            });
+
+            currentData = filtered;
+            renderTable(filtered);
+
+            // Highlight search terms
+            if (filtered.length > 0) {
+                highlightSearchTerm(searchTerm);
+            }
+        }
+
+        // Highlight matching text
+        function highlightSearchTerm(term) {
+            if (!term) return;
+
+            const tbody = document.getElementById('tableBody');
+            const cells = tbody.getElementsByTagName('td');
+
+            for (let cell of cells) {
+                const text = cell.textContent;
+                const normalizedText = normalizeText(text);
+                const normalizedTerm = normalizeText(term);
+
+                if (normalizedText.includes(normalizedTerm)) {
+                    const regex = new RegExp(`(${term})`, 'gi');
+                    cell.innerHTML = text.replace(regex, '<span class="highlight">$1</span>');
+                }
+            }
+        }
+
+        // Event listener for search
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value;
+            searchTable(searchTerm);
+        });
+
+        // Initial render
+        renderTable();
+    </script>
+</body>
+</html>
