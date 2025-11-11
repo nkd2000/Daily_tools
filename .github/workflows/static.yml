@@ -30,19 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        # Use the latest stable checkout action
         uses: actions/checkout@v4
-
       - name: Setup Pages
-        uses: actions/configure-pages@v3
-
+        uses: actions/configure-pages@v5
       - name: Upload artifact
-        # Ensure the pages artifact action uses v4 so it doesn't resolve an older internal dependency
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository (change to your build dir like 'public' if needed)
+          # Upload entire repository
           path: '.'
-
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
