@@ -407,151 +407,140 @@
         </div>
     </div>
 
-    <script>
-        const EXCEL_FILE_NAME = 'raipur_kyc_list.xlsx';
-        let allData = [];
-        let currentData = [];
-        let villageCount = {};
+   <script>
+    const EXCEL_FILE_NAME = 'raipur_kyc_list.xlsx';
+    let allData = [];
+    let currentData = [];
 
-        window.addEventListener('DOMContentLoaded', function () {
-            loadExcelFile();
-        });
+    window.addEventListener('DOMContentLoaded', function() {
+        loadExcelFile();
+    });
 
-        async function loadExcelFile() {
-            try {
-                const response = await fetch(EXCEL_FILE_NAME);
-
-                if (!response.ok) {
-                    throw new Error(`Excel file "${EXCEL_FILE_NAME}" नहीं मिली`);
-                }
-
-                const arrayBuffer = await response.arrayBuffer();
-                const data = new Uint8Array(arrayBuffer);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-
-                console.log(`📊 Total rows loaded: ${jsonData.length}`);
-                processExcelData(jsonData);
-
-                document.getElementById('loadingOverlay').style.display = 'none';
-
-            } catch (error) {
-                console.error('❌ Error:', error);
-                document.getElementById('loadingOverlay').style.display = 'none';
-
-                document.querySelector('.container').insertAdjacentHTML('afterbegin', `
-                    <div class="error-box">
-                        <strong>❌ Excel File लोड नहीं हो सकी</strong>
-                        <p>कृपया सुनिश्चित करें कि "<strong>${EXCEL_FILE_NAME}</strong>" file इसी directory में है।</p>
-                        <p style="margin-top: 10px; font-size: 0.9em;">Error: ${error.message}</p>
-                    </div>
-                `);
-
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="no-results">❌ Excel file लोड नहीं हो सकी</td></tr>';
-            }
-        }
-
-        function processExcelData(jsonData) {
-            allData = [];
-            villageCount = {};
-
-            jsonData.forEach(row => {
-                const keys = Object.keys(row);
-                let regId = '', beneficiaryName = '', husbandName = '';
-
-                const regIdKey = keys.find(k =>
-                    k.includes('Registration id') ||
-                    k.includes('beneficiary_code') ||
-                    k.toLowerCase().includes('registration') ||
-                    k.toLowerCase().includes('mvy') ||
-                    k.toLowerCase().includes('id')
-                );
-                if (regIdKey) regId = row[regIdKey] || '';
-
-                const beneficiaryKey = keys.find(k =>
-                    k === 'first_name' ||
-                    k.toLowerCase().includes('first') ||
-                    k.toLowerCase().includes('benif') ||
-                    k.toLowerCase().includes('name') ||
-                    k.toLowerCase().includes('लाभार्थी')
-                );
-                if (beneficiaryKey) beneficiaryName = row[beneficiaryKey] || '';
-
-                const husbandKey = keys.find(k =>
-                    k === 'husband_name' ||
-                    k.toLowerCase().includes('husband') ||
-                    k.toLowerCase().includes('पति')
-                );
-                if (husbandKey) husbandName = row[husbandKey] || '';
-
-                if (regId || beneficiaryName || husbandName) {
-                    allData.push({
-                        id: regId.toString().trim(),
-                        beneficiary: beneficiaryName.toString().trim(),
-                        husband: husbandName.toString().trim()
-                    });
-                }
-            });
-
-            currentData = [...allData];
-            renderTable();
-            updateStats();
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-
-            if (currentData.length === 0) {
-                if (allData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="no-results">⏳ डेटा लोड हो रहा है...</td></tr>';
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="4" class="no-results">❌ कोई परिणाम नहीं मिला</td></tr>';
-                }
-                return;
+    async function loadExcelFile() {
+        try {
+            const response = await fetch(EXCEL_FILE_NAME);
+            
+            if (!response.ok) {
+                throw new Error(`Excel file "${EXCEL_FILE_NAME}" नहीं मिली`);
             }
 
-            let html = '';
-            currentData.forEach((item, index) => {
-                html += `
-                    <tr>
-                        <td class="serial-col">${index + 1}</td>
-                        <td class="id-cell">${item.id}</td>
-                        <td class="name-cell">${item.beneficiary}</td>
-                        <td class="name-cell">${item.husband}</td>
-                    </tr>
-                `;
+            const arrayBuffer = await response.arrayBuffer();
+            const data = new Uint8Array(arrayBuffer);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            
+            // IMPORTANT: header को skip करने के लिए range set करें
+            const jsonData = XLSX.utils.sheet_to_json(firstSheet, { 
+                header: ["col_A", "col_B", "col_C", "col_D"],
+                range: 1  // पहली row (header) को skip करेगा
             });
 
-            tbody.innerHTML = html;
+            console.log(`📊 Total rows loaded: ${jsonData.length}`);
+            console.log('Sample data:', jsonData[0]); // Debug के लिए
+            
+            processExcelData(jsonData);
+            
+            document.getElementById('loadingOverlay').style.display = 'none';
+            
+        } catch (error) {
+            console.error('❌ Error:', error);
+            document.getElementById('loadingOverlay').style.display = 'none';
+            
+            document.querySelector('.container').insertAdjacentHTML('afterbegin', `
+                <div class="error-box">
+                    <strong>❌ Excel File लोड नहीं हो सकी</strong>
+                    <p>कृपया सुनिश्चित करें कि "<strong>${EXCEL_FILE_NAME}</strong>" file इसी directory में है।</p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">Error: ${error.message}</p>
+                </div>
+            `);
+            
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" class="no-results">❌ Excel file लोड नहीं हो सकी</td></tr>';
         }
+    }
 
-        function updateStats() {
-            document.getElementById('totalCount').textContent = allData.length;
-            document.getElementById('displayCount').textContent = currentData.length;
-        }
+    function processExcelData(jsonData) {
+        allData = [];
+        
+        jsonData.forEach((row, index) => {
+            // Excel structure:
+            // Column B = Registration ID (col_B)
+            // Column C = first_name / लाभार्थी का नाम (col_C)
+            // Column D = husband_name / पति का नाम (col_D)
+            
+            const regId = (row.col_B || '').toString().trim();
+            const beneficiaryName = (row.col_C || '').toString().trim();
+            const husbandName = (row.col_D || '').toString().trim();
 
-        document.getElementById('searchBox').addEventListener('input', function (e) {
-            performSearch(e.target.value);
-        });
-
-        function performSearch(searchTerm) {
-            searchTerm = searchTerm.toLowerCase().trim();
-
-            if (searchTerm === '') {
-                currentData = [...allData];
-            } else {
-                currentData = allData.filter(item => {
-                    return item.id.toLowerCase().includes(searchTerm) ||
-                        item.beneficiary.toLowerCase().includes(searchTerm) ||
-                        item.husband.toLowerCase().includes(searchTerm);
+            // Skip empty rows
+            if (regId || beneficiaryName || husbandName) {
+                allData.push({
+                    id: regId,
+                    beneficiary: beneficiaryName,
+                    husband: husbandName
                 });
             }
+        });
 
-            renderTable();
-            updateStats();
+        console.log(`✅ Processed ${allData.length} records`);
+        currentData = [...allData];
+        renderTable();
+        updateStats();
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        
+        if (currentData.length === 0) {
+            if (allData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="no-results">⏳ डेटा लोड हो रहा है...</td></tr>';
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" class="no-results">❌ कोई परिणाम नहीं मिला</td></tr>';
+            }
+            return;
         }
-    </script>
+
+        let html = '';
+        currentData.forEach((item, index) => {
+            html += `
+                <tr>
+                    <td class="serial-col">${index + 1}</td>
+                    <td class="id-cell">${item.id}</td>
+                    <td class="name-cell">${item.beneficiary}</td>
+                    <td class="name-cell">${item.husband}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    function updateStats() {
+        document.getElementById('totalCount').textContent = allData.length;
+        document.getElementById('displayCount').textContent = currentData.length;
+    }
+
+    document.getElementById('searchBox').addEventListener('input', function(e) {
+        performSearch(e.target.value);
+    });
+
+    function performSearch(searchTerm) {
+        searchTerm = searchTerm.toLowerCase().trim();
+
+        if (searchTerm === '') {
+            currentData = [...allData];
+        } else {
+            currentData = allData.filter(item => {
+                return item.id.toLowerCase().includes(searchTerm) ||
+                       item.beneficiary.toLowerCase().includes(searchTerm) ||
+                       item.husband.toLowerCase().includes(searchTerm);
+            });
+        }
+
+        renderTable();
+        updateStats();
+    }
+</script>
+
 </body>
 
 </html>
