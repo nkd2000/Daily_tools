@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>महतारी वंदन योजना - रायपुर KYC सूची</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 30px;
+            border-radius: 5px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            color: #856404;
+        }
+
+        .search-section {
+            padding: 30px;
+            background: white;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            color: #667eea;
+        }
+
+        .stats {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .stats strong {
+            color: #667eea;
+            font-size: 1.3em;
+        }
+
+        .village-stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 15px 30px;
+            background: #e3f2fd;
+        }
+
+        .village-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .village-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 1.3em;
+        }
+
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #dc3545;
+            font-size: 1.2em;
+        }
+
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.1em;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+            transform: scale(1.005);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        tbody tr.hidden {
+            display: none;
+        }
+
+        .village-cell {
+            background: #e3f2fd;
+            font-weight: 600;
+            color: #1976d2;
+        }
+
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .footer strong {
+            color: #dc3545;
+        }
+
+        .serial-number {
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .header p {
+                font-size: 1em;
+            }
+
+            table {
+                font-size: 0.85em;
+            }
+
+            th, td {
+                padding: 8px 5px;
+            }
+
+            .village-stats {
+                gap: 10px;
+            }
+
+            .village-badge {
+                font-size: 0.8em;
+                padding: 6px 12px;
+            }
+
+            .search-box {
+                font-size: 1em;
+                padding: 12px 40px 12px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 महतारी वंदन योजना - रायपुर KYC सूची</h1>
+            <p>रायपुर जिले के सभी pending KYC लाभार्थियों की सूची</p>
+        </div>
+
+        <div class="info-box">
+            <p>💡 <strong>सर्च कैसे करें:</strong> नाम, Registration ID, पति का नाम, या <strong>गांव/वार्ड का नाम</strong> टाइप करें - हिंदी या अंग्रेजी दोनों में काम करेगा</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-wrapper">
+                <input type="text" id="searchBox" class="search-box" 
+                       placeholder="नाम, ID, पति का नाम, या गांव का नाम टाइप करें (हिंदी या अंग्रेजी में)..." />
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+
+        <div class="stats">
+            <span id="statsText">कुल <strong id="totalCount">0</strong> में से <strong id="displayCount">0</strong> परिणाम दिखाए जा रहे हैं</span>
+        </div>
+
+        <div class="village-stats" id="villageStats" style="display: none;">
+            <!-- Village badges will be inserted here -->
+        </div>
+
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>क्रमांक</th>
+                        <th>गांव/वार्ड का नाम</th>
+                        <th>Registration ID</th>
+                        <th>लाभार्थी का नाम</th>
+                        <th>पति का नाम</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="5" class="loading">
+                            ⏳ डेटा लोड हो रहा है...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>⚠️ <strong>महत्वपूर्ण सूचना:</strong> यह सूची अंतिम नहीं है। अधिक जानकारी के लिए कृपया अपनी <strong>ग्राम पंचायत से संपर्क करें</strong>।</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">📞 किसी भी समस्या के लिए अपने ग्राम पंचायत कार्यालय से संपर्क करें</p>
+        </div>
+    </div>
+
+    <script>
+        let allData = [];
+        let currentData = [];
+        let villageCount = {};
+
+        // Excel file का नाम यहां डालें (same directory में होनी चाहिए)
+        const EXCEL_FILE_NAME = 'raipur_kyc_list.xlsx';  // 👈 अपनी Excel file का नाम यहां डालें
+
+        // Page load होते ही Excel file को automatically load करें
+        window.addEventListener('DOMContentLoaded', function() {
+            loadExcelFile();
+        });
+
+        async function loadExcelFile() {
+            try {
+                // Excel file को fetch करें
+                const response = await fetch(EXCEL_FILE_NAME);
+                
+                if (!response.ok) {
+                    throw new Error('Excel file नहीं मिली');
+                }
+
+                const arrayBuffer = await response.arrayBuffer();
+                const data = new Uint8Array(arrayBuffer);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // First sheet को read करें
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                // Data को process करें
+                processExcelData(jsonData);
+                
+            } catch (error) {
+                console.error('Error loading Excel file:', error);
+                document.getElementById('tableBody').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="error">
+                            ❌ Excel file लोड नहीं हो सकी।<br>
+                            कृपया सुनिश्चित करें कि "<strong>${EXCEL_FILE_NAME}</strong>" file same directory में है।<br>
+                            <small style="color: #666; margin-top: 10px; display: block;">Error: ${error.message}</small>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function processExcelData(jsonData) {
+            allData = [];
+            villageCount = {};
+            
+            jsonData.forEach((row, index) => {
+                const keys = Object.keys(row);
+                
+                let village = '';
+                let regId = '';
+                let beneficiaryName = '';
+                let husbandName = '';
+
+                // Village/Ward column को find करें
+                const villageKey = keys.find(k => 
+                    k === 'village_ward_name' ||
+                    k.toLowerCase().includes('village') || 
+                    k.toLowerCase().includes('ward') ||
+                    k.toLowerCase().includes('gaon') ||
+                    k.toLowerCase().includes('गांव') ||
+                    k.toLowerCase().includes('gram') ||
+                    k.toLowerCase().includes('ग्राम')
+                );
+                if (villageKey) village = row[villageKey] || '';
+
+                // Registration ID / Beneficiary code column को find करें
+                const regIdKey = keys.find(k => 
+                    k === 'Registration id /beneficiary_code' ||
+                    k.toLowerCase().includes('registration') ||
+                    k.toLowerCase().includes('beneficiary_code') ||
+                    k.toLowerCase().includes('mvy') || 
+                    k.toLowerCase().includes('id')
+                );
+                if (regIdKey) regId = row[regIdKey] || '';
+
+                // First name / Beneficiary name column को find करें
+                const beneficiaryKey = keys.find(k => 
+                    k === 'first_name' ||
+                    k.toLowerCase().includes('first') ||
+                    k.toLowerCase().includes('benif') || 
+                    k.toLowerCase().includes('name') ||
+                    k.toLowerCase().includes('लाभार्थी')
+                );
+                if (beneficiaryKey) beneficiaryName = row[beneficiaryKey] || '';
+
+                // Husband name column को find करें
+                const husbandKey = keys.find(k => 
+                    k === 'husband_name' ||
+                    k.toLowerCase().includes('husband') || 
+                    k.toLowerCase().includes('पति')
+                );
+                if (husbandKey) husbandName = row[husbandKey] || '';
+
+                // Village की counting करें
+                if (village) {
+                    const villageName = village.toString().trim();
+                    villageCount[villageName] = (villageCount[villageName] || 0) + 1;
+                }
+
+                // अगर कोई भी data मिला तो add करें
+                if (regId || beneficiaryName || husbandName) {
+                    allData.push({
+                        village: village.toString().trim(),
+                        id: reg
