@@ -7,155 +7,215 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-adsense-account" content="ca-pub-3793390054330330">
   <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <title>Age Calculator</title>
+  <title>Age Calculator — Free Online Tools</title>
   <style>
-    body {
-      background: linear-gradient(136deg, #3498db, #e74c3c);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .calculator-card {
-      background: linear-gradient(45deg, #ffffff, #f0f0f0);
-      border-radius: 20px;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-      padding: 30px;
-      width: 400px;
-      max-width: 100%;
-      text-align: center;
-      animation: fadeIn 0.8s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    h1 {
-      color: #2c3e50;
-      font-weight: bold;
-      margin-bottom: 20px;
-      font-size: 28px;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #34495e;
-      font-size: 16px;
-    }
-
-    input[type="date"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      font-size: 16px;
-      transition: all 0.3s ease;
-    }
-
-    input[type="date"]:focus {
-      outline: none;
-      border-color: #3498db;
-      box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
-    }
-
-    button {
-      background: linear-gradient(135deg, #ff5e62, #ff9966);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 25px;
-      cursor: pointer;
-      margin-top: 20px;
-      font-size: 18px;
-      transition: all 0.3s ease;
-    }
-
-    button:hover {
-      background: linear-gradient(135deg, #ff9966, #ff5e62);
-      transform: scale(1.05);
-    }
-
-    #result {
-      margin-top: 20px;
-      font-weight: bold;
-      color: #e74c3c;
-      font-size: 18px;
-    }
-
-    .info-icon {
-      color: #ff5e62;
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
+    :root{--bg1:#0f172a;--card:#0b1220;--accent:#7c3aed;--muted:#9aa4b2;--surface:#0f172a}
+    html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0b1220 0%, #081024 60%);color:#edf2f7}
+    header.sitebar{padding:18px 16px;text-align:center;background:linear-gradient(90deg,#0f172a,#071029);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+    header.sitebar a{color:#fff;text-decoration:none;margin:0 8px;font-weight:600}
+    main.container{display:grid;place-items:center;padding:40px 18px;min-height:calc(100vh - 144px)}
+    .card{width:100%;max-width:920px;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));border-radius:14px;padding:28px;box-shadow:0 10px 40px rgba(2,6,23,.6);border:1px solid rgba(255,255,255,0.04)}
+    .card .grid{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start}
+    .hero{padding:8px 6px;color:#e6eef9}
+    .hero h1{font-size:28px;margin:0 0 6px;color:#fff}
+    .hero p{margin:0;color:var(--muted);line-height:1.4}
+    .panel{background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(255,255,255,0.02));padding:18px;border-radius:10px}
+    label{display:block;color:#cbd5e1;font-weight:600;font-size:14px;margin-bottom:6px}
+    .input-row{display:flex;gap:12px;align-items:center}
+    input[type=date], button, select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:#fff}
+    .controls{display:flex;gap:10px;margin-top:14px}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),#ff6b6b);border:none;color:white;font-weight:700;cursor:pointer}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .result {padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:#e6eef9}
+    .result .big{font-size:28px;font-weight:700;margin-bottom:6px;color:#fff}
+    .meta{font-size:13px;color:var(--muted);margin-top:8px}
+    .aside {padding:8px 10px;border-radius:8px;background:linear-gradient(180deg,#081025,#071022);border:1px solid rgba(255,255,255,0.03)}
+    .secondary {font-size:13px;color:var(--muted)}
+    .small {font-size:13px;color:var(--muted)}
+    .helper {font-size:13px;color:var(--muted);margin-top:8px}
+    .actions {display:flex;gap:10px;align-items:center}
+    .copy-btn {background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px;border-radius:8px;color:var(--muted);cursor:pointer}
+    footer.sitefoot{padding:18px;text-align:center;color:var(--muted);background:linear-gradient(180deg,transparent,rgba(0,0,0,0.2))}
+    @media (max-width:880px){.card .grid{grid-template-columns:1fr;}.aside{order:2}} 
   </style>
 
 </head>
 
 <body>
-  <div class="calculator-card">
-    <h1>Age Calculator</h1>
-
-  <header style="background:#2c3e50;color:#fff;padding:12px 0;text-align:center">
-    <nav style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap">
-      <a href="index.html" style="color:#fff; text-decoration:none; font-weight:600">Home</a>
-      <a href="privacy.html" style="color:#fff; text-decoration:none">Privacy</a>
-      <a href="contact.html" style="color:#fff; text-decoration:none">Contact</a>
-    </nav>
+  <header class="sitebar">
+    <a href="index.html">Home</a> ·
+    <a href="privacy.html">Privacy</a> ·
+    <a href="contact.html">Contact</a>
   </header>
-    <div>
-      <label for="dob" class="info-icon">📅 Date of Birth:</label>
-      <input type="date" id="dob" required>
+
+  <main class="container">
+    <div class="card" role="region" aria-labelledby="age-title">
+      <div class="grid">
+        <div class="hero">
+          <h1 id="age-title">Age Calculator</h1>
+          <p>Quickly compute exact age and useful details — years, months, days, next birthday and days until then. Works entirely in your browser.</p>
+
+          <div class="panel" aria-hidden="false">
+            <form id="ageForm" onsubmit="return false" aria-label="Age calculator form">
+              <div>
+                <label for="dob">Date of birth</label>
+                <input id="dob" type="date" aria-required="true">
+              </div>
+
+              <div style="margin-top:12px">
+                <label for="selectedDate">Calculate as of</label>
+                <input id="selectedDate" type="date" aria-required="true">
+              </div>
+
+              <div class="controls">
+                <button id="calculateBtn" class="btn-primary">Calculate</button>
+                <button id="resetBtn" class="btn-ghost" type="button">Reset</button>
+                <div style="flex:1"></div>
+              </div>
+
+              <div class="helper">Tip: If 'Calculate as of' is empty we automatically use today.</div>
+            </form>
+          </div>
+
+          <div style="height:12px"></div>
+        </div>
+
+        <aside class="aside">
+          <div class="result" id="resultPanel" aria-live="polite">
+            <div class="big" id="resultMain">—</div>
+            <div class="secondary" id="resultDetail">Enter a date and press Calculate to see details.</div>
+            <div class="meta" id="resultMeta"></div>
+            <div class="actions" style="margin-top:12px">
+              <button id="copyBtn" class="copy-btn" title="Copy result">Copy</button>
+              <div style="flex:1"></div>
+              <a class="small" href="index.html">Back to tools</a>
+            </div>
+          </div>
+
+          <div style="height:8px"></div>
+          <div class="small">This calculator is client-side only — no data leaves your browser.</div>
+        </aside>
+      </div>
     </div>
-
-    <div>
-      <label for="selectedDate" class="info-icon">📆 Select Date:</label>
-      <input type="date" id="selectedDate" required>
-    </div>
-
-    <button id="calculateBtn">Calculate Age</button>
-
-    <div id="result"></div>
-  </div>
-
-<div style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; border-radius: 5px; cursor: pointer;" onclick="history.back()">
-  Back
-</div>
+  </main>
 
   <script>
-    // JavaScript logic for calculating age difference
-    const calculateBtn = document.getElementById("calculateBtn");
-    calculateBtn.addEventListener("click", () => {
-      const dobInput = document.getElementById("dob");
-      const selectedDateInput = document.getElementById("selectedDate");
+    (function () {
+      const $ = id => document.getElementById(id);
+      const dob = $('dob');
+      const asOf = $('selectedDate');
+      const calculateBtn = $('calculateBtn');
+      const resetBtn = $('resetBtn');
+      const resultMain = $('resultMain');
+      const resultDetail = $('resultDetail');
+      const resultMeta = $('resultMeta');
+      const copyBtn = $('copyBtn');
 
-      const dob = new Date(dobInput.value);
-      const selectedDate = new Date(selectedDateInput.value);
+      function setToday(input) {
+        if (!input.value) {
+          const today = new Date();
+          input.value = today.toISOString().slice(0, 10);
+        }
+      }
 
-      const diffTime = Math.abs(selectedDate - dob);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      // Populate default 'as of' with today
+      document.addEventListener('DOMContentLoaded', () => {
+        const today = new Date().toISOString().slice(0, 10);
+        if (!asOf.value) asOf.value = today;
+      });
 
-      const years = Math.floor(diffDays / 365);
-      const months = Math.floor((diffDays % 365) / 30);
-      const days = Math.floor((diffDays % 365) % 30);
+      function exactAge(birth, date) {
+        if (isNaN(birth) || isNaN(date)) return null;
+        if (birth > date) return null;
 
-      const result = `${days} days, ${months} months, ${years} years`;
-      document.getElementById("result").textContent = result;
-    });
+        let years = date.getFullYear() - birth.getFullYear();
+        let months = date.getMonth() - birth.getMonth();
+        let days = date.getDate() - birth.getDate();
+
+        if (days < 0) {
+          // borrow days from previous month
+          const prevMonth = new Date(date.getFullYear(), date.getMonth(), 0); // last day of previous month
+          days += prevMonth.getDate();
+          months -= 1;
+        }
+
+        if (months < 0) {
+          months += 12;
+          years -= 1;
+        }
+
+        return { years, months, days };
+      }
+
+      function daysBetween(a, b) {
+        const ms = b - a;
+        return Math.ceil(ms / (1000 * 60 * 60 * 24));
+      }
+
+      function compute() {
+        const d1 = new Date(dob.value);
+        const d2 = new Date(asOf.value || new Date());
+
+        if (!dob.value) {
+          resultMain.textContent = 'Please enter your date of birth.';
+          resultDetail.textContent = '';
+          resultMeta.textContent = '';
+          return;
+        }
+
+        if (d1 > d2) {
+          resultMain.textContent = 'Date of birth cannot be after the reference date.';
+          resultDetail.textContent = '';
+          resultMeta.textContent = '';
+          return;
+        }
+
+        const age = exactAge(d1, d2);
+        if (!age) {
+          resultMain.textContent = 'Could not calculate age.';
+          return;
+        }
+
+        const totalDays = daysBetween(d1, d2);
+        resultMain.textContent = `${age.years} years, ${age.months} months, ${age.days} days`;
+
+        // Additional details
+        resultDetail.textContent = `Total time: ${totalDays} day${totalDays !== 1 ? 's' : ''} — calculated as of ${d2.toDateString()}.`;
+
+        // next birthday
+        let nextBirthday = new Date(d2.getFullYear(), d1.getMonth(), d1.getDate());
+        if (nextBirthday <= d2) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+        const untilNext = daysBetween(d2, nextBirthday);
+
+        resultMeta.textContent = `Next birthday: ${nextBirthday.toDateString()} (in ${untilNext} day${untilNext !== 1 ? 's' : ''}).`;
+      }
+
+      calculateBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        compute();
+      });
+
+      resetBtn.addEventListener('click', () => {
+        dob.value = '';
+        asOf.value = new Date().toISOString().slice(0, 10);
+        resultMain.textContent = '—';
+        resultDetail.textContent = 'Enter a date and press Calculate to see details.';
+        resultMeta.textContent = '';
+      });
+
+      copyBtn.addEventListener('click', async () => {
+        const text = `${resultMain.textContent}\n${resultDetail.textContent}\n${resultMeta.textContent}`;
+        try {
+          await navigator.clipboard.writeText(text);
+          copyBtn.textContent = 'Copied ✓';
+          setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+        } catch (err) {
+          copyBtn.textContent = 'Copy failed';
+          setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+        }
+      });
+
+    })();
   </script>
   <footer style="text-align:center;padding:18px;background:#f4f4f4;margin-top:30px">
     <a href="privacy.html">Privacy</a> • <a href="contact.html">Contact</a>
