@@ -3,337 +3,420 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Resizer & Compressor</title>
+    
+    <!-- User's AdSense -->
     <meta name="google-adsense-account" content="ca-pub-3793390054330330">
     <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <title>Signature Resizer</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body {
-    font-family: 'Roboto', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #fff;
-}
-
-.container {
-    text-align: center;
-    padding: 40px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    max-width: 500px;
-    width: 100%;
-}
-
-h1 {
-    margin-bottom: 20px;
-    font-size: 2em;
-    font-weight: bold;
-    color: #333;
-}
-
-h2,h6 {
-    color: #000000;
-}
-
-input[type="file"] {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
-    border: 2px solid #764ba2;
-    border-radius: 5px;
-    background: #fff;
-    color: #764ba2;
-    cursor: pointer;
-    transition: background 0.3s, color 0.3s;
-}
-
-input[type="file"]:hover {
-    background: #764ba2;
-    color: #fff;
-}
-
-.preview-container {
-    margin: 20px 0;
-    display: none;
-}
-
-#preview {
-    max-width: 100%;
-    height: auto;
-    border: 2px solid #ddd;
-    margin-bottom: 10px;
-    border-radius: 10px;
-}
-
-#imageInfo {
-    margin-bottom: 20px;
-    font-size: 14px;
-    color: #333;
-}
-
-.btn {
-    display: inline-block;
-    padding: 10px 20px;
-    color: #fff;
-    background-color: #667eea;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 16px;
-    transition: background 0.3s;
-}
-
-.btn:hover {
-    background-color: #4a63d6;
-}
-
-.back-btn {
-    margin-top: 20px;
-    background-color: #e53935;
-}
-
-.back-btn:hover {
-    background-color: #c62828;
-}
+        body { font-family: 'Inter', sans-serif; }
+        .drag-active { border-color: #4f46e5; background-color: #eef2ff; }
+        /* Smooth fade in for elements */
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <header style="background:#2c3e50;color:#fff;padding:12px 0;text-align:center">
-        <nav style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap">
-            <a href="index.html" style="color:#fff; text-decoration:none; font-weight:600">Home</a>
-            <a href="privacy.html" style="color:#fff; text-decoration:none">Privacy</a>
-            <a href="contact.html" style="color:#fff; text-decoration:none">Contact</a>
-        </nav>
-    </header>
-        <main style="padding:28px;max-width:1100px;margin:24px auto;">
-            <div style="display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start">
-                <section class="panel" style="padding:20px;border-radius:12px;">
-                    <h1 style="margin-top:0;color:#0b1220">Signature Resizer</h1>
-                    <p class="small" style="color:#334155">Resize and optimize official signatures for forms (example: 6cm × 2cm for SSC). Works offline in your browser — files are not uploaded.</p>
+<body class="bg-gray-50 text-slate-800 flex flex-col min-h-screen">
 
-                    <div style="margin-top:14px;">
-                        <label for="imageUpload">Choose a signature image</label>
-                        <input type="file" id="imageUpload" accept="image/*" aria-label="Upload signature image">
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-pen-nib"></i>
                     </div>
-
-                    <div style="display:flex;gap:12px;margin-top:12px;align-items:center">
-                        <div style="flex:1">
-                            <label for="preset">Presets</label>
-                            <select id="preset" aria-label="Preset sizes">
-                                <option value="640x276">Web (640 × 276 px)</option>
-                                <option value="6cmx2cm">Official (6cm × 2cm, 300dpi)</option>
-                                <option value="custom">Custom</option>
-                            </select>
-                        </div>
-                        <div style="width:110px">
-                            <label for="dpi">DPI</label>
-                            <input id="dpi" type="number" min="72" max="1200" value="300" style="width:100%">
-                        </div>
-                    </div>
-
-                    <div id="customInputs" style="display:none;margin-top:12px;gap:12px;display:grid;grid-template-columns:1fr 1fr;">
-                        <div>
-                            <label for="targetW">Width (px)</label>
-                            <input id="targetW" type="number" min="1" inputmode="numeric">
-                        </div>
-                        <div>
-                            <label for="targetH">Height (px)</label>
-                            <input id="targetH" type="number" min="1" inputmode="numeric">
-                        </div>
-                    </div>
-
-                    <div style="display:flex;gap:10px;margin-top:16px;align-items:center">
-                        <button id="processBtn" class="btn">Resize & Compress</button>
-                        <button id="resetBtn" class="btn back-btn" style="background:#c62828">Reset</button>
-                        <div style="flex:1"></div>
-                        <button id="downloadBtn" class="btn" style="display:none;">Download</button>
-                    </div>
-
-                    <div id="status" style="margin-top:12px;color:#0b1220;font-weight:600"></div>
-                </section>
-
-                <aside style="padding:20px;border-radius:12px;background:linear-gradient(180deg,#fff,#f8fafc);">
-                    <div id="previewBox" style="display:grid;gap:12px;place-items:center;">
-                        <div style="width:100%;max-width:360px;border-radius:8px;padding:10px;background:#fff;border:1px solid rgba(10,15,25,0.04)">
-                            <img id="preview" src="" alt="Signature preview" style="display:none;width:100%;height:auto;border-radius:6px;object-fit:contain;" />
-                        </div>
-                        <div id="imageInfo" style="width:100%;font-size:14px;color:#475569"></div>
-                        <div style="width:100%;display:flex;gap:8px;justify-content:center">
-                            <button id="copyBtn" class="btn" style="background:#0f172a;">Copy Data</button>
-                            <button id="openBtn" class="btn btn-ghost" style="background:transparent;border:1px solid rgba(10,15,25,0.06)">Open</button>
-                        </div>
-                    </div>
-                    <div style="margin-top:18px;font-size:13px;color:#64748b">Notes: output is a resized and compressed image. If you need exact DPI printing, check the chosen value and use a PDF/print workflow.</div>
-                </aside>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">SigResize</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
+                    <a href="index.html" class="hover:text-indigo-600 transition">Home</a>
+                    <a href="privacy.html" class="hover:text-indigo-600 transition">Privacy</a>
+                    <a href="contact.html" class="hover:text-indigo-600 transition">Contact</a>
+                </div>
             </div>
-            <canvas id="canvas" style="display:none"></canvas>
-        </main>
-        <script>
-            (function () {
-                const $ = id => document.getElementById(id);
-                const imageUpload = $('imageUpload');
-                const preset = $('preset');
-                const dpi = $('dpi');
-                const customInputs = $('customInputs');
-                const targetW = $('targetW');
-                const targetH = $('targetH');
-                const processBtn = $('processBtn');
-                const resetBtn = $('resetBtn');
-                const downloadBtn = $('downloadBtn');
-                const canvas = $('canvas');
-                const ctx = canvas.getContext('2d');
-                const preview = $('preview');
-                const imageInfo = $('imageInfo');
-                const status = $('status');
-                const copyBtn = $('copyBtn');
-                const openBtn = $('openBtn');
+        </div>
+    </nav>
 
-                function cmToPx(cm, dpiVal) {
-                    return Math.round((cm / 2.54) * dpiVal);
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 sm:px-6 w-full">
+        
+        <!-- Header Section -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Optimize Your Digital Signature</h1>
+            <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+                Resize, crop, and compress signatures for official documents (SSC, Banking, Government Forms). 
+                <span class="text-indigo-600 font-medium bg-indigo-50 px-2 py-0.5 rounded">100% Client-Side Secure</span>
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Column: Controls -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Upload Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-upload mr-2 text-indigo-500"></i>Upload Source</h3>
+                    </div>
+                    <div class="p-6">
+                        <label id="dropZone" for="imageUpload" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition duration-200 group">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 group-hover:text-indigo-500 mb-3 transition"></i>
+                                <p class="mb-1 text-sm text-gray-500"><span class="font-semibold text-gray-700">Click to upload</span> or drag and drop</p>
+                                <p class="text-xs text-gray-400">PNG, JPG or JPEG</p>
+                            </div>
+                            <input id="imageUpload" type="file" class="hidden" accept="image/*" />
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Settings Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-sliders mr-2 text-indigo-500"></i>Configuration</h3>
+                    </div>
+                    <div class="p-6 space-y-5">
+                        <!-- Preset Select -->
+                        <div>
+                            <label for="preset" class="block text-sm font-medium text-gray-700 mb-1">Target Size</label>
+                            <div class="relative">
+                                <select id="preset" class="block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg border bg-white shadow-sm">
+                                    <option value="640x276">Web Standard (640 × 276 px)</option>
+                                    <option value="6cmx2cm" selected>Official Form (6cm × 2cm @ 300dpi)</option>
+                                    <option value="custom">Custom Dimensions</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- DPI Input -->
+                        <div>
+                            <label for="dpi" class="block text-sm font-medium text-gray-700 mb-1">Resolution (DPI)</label>
+                            <input type="number" id="dpi" value="300" min="72" max="1200" class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2.5 px-3 border">
+                            <p class="mt-1 text-xs text-gray-400">Standard for printing is 300 DPI.</p>
+                        </div>
+
+                        <!-- Custom Inputs (Hidden by default) -->
+                        <div id="customInputs" class="grid grid-cols-2 gap-4 hidden fade-in">
+                            <div>
+                                <label for="targetW" class="block text-xs font-medium text-gray-500 uppercase">Width (px)</label>
+                                <input type="number" id="targetW" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3 border">
+                            </div>
+                            <div>
+                                <label for="targetH" class="block text-xs font-medium text-gray-500 uppercase">Height (px)</label>
+                                <input type="number" id="targetH" class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm py-2 px-3 border">
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="pt-2 flex gap-3">
+                            <button id="processBtn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition duration-150 ease-in-out flex justify-center items-center gap-2">
+                                <i class="fa-solid fa-bolt"></i> Resize & Compress
+                            </button>
+                            <button id="resetBtn" class="px-4 py-2.5 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+                                Reset
+                            </button>
+                        </div>
+                        <div id="status" class="text-sm font-medium text-center h-5"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Preview -->
+            <div class="lg:col-span-7">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden min-h-[500px] flex flex-col">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-eye mr-2 text-indigo-500"></i>Live Preview</h3>
+                        <span id="previewBadge" class="hidden bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Processed</span>
+                    </div>
+                    
+                    <div class="flex-grow p-8 flex flex-col items-center justify-center bg-slate-100 relative">
+                        <!-- Placeholder State -->
+                        <div id="emptyState" class="text-center text-gray-400">
+                            <i class="fa-regular fa-image text-6xl mb-4 opacity-50"></i>
+                            <p>Upload an image to see the preview here</p>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div class="relative shadow-xl rounded-lg overflow-hidden bg-white border border-gray-200">
+                            <img id="preview" src="" alt="Signature preview" class="hidden max-w-full max-h-[400px] object-contain" />
+                        </div>
+                    </div>
+
+                    <!-- Output Stats & Actions -->
+                    <div id="outputActions" class="p-6 bg-white border-t border-gray-100 hidden fade-in">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div class="text-sm text-gray-600">
+                                <p class="font-medium text-gray-900 mb-1">Output Details:</p>
+                                <p id="imageInfo"></p>
+                            </div>
+                            <div class="flex gap-3">
+                                <button id="copyBtn" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <i class="fa-regular fa-clipboard mr-2"></i> Copy Info
+                                </button>
+                                <a id="downloadBtn" href="#" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                    <i class="fa-solid fa-download mr-2"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 bg-blue-50 border-l-4 border-blue-400 p-4 rounded-md">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fa-solid fa-circle-info text-blue-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">
+                                <span class="font-bold">Privacy Note:</span> Images are processed entirely within your browser. No files are uploaded to any server.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="canvas" class="hidden"></canvas>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">
+                &copy; 2023 Free Online Tools. <a href="privacy.html" class="text-indigo-600 hover:text-indigo-500">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            const $ = id => document.getElementById(id);
+            const imageUpload = $('imageUpload');
+            const dropZone = $('dropZone');
+            const preset = $('preset');
+            const dpi = $('dpi');
+            const customInputs = $('customInputs');
+            const targetW = $('targetW');
+            const targetH = $('targetH');
+            const processBtn = $('processBtn');
+            const resetBtn = $('resetBtn');
+            const downloadBtn = $('downloadBtn');
+            const canvas = $('canvas');
+            const ctx = canvas.getContext('2d');
+            const preview = $('preview');
+            const imageInfo = $('imageInfo');
+            const status = $('status');
+            const copyBtn = $('copyBtn');
+            const emptyState = $('emptyState');
+            const outputActions = $('outputActions');
+            const previewBadge = $('previewBadge');
+
+            function cmToPx(cm, dpiVal) {
+                return Math.round((cm / 2.54) * dpiVal);
+            }
+
+            function setPreset(p) {
+                const currentDpi = Number(dpi.value || 300);
+                if (p === '640x276') {
+                    targetW.value = 640; targetH.value = 276; 
+                    customInputs.classList.add('hidden');
+                } else if (p === '6cmx2cm') {
+                    targetW.value = cmToPx(6, currentDpi);
+                    targetH.value = cmToPx(2, currentDpi);
+                    customInputs.classList.add('hidden');
+                } else {
+                    customInputs.classList.remove('hidden');
+                    // Keep values if they exist, else clear
+                    if(!targetW.value) targetW.value = '';
+                    if(!targetH.value) targetH.value = '';
+                }
+            }
+
+            // Drag and Drop Logic
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-active'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-active'), false);
+            });
+
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                imageUpload.files = files;
+                handleFiles(files[0]);
+            }
+
+            preset.addEventListener('change', (e) => setPreset(e.target.value));
+            
+            dpi.addEventListener('change', () => { 
+                if (preset.value === '6cmx2cm') setPreset('6cmx2cm'); 
+            });
+
+            let lastBlobURL = null;
+
+            function clearPreview() {
+                preview.src = '';
+                preview.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                outputActions.classList.add('hidden');
+                previewBadge.classList.add('hidden');
+                
+                if (lastBlobURL) { URL.revokeObjectURL(lastBlobURL); lastBlobURL = null; }
+                status.textContent = '';
+                status.className = "text-sm font-medium text-center h-5 text-gray-500";
+            }
+
+            resetBtn.addEventListener('click', () => {
+                imageUpload.value = '';
+                preset.value = '6cmx2cm';
+                dpi.value = 300;
+                setPreset('6cmx2cm');
+                clearPreview();
+            });
+
+            imageUpload.addEventListener('change', (e) => handleFiles(e.target.files[0]));
+
+            function handleFiles(f) {
+                clearPreview();
+                if (!f) return;
+                
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    preview.src = ev.target.result;
+                    preview.classList.remove('hidden');
+                    emptyState.classList.add('hidden');
+                    // Reset processed state visually until they click process
+                    preview.style.opacity = "0.7"; 
+                    status.textContent = "Image loaded. Click 'Resize' to process.";
+                    status.classList.add("text-indigo-600");
+                };
+                reader.readAsDataURL(f);
+            }
+
+            processBtn.addEventListener('click', async () => {
+                const f = imageUpload.files[0];
+                if (!f) { 
+                    status.textContent = 'Please upload an image first.'; 
+                    status.className = "text-sm font-medium text-center h-5 text-red-600";
+                    return; 
                 }
 
-                function setPreset(p) {
-                    if (p === '640x276') {
-                        targetW.value = 640; targetH.value = 276; customInputs.style.display = 'none';
-                    } else if (p === '6cmx2cm') {
-                        const w = cmToPx(6, Number(dpi.value || 300));
-                        const h = cmToPx(2, Number(dpi.value || 300));
-                        targetW.value = w; targetH.value = h; customInputs.style.display = 'none';
-                    } else {
-                        customInputs.style.display = 'grid';
-                        targetW.value = '';
-                        targetH.value = '';
-                    }
+                let w = Number(targetW.value || 0);
+                let h = Number(targetH.value || 0);
+                if (!w || !h) { 
+                    status.textContent = 'Invalid dimensions.'; 
+                    status.className = "text-sm font-medium text-center h-5 text-red-600";
+                    return; 
                 }
 
-                preset.addEventListener('change', (e) => setPreset(e.target.value));
-                dpi.addEventListener('change', () => { if (preset.value === '6cmx2cm') setPreset('6cmx2cm'); });
-
-                let lastBlobURL = null;
-
-                function clearPreview() {
-                    preview.src = '';
-                    preview.style.display = 'none';
-                    imageInfo.textContent = '';
-                    if (lastBlobURL) { URL.revokeObjectURL(lastBlobURL); lastBlobURL = null; }
-                    downloadBtn.style.display = 'none';
-                    status.textContent = '';
-                }
-
-                resetBtn.addEventListener('click', () => {
-                    imageUpload.value = '';
-                    preset.value = '640x276';
-                    dpi.value = 300;
-                    setPreset('640x276');
-                    clearPreview();
-                });
-
-                imageUpload.addEventListener('change', () => {
-                    clearPreview();
-                    status.textContent = '';
-                    const f = imageUpload.files[0];
-                    if (!f) return;
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        preview.src = ev.target.result;
-                        preview.style.display = 'block';
-                        imageInfo.textContent = `Original: ${Math.round(f.size/1024)} KB — ${f.type}`;
-                    };
-                    reader.readAsDataURL(f);
-                });
-
-                processBtn.addEventListener('click', async () => {
-                    const f = imageUpload.files[0];
-                    if (!f) { status.textContent = 'Please upload an image first.'; return; }
-
-                    // determine target
-                    let w = Number(targetW.value || 0);
-                    let h = Number(targetH.value || 0);
-                    if (!w || !h) { status.textContent = 'Please set valid target width and height.'; return; }
-
-                    // load image
-                    status.textContent = 'Processing…';
+                status.textContent = 'Processing...';
+                status.className = "text-sm font-medium text-center h-5 text-indigo-600";
+                
+                // Slight delay to allow UI to update
+                setTimeout(async () => {
                     const dataUrl = await fileToDataURL(f);
                     const img = await loadImage(dataUrl);
 
-                    // set canvas
                     canvas.width = w;
                     canvas.height = h;
-                    // maintain aspect ratio by center-cover logic
+
                     const srcW = img.width, srcH = img.height;
                     const srcRatio = srcW / srcH, destRatio = w / h;
                     let sx = 0, sy = 0, sWidth = srcW, sHeight = srcH;
+
+                    // Center Crop Logic
                     if (srcRatio > destRatio) {
-                        // source wider, crop horizontally
                         sWidth = Math.round(srcH * destRatio);
                         sx = Math.floor((srcW - sWidth)/2);
                     } else if (srcRatio < destRatio) {
-                        // source taller, crop vertically
                         sHeight = Math.round(srcW / destRatio);
                         sy = Math.floor((srcH - sHeight)/2);
                     }
 
                     ctx.clearRect(0,0,w,h);
+                    // Optional: White background for transparency issues
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(0, 0, w, h);
                     ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, w, h);
 
-                    // compress progressively to try to reach small size (aim ~25KB)
+                    // Compression Loop
                     let quality = 0.95, blob = null;
                     for (let attempt=0; attempt<10; attempt++) {
                         const blobTmp = await canvasToBlob(canvas, quality);
                         if (!blobTmp) break;
                         const kb = blobTmp.size/1024;
                         blob = blobTmp;
-                        if (kb <= 30 || quality < 0.2) break;
-                        quality -= 0.12;
+                        // Target ~25KB or stop if quality gets too low
+                        if (kb <= 50 || quality < 0.2) break;
+                        quality -= 0.1;
                     }
 
-                    if (!blob) { status.textContent = 'Failed to compress image'; return; }
+                    if (!blob) { status.textContent = 'Error processing image'; return; }
 
-                    // show preview and allow download
                     if (lastBlobURL) URL.revokeObjectURL(lastBlobURL);
                     lastBlobURL = URL.createObjectURL(blob);
+                    
                     preview.src = lastBlobURL;
-                    preview.style.display = 'block';
-
-                    imageInfo.textContent = `Output: ${Math.round(blob.size/1024)} KB — ${w} × ${h} px (quality ${Math.round((quality||0)*100)}%)`;
-                    downloadBtn.style.display = 'inline-block';
+                    preview.style.opacity = "1";
+                    previewBadge.classList.remove('hidden');
+                    
+                    outputActions.classList.remove('hidden');
+                    
+                    const kbSize = Math.round(blob.size/1024);
+                    imageInfo.innerHTML = `<span class="font-bold text-gray-800">${w} × ${h} px</span> • <span class="font-bold text-gray-800">${kbSize} KB</span>`;
+                    
                     downloadBtn.href = lastBlobURL;
                     downloadBtn.download = `signature_${w}x${h}.jpg`;
-                    status.textContent = 'Done — preview updated';
-                });
+                    
+                    status.textContent = 'Processing Complete!';
+                    status.className = "text-sm font-medium text-center h-5 text-green-600";
+                }, 50);
+            });
 
-                copyBtn.addEventListener('click', async () => {
-                    try {
-                        await navigator.clipboard.writeText(imageInfo.textContent || '');
-                        copyBtn.textContent = 'Copied ✓';
-                        setTimeout(()=>copyBtn.textContent='Copy Data',1400);
-                    } catch(e) { copyBtn.textContent='Copy failed'; setTimeout(()=>copyBtn.textContent='Copy Data',1400); }
-                });
+            copyBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(imageInfo.innerText);
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Copied!';
+                    copyBtn.classList.add('text-green-700', 'bg-green-50');
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                        copyBtn.classList.remove('text-green-700', 'bg-green-50');
+                    }, 2000);
+                } catch(e) { console.error(e); }
+            });
 
-                openBtn.addEventListener('click', () => {
-                    if (preview.src) window.open(preview.src, '_blank');
-                });
+            function fileToDataURL(file) {
+                return new Promise(resolve => { const r=new FileReader(); r.onload=(e)=>resolve(e.target.result); r.readAsDataURL(file); });
+            }
 
-                function fileToDataURL(file) {
-                    return new Promise(resolve => { const r=new FileReader(); r.onload=(e)=>resolve(e.target.result); r.readAsDataURL(file); });
-                }
+            function loadImage(dataUrl) { return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=dataUrl; }); }
 
-                function loadImage(dataUrl) { return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=dataUrl; }); }
+            function canvasToBlob(canvasEl, q){ return new Promise(r=> canvasEl.toBlob(b=>r(b),'image/jpeg',q)); }
 
-                function canvasToBlob(canvasEl, q){ return new Promise(r=> canvasEl.toBlob(b=>r(b),'image/jpeg',q)); }
-
-                // set initial preset values
-                setPreset('640x276');
-
-            })();
-        </script>
-            <footer style="text-align:center;padding:18px;background:#f4f4f4;margin-top:30px">
-                <a href="privacy.html">Privacy</a> • <a href="contact.html">Contact</a>
-                <div style="font-size:0.9em;color:#666;margin-top:6px">&copy; Free Online Tools</div>
-            </footer>
-    </body>
-    </html>
+            // Initialize
+            setPreset('6cmx2cm');
+        })();
+    </script>
+</body>
+</html>
