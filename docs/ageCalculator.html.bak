@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-adsense-account" content="ca-pub-3793390054330330">
+  <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <title>Age Calculator</title>
+  <style>
+    body {
+      background: linear-gradient(136deg, #3498db, #e74c3c);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .calculator-card {
+      background: linear-gradient(45deg, #ffffff, #f0f0f0);
+      border-radius: 20px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+      padding: 30px;
+      width: 400px;
+      max-width: 100%;
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      color: #2c3e50;
+      font-weight: bold;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #34495e;
+      font-size: 16px;
+    }
+
+    input[type="date"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="date"]:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+
+    button {
+      background: linear-gradient(135deg, #ff5e62, #ff9966);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 25px;
+      cursor: pointer;
+      margin-top: 20px;
+      font-size: 18px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #ff9966, #ff5e62);
+      transform: scale(1.05);
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #e74c3c;
+      font-size: 18px;
+    }
+
+    .info-icon {
+      color: #ff5e62;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="calculator-card">
+    <h1>Age Calculator</h1>
+
+  <header style="background:#2c3e50;color:#fff;padding:12px 0;text-align:center">
+    <nav style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap">
+      <a href="index.html" style="color:#fff; text-decoration:none; font-weight:600">Home</a>
+      <a href="privacy.html" style="color:#fff; text-decoration:none">Privacy</a>
+      <a href="contact.html" style="color:#fff; text-decoration:none">Contact</a>
+    </nav>
+  </header>
+    <div>
+      <label for="dob" class="info-icon">📅 Date of Birth:</label>
+      <input type="date" id="dob" required>
+    </div>
+
+    <div>
+      <label for="selectedDate" class="info-icon">📆 Select Date:</label>
+      <input type="date" id="selectedDate" required>
+    </div>
+
+    <button id="calculateBtn">Calculate Age</button>
+
+    <div id="result"></div>
+  </div>
+
+<div style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; border-radius: 5px; cursor: pointer;" onclick="history.back()">
+  Back
+</div>
+
+  <script>
+    // JavaScript logic for calculating age difference
+    const calculateBtn = document.getElementById("calculateBtn");
+    calculateBtn.addEventListener("click", () => {
+      const dobInput = document.getElementById("dob");
+      const selectedDateInput = document.getElementById("selectedDate");
+
+      const dob = new Date(dobInput.value);
+      const selectedDate = new Date(selectedDateInput.value);
+
+      const diffTime = Math.abs(selectedDate - dob);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      const years = Math.floor(diffDays / 365);
+      const months = Math.floor((diffDays % 365) / 30);
+      const days = Math.floor((diffDays % 365) % 30);
+
+      const result = `${days} days, ${months} months, ${years} years`;
+      document.getElementById("result").textContent = result;
+    });
+  </script>
+  <footer style="text-align:center;padding:18px;background:#f4f4f4;margin-top:30px">
+    <a href="privacy.html">Privacy</a> • <a href="contact.html">Contact</a>
+    <div style="font-size:0.9em;color:#666;margin-top:6px">&copy; Free Online Tools</div>
+  </footer>
+</body>
+
+</html>
