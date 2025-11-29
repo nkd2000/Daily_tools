@@ -1,30 +1,167 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Free Online Tools</title>
+    
+    <!-- User's AdSense -->
     <meta name="google-adsense-account" content="ca-pub-3793390054330330">
     <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <title>Contact — Free Online Tools</title>
-    <style>
-      body { font-family: Arial, Helvetica, sans-serif; padding: 24px; max-width: 900px; margin: 0 auto; line-height: 1.5 }
-      header, footer { text-align: center; margin: 20px 0 }
-      label { display:block; margin-top: 12px }
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>Contact</h1>
-      <p>We welcome feedback, bug reports and questions about our tools.</p>
-    </header>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <main>
-      <p>You can reach the site owner at: <strong>your-email@example.com</strong></p>
-      <p>If you'd like me to update this address, share the email you want displayed and I'll update it.</p>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-slate-800 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">Contact</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
+                    <a href="index.html" class="hover:text-slate-900 transition">Home</a>
+                    <a href="https://jansuchnaforall.blogspot.com" target="_blank" class="hover:text-slate-900 transition">Blog</a>
+                    <a href="contact.html" class="text-slate-900 font-semibold">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-5xl mx-auto px-4 py-12 sm:px-6 w-full">
+        
+        <div class="text-center mb-12">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Get in Touch</h1>
+            <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+                We welcome feedback, bug reports, and suggestions for new tools.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+            
+            <!-- Contact Info -->
+            <div class="md:col-span-5 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 h-full">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">Contact Information</h2>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                                <i class="fa-solid fa-at text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Email Us</h3>
+                                <p class="text-sm text-gray-500 mt-1 mb-2">For general inquiries and support.</p>
+                                <!-- <a href="mailto:your-email@example.com" class="text-blue-600 font-medium hover:underline break-all">
+                                    your-email@example.com
+                                </a> -->
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 bg-purple-50 text-purple-600 rounded-lg">
+                                <i class="fa-solid fa-bug text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Report a Bug</h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    Found an issue with a tool? Please let us know the browser you are using and the steps to reproduce it.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 bg-green-50 text-green-600 rounded-lg">
+                                <i class="fa-solid fa-lightbulb text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900">Suggestions</h3>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    Have an idea for a new tool? We'd love to hear it!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="md:col-span-7">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">Send a Message</h2>
+                    
+                    <form action="mailto:your-email@example.com" method="post" enctype="text/plain" class="space-y-5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                <input type="text" id="name" name="name" class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2.5 border" placeholder="Your name">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="email" name="email" class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2.5 border" placeholder="you@company.com">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                            <select id="subject" name="subject" class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2.5 border bg-white">
+                                <option>General Inquiry</option>
+                                <option>Bug Report</option>
+                                <option>Feature Request</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                            <textarea id="message" name="message" rows="5" class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-3 border" placeholder="How can we help you?"></textarea>
+                        </div>
+
+                        <div class="pt-2">
+                            <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 px-4 rounded-lg shadow transition duration-150 ease-in-out flex justify-center items-center gap-2">
+                                <i class="fa-regular fa-paper-plane"></i> Send Message
+                            </button>
+                            <p class="text-xs text-center text-gray-400 mt-3">This form will open your default email client.</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-8 text-center">
+             <button onclick="history.back()" class="text-gray-500 hover:text-gray-700 font-medium text-sm inline-flex items-center transition">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Back to previous page
+            </button>
+        </div>
+
     </main>
 
-    <footer>
-      <small>&copy; Free Online Tools</small>
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <p class="text-sm text-gray-500">
+                    &copy; <script>document.write(new Date().getFullYear())</script> Free Online Tools. All rights reserved.
+                </p>
+            </div>
+        </div>
     </footer>
-  </body>
+
+</body>
 </html>
