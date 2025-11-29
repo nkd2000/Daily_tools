@@ -349,6 +349,13 @@
 </head>
 
 <body>
+    <div style="text-align:center; padding:12px 0; background:#2c3e50; color:#fff">
+        <nav style="display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap">
+            <a href="index.html" style="color:#fff; text-decoration:none; font-weight:600">Home</a>
+            <a href="privacy.html" style="color:#fff; text-decoration:none">Privacy</a>
+            <a href="contact.html" style="color:#fff; text-decoration:none">Contact</a>
+        </nav>
+    </div>
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-content">
             <div class="spinner"></div>
@@ -410,10 +417,14 @@
         </div>
     </div>
 
-   <script>
-    const EXCEL_FILE_NAME = 'raipur_kyc_list.xlsx';
-    let allData = [];
-    let currentData = [];
+</script>
+
+    <footer style="text-align:center;padding:18px;background:#f4f4f4;margin-top:30px">
+        <a href="privacy.html">Privacy</a> • <a href="contact.html">Contact</a>
+        <div style="font-size:0.9em;color:#666;margin-top:6px">&copy; Free Online Tools</div>
+    </footer>
+
+</body>
 
     window.addEventListener('DOMContentLoaded', function() {
         loadExcelFile();
