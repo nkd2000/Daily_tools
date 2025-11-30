@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Size Reducer | Free Online Tools</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Reduce image size to specific KB (20KB, 50KB, 100KB) online for free. Compress JPG/PNG for government forms and applications instantly.">
+    <meta name="keywords" content="reduce image size in kb, compress image to 20kb, image reducer, photo compressor for form, jpg size reducer">
+    <meta name="author" content="Free Online Tools">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Image Size Reducer (KB)">
+    <meta property="og:description" content="Compress images to exact KB size for online forms.">
+    
+    <!-- User's AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
+    <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        .drag-active { border-color: #2563eb; background-color: #eff6ff; }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-compress"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">ImgReducer</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
+                    <a href="index.html" class="hover:text-blue-600 transition">Home</a>
+                    <a href="https://jansuchnaforall.blogspot.com" target="_blank" class="hover:text-blue-600 transition">Blog</a>
+                    <a href="contact.html" class="hover:text-blue-600 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-5xl mx-auto px-4 py-8 sm:px-6 w-full">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Image Size Reducer</h1>
+            <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+                Compress images to an exact file size (e.g., 20KB, 50KB) for official forms.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Column: Controls -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Upload Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-upload mr-2 text-blue-500"></i>Upload Image</h3>
+                    </div>
+                    <div class="p-6">
+                        <label id="dropZone" class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition duration-200 group">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i class="fa-solid fa-image text-3xl text-gray-400 group-hover:text-blue-500 mb-3 transition"></i>
+                                <p class="mb-1 text-sm text-gray-500"><span class="font-semibold text-gray-700">Click to upload</span> or drag & drop</p>
+                                <p class="text-xs text-gray-400">JPG, PNG supported</p>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Settings Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-sliders mr-2 text-blue-500"></i>Target Size</h3>
+                    </div>
+                    <div class="p-6 space-y-5">
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Maximum File Size (KB)</label>
+                            <div class="flex gap-2">
+                                <input type="number" id="targetSize" value="50" min="10" max="5000" class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2.5 border">
+                                <span class="inline-flex items-center px-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-500 text-sm">KB</span>
+                            </div>
+                            <!-- Quick Presets -->
+                            <div class="flex gap-2 mt-3">
+                                <button onclick="setKB(20)" class="text-xs bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-full transition border border-gray-200">20KB</button>
+                                <button onclick="setKB(50)" class="text-xs bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-full transition border border-gray-200">50KB</button>
+                                <button onclick="setKB(100)" class="text-xs bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-full transition border border-gray-200">100KB</button>
+                                <button onclick="setKB(200)" class="text-xs bg-gray-100 hover:bg-blue-50 text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-full transition border border-gray-200">200KB</button>
+                            </div>
+                        </div>
+
+                        <button id="processBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition duration-150 ease-in-out flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-compress"></i> Compress Image
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="lg:col-span-7">
+                
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden min-h-[400px] flex flex-col">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-eye mr-2 text-blue-500"></i>Result</h3>
+                        <div id="statusBadge" class="hidden text-xs font-bold px-2.5 py-1 rounded-full"></div>
+                    </div>
+                    
+                    <div class="flex-grow p-6 bg-slate-50 flex flex-col items-center justify-center">
+                        
+                        <!-- Empty State -->
+                        <div id="emptyState" class="text-center text-gray-400">
+                            <i class="fa-regular fa-image text-6xl mb-4 opacity-30"></i>
+                            <p>Upload an image to start</p>
+                        </div>
+
+                        <!-- Comparison View -->
+                        <div id="resultContainer" class="hidden w-full fade-in space-y-6">
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <!-- Original -->
+                                <div class="space-y-2">
+                                    <p class="text-xs text-gray-500 font-bold uppercase text-center">Original</p>
+                                    <div class="bg-white p-2 rounded-lg border border-gray-200 shadow-sm h-48 flex items-center justify-center overflow-hidden">
+                                        <img id="previewOrig" class="max-h-full max-w-full object-contain">
+                                    </div>
+                                    <p id="sizeOrig" class="text-sm text-center text-gray-600 font-medium">-- KB</p>
+                                </div>
+
+                                <!-- Compressed -->
+                                <div class="space-y-2">
+                                    <p class="text-xs text-green-600 font-bold uppercase text-center">Compressed</p>
+                                    <div class="bg-white p-2 rounded-lg border-2 border-green-500 shadow-sm h-48 flex items-center justify-center overflow-hidden relative">
+                                        <img id="previewComp" class="max-h-full max-w-full object-contain">
+                                        <div id="loadingOverlay" class="absolute inset-0 bg-white/80 flex items-center justify-center hidden">
+                                            <i class="fa-solid fa-circle-notch fa-spin text-blue-500 text-2xl"></i>
+                                        </div>
+                                    </div>
+                                    <p id="sizeComp" class="text-sm text-center text-green-700 font-bold">-- KB</p>
+                                </div>
+                            </div>
+
+                            <!-- Success Message -->
+                            <div id="successMsg" class="bg-green-50 border border-green-200 rounded-lg p-3 text-center hidden">
+                                <p class="text-sm text-green-800"><i class="fa-solid fa-check-circle mr-1"></i> Successfully reduced to <span id="finalSizeVal" class="font-bold"></span>!</p>
+                            </div>
+
+                            <a id="downloadBtn" href="#" class="block w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow text-center transition">
+                                <i class="fa-solid fa-download mr-2"></i> Download Image
+                            </a>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="mt-4 flex justify-between items-center">
+                    <button onclick="history.back()" class="text-gray-500 hover:text-gray-700 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Tools
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">
+                &copy; 2023 Free Online Tools. <a href="privacy.html" class="text-blue-600 hover:text-blue-500">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            const fileInput = document.getElementById('fileInput');
+            const dropZone = document.getElementById('dropZone');
+            const targetSizeInput = document.getElementById('targetSize');
+            const processBtn = document.getElementById('processBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            const emptyState = document.getElementById('emptyState');
+            const previewOrig = document.getElementById('previewOrig');
+            const previewComp = document.getElementById('previewComp');
+            const sizeOrig = document.getElementById('sizeOrig');
+            const sizeComp = document.getElementById('sizeComp');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const statusBadge = document.getElementById('statusBadge');
+            const successMsg = document.getElementById('successMsg');
+            const finalSizeVal = document.getElementById('finalSizeVal');
+
+            let currentFile = null;
+
+            // Set Preset
+            window.setKB = (kb) => {
+                targetSizeInput.value = kb;
+                if(currentFile) processImage();
+            };
+
+            // Drag & Drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); ev.stopPropagation(); }));
+            dropZone.addEventListener('dragenter', () => dropZone.classList.add('drag-active'));
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-active'));
+            dropZone.addEventListener('drop', (e) => {
+                dropZone.classList.remove('drag-active');
+                handleFile(e.dataTransfer.files[0]);
+            });
+            fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+            function handleFile(file) {
+                if (!file || !file.type.startsWith('image/')) return;
+                currentFile = file;
+                
+                // Show original
+                sizeOrig.textContent = (file.size / 1024).toFixed(2) + ' KB';
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewOrig.src = e.target.result;
+                    emptyState.classList.add('hidden');
+                    resultContainer.classList.remove('hidden');
+                    
+                    // Reset Compressed View
+                    previewComp.src = "";
+                    sizeComp.textContent = "-- KB";
+                    successMsg.classList.add('hidden');
+                    downloadBtn.classList.add('hidden');
+                    
+                    // Auto process
+                    processImage();
+                };
+                reader.readAsDataURL(file);
+            }
+
+            processBtn.addEventListener('click', processImage);
+
+            async function processImage() {
+                if(!currentFile) return;
+
+                const targetKB = parseInt(targetSizeInput.value);
+                if(!targetKB) return alert("Please enter a target size");
+
+                loadingOverlay.classList.remove('hidden');
+                statusBadge.className = "bg-yellow-100 text-yellow-800 text-xs font-bold px-2.5 py-1 rounded-full";
+                statusBadge.textContent = "Compressing...";
+                statusBadge.classList.remove('hidden');
+
+                try {
+                    const blob = await compressToSize(currentFile, targetKB * 1024);
+                    
+                    const url = URL.createObjectURL(blob);
+                    previewComp.src = url;
+                    
+                    const finalSize = (blob.size / 1024).toFixed(2);
+                    sizeComp.textContent = finalSize + ' KB';
+                    finalSizeVal.textContent = finalSize + ' KB';
+                    
+                    downloadBtn.href = url;
+                    downloadBtn.download = `compressed_${targetKB}kb_${currentFile.name.split('.')[0]}.jpg`;
+                    
+                    successMsg.classList.remove('hidden');
+                    downloadBtn.classList.remove('hidden');
+                    
+                    statusBadge.className = "bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full";
+                    statusBadge.textContent = "Done";
+
+                } catch (e) {
+                    console.error(e);
+                    alert("Could not compress to this size. Try a larger target.");
+                    statusBadge.className = "bg-red-100 text-red-800 text-xs font-bold px-2.5 py-1 rounded-full";
+                    statusBadge.textContent = "Failed";
+                } finally {
+                    loadingOverlay.classList.add('hidden');
+                }
+            }
+
+            // Core Logic: Binary Search for Quality & Resize
+            function compressToSize(file, targetBytes) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.src = URL.createObjectURL(file);
+                    img.onload = async () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Initial resize if huge
+                        if(width > 2000) {
+                            height = Math.round(height * (2000 / width));
+                            width = 2000;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#FFFFFF'; // Fill transparent with white (for JPG)
+                        ctx.fillRect(0, 0, width, height);
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        let min = 0;
+                        let max = 1;
+                        let quality = 0.9;
+                        let blob = null;
+                        let bestBlob = null;
+
+                        // Binary search for quality
+                        for(let i=0; i<7; i++) { // 7 iterations is usually enough precision
+                            blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+                            
+                            if (blob.size <= targetBytes) {
+                                bestBlob = blob; // Valid candidate
+                                min = quality; // Try higher quality
+                            } else {
+                                max = quality; // Try lower quality
+                            }
+                            quality = (min + max) / 2;
+                        }
+
+                        // If even lowest quality is too big, start shrinking dimensions
+                        if (!bestBlob && blob.size > targetBytes) {
+                            let scale = 0.9;
+                            while(scale > 0.1) {
+                                canvas.width = Math.round(width * scale);
+                                canvas.height = Math.round(height * scale);
+                                ctx.fillStyle = '#FFFFFF';
+                                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                                
+                                blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.5)); // Medium quality
+                                if(blob.size <= targetBytes) {
+                                    bestBlob = blob;
+                                    break;
+                                }
+                                scale -= 0.1;
+                            }
+                        }
+
+                        if(bestBlob) resolve(bestBlob);
+                        else reject("Cannot compress enough");
+                    };
+                });
+            }
+
+        })();
+    </script>
+</body>
+</html>
