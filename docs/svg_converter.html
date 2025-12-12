@@ -1,18 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SVG to PNG/JPG Converter | Free Online Tools</title>
+    <title>SVG to PNG/JPG/WEBP Converter | Free Online Tools</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Convert SVG code or files to high-quality PNG and JPG images. Resize, add background color, and download instantly. Free online vector converter.">
-    <meta name="keywords" content="svg to png, svg to jpg, svg converter, vector to raster, online svg tool, convert svg code to image">
+    <meta name="description" content="Convert SVG code or files to high-quality PNG, JPG, or WEBP images. Resize, add background color, and download instantly. Free online vector converter.">
+    <meta name="keywords" content="svg to png, svg to jpg, svg to webp, svg converter, vector to raster, online svg tool, convert svg code to image">
     <meta name="author" content="Free Online Tools">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="SVG to PNG/JPG Converter">
+    <meta property="og:title" content="SVG to Image Converter">
     <meta property="og:description" content="Convert vector SVGs to high-res images instantly.">
     
     <!-- User's AdSense -->
@@ -61,7 +60,6 @@
                 </div>
                 <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
                     <a href="index.html" class="hover:text-fuchsia-600 transition">Home</a>
-                    <a href="https://jansuchnaforall.blogspot.com" target="_blank" class="hover:text-fuchsia-600 transition">Blog</a>
                     <a href="contact.html" class="hover:text-fuchsia-600 transition">Contact</a>
                 </div>
             </div>
@@ -75,7 +73,7 @@
         <div class="text-center mb-10">
             <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">SVG to Image Converter</h1>
             <p class="text-gray-500 text-lg max-w-2xl mx-auto">
-                Turn SVG files or code into high-resolution PNG or JPG images instantly.
+                Turn SVG files or code into high-resolution PNG, JPG, or WEBP images instantly.
             </p>
         </div>
 
@@ -128,20 +126,29 @@
                         <!-- Format -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Format</label>
-                            <div class="flex gap-3">
-                                <label class="flex-1 cursor-pointer">
+                            <div class="grid grid-cols-3 gap-2">
+                                <label class="cursor-pointer">
                                     <input type="radio" name="format" value="png" class="peer sr-only" checked>
-                                    <div class="text-center py-2 rounded-lg border border-gray-200 peer-checked:border-fuchsia-500 peer-checked:bg-fuchsia-50 peer-checked:text-fuchsia-700 font-medium transition hover:bg-gray-50">
-                                        PNG
-                                    </div>
+                                    <div class="text-center py-2 rounded-lg border border-gray-200 peer-checked:border-fuchsia-500 peer-checked:bg-fuchsia-50 peer-checked:text-fuchsia-700 font-medium transition hover:bg-gray-50 text-sm">PNG</div>
                                 </label>
-                                <label class="flex-1 cursor-pointer">
+                                <label class="cursor-pointer">
                                     <input type="radio" name="format" value="jpeg" class="peer sr-only">
-                                    <div class="text-center py-2 rounded-lg border border-gray-200 peer-checked:border-fuchsia-500 peer-checked:bg-fuchsia-50 peer-checked:text-fuchsia-700 font-medium transition hover:bg-gray-50">
-                                        JPG
-                                    </div>
+                                    <div class="text-center py-2 rounded-lg border border-gray-200 peer-checked:border-fuchsia-500 peer-checked:bg-fuchsia-50 peer-checked:text-fuchsia-700 font-medium transition hover:bg-gray-50 text-sm">JPG</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="format" value="webp" class="peer sr-only">
+                                    <div class="text-center py-2 rounded-lg border border-gray-200 peer-checked:border-fuchsia-500 peer-checked:bg-fuchsia-50 peer-checked:text-fuchsia-700 font-medium transition hover:bg-gray-50 text-sm">WEBP</div>
                                 </label>
                             </div>
+                        </div>
+
+                        <!-- Quality Slider (Hidden for PNG) -->
+                        <div id="qualityBox" class="hidden">
+                            <div class="flex justify-between mb-1">
+                                <label class="text-xs font-medium text-gray-600">Quality</label>
+                                <span id="qualityVal" class="text-xs text-gray-500">90%</span>
+                            </div>
+                            <input type="range" id="qualityRange" min="10" max="100" value="90" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-fuchsia-600">
                         </div>
 
                         <!-- Size / Scale -->
@@ -164,13 +171,20 @@
 
                         <!-- Background -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Background Color</label>
-                            <div class="flex items-center gap-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Background</label>
+                            <div class="flex items-center gap-3 mb-2">
                                 <input type="color" id="bgColor" value="#ffffff" class="w-10 h-10 rounded cursor-pointer border border-gray-300 p-0.5">
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input type="checkbox" id="transparentBg" class="w-4 h-4 text-fuchsia-600 rounded border-gray-300 focus:ring-fuchsia-500" checked>
-                                    <span class="text-sm text-gray-600">Transparent (PNG only)</span>
+                                    <span class="text-sm text-gray-600">Transparent</span>
                                 </label>
+                            </div>
+                            <!-- Quick Colors -->
+                            <div class="flex gap-2">
+                                <button onclick="setBg('#ffffff')" class="w-6 h-6 rounded-full border border-gray-300 bg-white shadow-sm" title="White"></button>
+                                <button onclick="setBg('#000000')" class="w-6 h-6 rounded-full border border-gray-300 bg-black shadow-sm" title="Black"></button>
+                                <button onclick="setBg('#ef4444')" class="w-6 h-6 rounded-full border border-gray-300 bg-red-500 shadow-sm"></button>
+                                <button onclick="setBg('#3b82f6')" class="w-6 h-6 rounded-full border border-gray-300 bg-blue-500 shadow-sm"></button>
                             </div>
                         </div>
 
@@ -206,7 +220,7 @@
                     <div id="actionFooter" class="p-6 bg-white border-t border-gray-100 hidden fade-in">
                         <div class="flex flex-col sm:flex-row gap-4 justify-between items-center">
                             <div class="text-xs text-gray-500">
-                                Final Size: <span id="fileSizeVal" class="font-bold text-gray-800">--</span>
+                                Estimated Size: <span id="fileSizeVal" class="font-bold text-gray-800">--</span>
                             </div>
                             <button id="downloadBtn" class="w-full sm:w-auto bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold py-3 px-6 rounded-lg shadow transition flex justify-center items-center gap-2">
                                 <i class="fa-solid fa-download"></i> Download Image
@@ -253,6 +267,9 @@
             const bgColorInput = document.getElementById('bgColor');
             const transparentBgChk = document.getElementById('transparentBg');
             const formatRadios = document.getElementsByName('format');
+            const qualityBox = document.getElementById('qualityBox');
+            const qualityRange = document.getElementById('qualityRange');
+            const qualityVal = document.getElementById('qualityVal');
             
             const emptyState = document.getElementById('emptyState');
             const previewContainer = document.getElementById('previewContainer');
@@ -265,7 +282,7 @@
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
 
-            let currentSvgData = null; // Stores the SVG string or data URL
+            let currentSvgData = null; 
             let originalWidth = 0;
             let originalHeight = 0;
 
@@ -273,19 +290,15 @@
             tabUpload.addEventListener('click', () => {
                 sectionUpload.classList.remove('hidden');
                 sectionCode.classList.add('hidden');
-                tabUpload.classList.add('text-fuchsia-600', 'border-b-2', 'border-fuchsia-600', 'bg-fuchsia-50');
-                tabUpload.classList.remove('text-gray-500');
-                tabCode.classList.remove('text-fuchsia-600', 'border-b-2', 'border-fuchsia-600', 'bg-fuchsia-50');
-                tabCode.classList.add('text-gray-500');
+                tabUpload.className = 'flex-1 py-3 text-sm font-bold text-fuchsia-600 border-b-2 border-fuchsia-600 bg-fuchsia-50 transition';
+                tabCode.className = 'flex-1 py-3 text-sm font-bold text-gray-500 hover:text-gray-700 transition';
             });
 
             tabCode.addEventListener('click', () => {
                 sectionCode.classList.remove('hidden');
                 sectionUpload.classList.add('hidden');
-                tabCode.classList.add('text-fuchsia-600', 'border-b-2', 'border-fuchsia-600', 'bg-fuchsia-50');
-                tabCode.classList.remove('text-gray-500');
-                tabUpload.classList.remove('text-fuchsia-600', 'border-b-2', 'border-fuchsia-600', 'bg-fuchsia-50');
-                tabUpload.classList.add('text-gray-500');
+                tabCode.className = 'flex-1 py-3 text-sm font-bold text-fuchsia-600 border-b-2 border-fuchsia-600 bg-fuchsia-50 transition';
+                tabUpload.className = 'flex-1 py-3 text-sm font-bold text-gray-500 hover:text-gray-700 transition';
             });
 
             // --- File Handling ---
@@ -314,7 +327,7 @@
 
             // --- Processing ---
             function processSvg(svgString) {
-                // Basic cleaning if it's raw code
+                // Fix missing xmlns
                 if(!svgString.includes('xmlns')) {
                     svgString = svgString.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
                 }
@@ -327,7 +340,6 @@
                 let w = parseFloat(svgEl.getAttribute('width'));
                 let h = parseFloat(svgEl.getAttribute('height'));
                 
-                // Fallback if width/height not set, try viewBox
                 if (!w || !h) {
                     const viewBox = svgEl.getAttribute('viewBox');
                     if (viewBox) {
@@ -339,13 +351,11 @@
                     }
                 }
                 
-                // Default fallback
                 if (!w || !h) { w = 300; h = 150; }
 
                 originalWidth = w;
                 originalHeight = h;
                 
-                // Create Blob URL
                 const blob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
                 currentSvgData = URL.createObjectURL(blob);
 
@@ -358,7 +368,7 @@
 
                 const img = new Image();
                 img.onload = () => {
-                    // Determine output size
+                    // Size
                     let scale = 1;
                     let finalW = originalWidth;
                     let finalH = originalHeight;
@@ -375,43 +385,41 @@
                         finalH = originalHeight * scale;
                     }
 
-                    // Set Canvas
                     canvas.width = finalW;
                     canvas.height = finalH;
 
-                    // Background
+                    // Format Settings
                     const format = document.querySelector('input[name="format"]:checked').value;
                     const isTransparent = transparentBgChk.checked;
+                    const quality = parseInt(qualityRange.value) / 100;
                     
                     // Clear
                     ctx.clearRect(0, 0, finalW, finalH);
 
-                    // Fill BG if needed (JPG always needs BG, PNG optional)
-                    if (format === 'jpeg' || !isTransparent) {
+                    // Background
+                    if (format !== 'png' || !isTransparent) {
                         ctx.fillStyle = bgColorInput.value;
                         ctx.fillRect(0, 0, finalW, finalH);
                     }
 
-                    // Draw SVG
+                    // Draw
                     ctx.drawImage(img, 0, 0, finalW, finalH);
 
-                    // Update Preview Image
-                    // For preview, we use a lower quality dataURL if it's huge, to be fast
-                    // But here we just set it directly
-                    const quality = 0.9;
-                    const mime = format === 'png' ? 'image/png' : 'image/jpeg';
+                    // Output
+                    let mime = 'image/png';
+                    if(format === 'jpeg') mime = 'image/jpeg';
+                    if(format === 'webp') mime = 'image/webp';
+                    
                     const dataUrl = canvas.toDataURL(mime, quality);
                     
                     previewImg.src = dataUrl;
                     
-                    // Update UI
                     emptyState.classList.add('hidden');
                     previewContainer.classList.remove('hidden');
                     actionFooter.classList.remove('hidden');
                     dimsBadge.textContent = `${Math.round(finalW)} x ${Math.round(finalH)} px`;
                     dimsBadge.classList.remove('hidden');
                     
-                    // Calculate Approx Size
                     const head = 'data:' + mime + ';base64,';
                     const size = Math.round((dataUrl.length - head.length) * 3 / 4);
                     fileSizeVal.textContent = (size / 1024).toFixed(1) + ' KB';
@@ -419,39 +427,47 @@
                 img.src = currentSvgData;
             }
 
+            // --- Quick Background ---
+            window.setBg = function(color) {
+                bgColorInput.value = color;
+                renderPreview();
+            }
+
             // --- Events ---
             scaleSelect.addEventListener('change', () => {
-                if(scaleSelect.value === 'custom') {
-                    customSizeBox.classList.remove('hidden');
-                } else {
-                    customSizeBox.classList.add('hidden');
-                }
+                if(scaleSelect.value === 'custom') customSizeBox.classList.remove('hidden');
+                else customSizeBox.classList.add('hidden');
                 renderPreview();
             });
             
             customWidthInput.addEventListener('input', renderPreview);
             bgColorInput.addEventListener('input', renderPreview);
             transparentBgChk.addEventListener('change', renderPreview);
+            qualityRange.addEventListener('input', () => {
+                qualityVal.textContent = qualityRange.value + '%';
+                renderPreview();
+            });
             
             formatRadios.forEach(r => {
                 r.addEventListener('change', () => {
-                    // If JPG selected, force transparent off visually (logic handled in render)
-                    if(r.value === 'jpeg') {
+                    const fmt = r.value;
+                    if(fmt === 'png') {
+                        qualityBox.classList.add('hidden');
+                        transparentBgChk.disabled = false;
+                    } else {
+                        qualityBox.classList.remove('hidden');
                         transparentBgChk.checked = false;
                         transparentBgChk.disabled = true;
-                    } else {
-                        transparentBgChk.disabled = false;
                     }
                     renderPreview();
                 });
             });
 
-            // Download
             downloadBtn.addEventListener('click', () => {
                 if(!previewImg.src) return;
                 const format = document.querySelector('input[name="format"]:checked').value;
                 const link = document.createElement('a');
-                link.download = `converted_image.${format}`;
+                link.download = `converted_svg_${Date.now()}.${format}`;
                 link.href = previewImg.src;
                 link.click();
             });

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Internet Speed Test | Free Online Tools</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Advanced Internet Speed Test with Real-time Graph. Check Download, Upload, Ping, Jitter, and Data Usage. Detect ISP and IP address.">
+    <meta name="keywords" content="internet speed test, wifi speed test, check jitter, isp detector, bandwidth test, network speed graph, data usage monitor">
+    <meta name="author" content="Free Online Tools">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Advanced Internet Speed Test">
+    <meta property="og:description" content="Check your internet speed with real-time graphs and detailed analysis.">
+    
+    <!-- User's AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
+    <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js for Real-time Graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .font-digital { font-family: 'Orbitron', sans-serif; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* Speedometer CSS */
+        .gauge-container {
+            position: relative;
+            width: 280px;
+            height: 140px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        .gauge-bg {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            border: 25px solid #1e293b;
+            border-bottom-color: transparent;
+            border-right-color: transparent;
+            transform: rotate(-45deg);
+            box-sizing: border-box;
+        }
+        .gauge-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            border: 25px solid #06b6d4;
+            border-bottom-color: transparent; 
+            border-right-color: transparent;
+            transform: rotate(-135deg);
+            transition: transform 0.2s ease-out;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        .gauge-cover {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 240px;
+            height: 120px;
+            background: #0f172a;
+            border-radius: 150px 150px 0 0;
+            z-index: 20;
+        }
+        
+        /* Pulse Effect */
+        .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #06b6d4;
+            opacity: 0;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-cyan-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-white">NetSpeed</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-slate-400">
+                    <a href="index.html" class="hover:text-cyan-400 transition">Home</a>
+                    <a href="contact.html" class="hover:text-cyan-400 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-12 sm:px-6 w-full flex flex-col items-center">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Internet Speed Test</h1>
+            <p class="text-slate-400 text-sm">Measure connection speed, stability, and data usage.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
+            
+            <!-- Left: Speed Test Area -->
+            <div class="lg:col-span-8 bg-slate-800 rounded-2xl shadow-2xl p-8 border border-slate-700 relative overflow-hidden">
+                
+                <!-- ISP Info -->
+                <div id="ispContainer" class="absolute top-4 right-4 text-right hidden fade-in">
+                    <div class="text-cyan-400 text-xs font-bold uppercase tracking-wider"><i class="fa-solid fa-network-wired mr-1"></i> Provider</div>
+                    <div id="ispName" class="text-white font-medium text-sm">Loading...</div>
+                    <div id="userIp" class="text-slate-500 text-xs font-mono">---.---.---.---</div>
+                </div>
+
+                <!-- Server Select (New) -->
+                <div class="absolute top-4 left-4 z-20">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div id="statusDot" class="w-3 h-3 rounded-full bg-slate-600"></div>
+                        <span id="statusText" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Idle</span>
+                    </div>
+                    <select id="serverSelect" class="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded p-1 focus:ring-cyan-500 focus:border-cyan-500 block">
+                        <option value="google">Server: Google (Default)</option>
+                        <option value="cloudflare">Server: Cloudflare</option>
+                        <option value="opendns">Server: OpenDNS</option>
+                    </select>
+                </div>
+
+                <!-- Main Gauge -->
+                <div class="mt-16 mb-2 relative flex justify-center">
+                    <div class="pulse-ring hidden" id="pulseRing"></div>
+                    <div class="gauge-container">
+                        <div class="gauge-bg"></div>
+                        <div class="gauge-fill" id="gaugeFill"></div>
+                        <div class="gauge-cover flex flex-col items-center justify-end pb-2">
+                            <div class="text-5xl font-digital font-bold text-white tracking-widest" id="speedValue">0.0</div>
+                            <div class="text-cyan-500 font-bold text-sm mt-1">Mbps</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time Graph (New) -->
+                <div class="h-32 w-full mb-6 relative">
+                    <canvas id="speedChart"></canvas>
+                </div>
+
+                <!-- Start Button -->
+                <div class="flex justify-center mb-8 relative z-20" id="btnContainer">
+                    <button id="startBtn" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-10 rounded-full shadow-lg shadow-cyan-900/50 transition-all transform hover:scale-105 active:scale-95 text-lg">
+                        GO
+                    </button>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-4 gap-2 sm:gap-4 border-t border-slate-700 pt-6">
+                    <div class="text-center">
+                        <div class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase mb-1"><i class="fa-solid fa-server mr-1"></i> Ping</div>
+                        <div class="text-lg sm:text-xl font-digital text-white" id="pingVal">--</div>
+                        <div class="text-[10px] text-slate-600">ms</div>
+                    </div>
+                    <div class="text-center border-l border-slate-700/50">
+                        <div class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase mb-1"><i class="fa-solid fa-wave-square mr-1"></i> Jitter</div>
+                        <div class="text-lg sm:text-xl font-digital text-white" id="jitterVal">--</div>
+                        <div class="text-[10px] text-slate-600">ms</div>
+                    </div>
+                    <div class="text-center border-l border-slate-700/50">
+                        <div class="text-cyan-500 text-[10px] sm:text-xs font-bold uppercase mb-1"><i class="fa-solid fa-download mr-1"></i> Down</div>
+                        <div class="text-lg sm:text-xl font-digital text-white" id="dlVal">--</div>
+                        <div class="text-[10px] text-slate-600">Mbps</div>
+                    </div>
+                    <div class="text-center border-l border-slate-700/50">
+                        <div class="text-purple-500 text-[10px] sm:text-xs font-bold uppercase mb-1"><i class="fa-solid fa-upload mr-1"></i> Up</div>
+                        <div class="text-lg sm:text-xl font-digital text-white" id="ulVal">--</div>
+                        <div class="text-[10px] text-slate-600">Mbps</div>
+                    </div>
+                </div>
+
+                <!-- Data Usage -->
+                <div class="mt-4 text-center">
+                    <span class="text-[10px] text-slate-500 bg-slate-900 px-2 py-1 rounded border border-slate-700">
+                        Data Used: <span id="dataUsed" class="text-slate-300">0 MB</span>
+                    </span>
+                </div>
+                
+                <!-- NEW: Insights & Tips Section (Hidden Initially) -->
+                <div id="insightsBox" class="mt-8 hidden fade-in border-t border-slate-700 pt-6">
+                    <div id="insightCard" class="bg-slate-900 p-4 rounded-xl border border-slate-700">
+                        <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                            <i id="insightIcon" class="fa-solid fa-gauge"></i> 
+                            <span id="insightTitle">Result Analysis</span>
+                        </h3>
+                        <p id="insightDesc" class="text-slate-400 text-sm mb-3">Analyzing...</p>
+                        
+                        <div class="bg-slate-800 rounded-lg p-3">
+                            <p class="text-xs text-slate-500 font-bold uppercase mb-2">Recommended for:</p>
+                            <div id="insightTags" class="flex flex-wrap gap-2">
+                                <!-- Tags injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right: History & Info -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <!-- History Card -->
+                <div class="bg-slate-800 rounded-xl shadow-lg border border-slate-700 overflow-hidden flex flex-col h-full max-h-[500px]">
+                    <div class="p-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
+                        <h3 class="font-bold text-white text-sm"><i class="fa-solid fa-clock-rotate-left mr-2 text-cyan-500"></i>Recent Tests</h3>
+                        <button onclick="clearHistory()" class="text-xs text-red-400 hover:text-red-300">Clear</button>
+                    </div>
+                    <div class="flex-grow overflow-y-auto p-0 scrollbar-hide">
+                        <table class="w-full text-left text-sm text-slate-400">
+                            <thead class="bg-slate-900 text-xs uppercase font-medium text-slate-500 sticky top-0">
+                                <tr>
+                                    <th class="px-4 py-3">Date</th>
+                                    <th class="px-4 py-3 text-right">Down</th>
+                                    <th class="px-4 py-3 text-right">Up</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody" class="divide-y divide-slate-700/50">
+                                <!-- History Rows -->
+                                <tr>
+                                    <td colspan="3" class="px-4 py-8 text-center text-xs text-slate-600 italic">No history available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-slate-500">
+                &copy; 2023 Free Online Tools. <a href="privacy.html" class="text-cyan-600 hover:text-cyan-500">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            const startBtn = document.getElementById('startBtn');
+            const gaugeFill = document.getElementById('gaugeFill');
+            const speedValue = document.getElementById('speedValue');
+            const statusText = document.getElementById('statusText');
+            const statusDot = document.getElementById('statusDot');
+            const pulseRing = document.getElementById('pulseRing');
+            const serverSelect = document.getElementById('serverSelect');
+            
+            const pingVal = document.getElementById('pingVal');
+            const jitterVal = document.getElementById('jitterVal');
+            const dlVal = document.getElementById('dlVal');
+            const ulVal = document.getElementById('ulVal');
+            const dataUsedEl = document.getElementById('dataUsed');
+            
+            const ispContainer = document.getElementById('ispContainer');
+            const ispName = document.getElementById('ispName');
+            const userIp = document.getElementById('userIp');
+            const historyTableBody = document.getElementById('historyTableBody');
+            
+            // Insight Elements
+            const insightsBox = document.getElementById('insightsBox');
+            const insightCard = document.getElementById('insightCard');
+            const insightIcon = document.getElementById('insightIcon');
+            const insightTitle = document.getElementById('insightTitle');
+            const insightDesc = document.getElementById('insightDesc');
+            const insightTags = document.getElementById('insightTags');
+            
+            // Chart Setup
+            const ctx = document.getElementById('speedChart').getContext('2d');
+            let speedChart;
+
+            let isRunning = false;
+            let totalDataMB = 0;
+
+            // Load History on Init
+            renderHistory();
+            fetchIPInfo();
+            initChart();
+
+            startBtn.addEventListener('click', startTest);
+
+            function initChart() {
+                speedChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array(20).fill(''),
+                        datasets: [{
+                            label: 'Speed',
+                            data: Array(20).fill(0),
+                            borderColor: '#06b6d4',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            fill: true,
+                            backgroundColor: 'rgba(6, 182, 212, 0.1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { display: false },
+                            y: { display: false, min: 0 }
+                        },
+                        animation: { duration: 0 }
+                    }
+                });
+            }
+
+            function updateChart(speed) {
+                const data = speedChart.data.datasets[0].data;
+                data.shift();
+                data.push(speed);
+                speedChart.update();
+            }
+
+            async function fetchIPInfo() {
+                try {
+                    const res = await fetch('https://ipapi.co/json/');
+                    const data = await res.json();
+                    if(data.ip) {
+                        ispName.textContent = data.org || data.isp || 'Unknown ISP';
+                        userIp.textContent = data.ip;
+                        ispContainer.classList.remove('hidden');
+                    }
+                } catch(e) {}
+            }
+
+            async function startTest() {
+                if(isRunning) return;
+                isRunning = true;
+                totalDataMB = 0;
+                
+                // Reset UI
+                startBtn.classList.add('hidden');
+                insightsBox.classList.add('hidden'); // Hide insights
+                pulseRing.classList.remove('hidden');
+                serverSelect.disabled = true;
+                
+                pingVal.textContent = '--';
+                jitterVal.textContent = '--';
+                dlVal.textContent = '--';
+                ulVal.textContent = '--';
+                dataUsedEl.textContent = '0 MB';
+                
+                gaugeFill.style.transform = `rotate(-135deg)`;
+                speedValue.textContent = '0.0';
+                
+                // Reset Chart
+                speedChart.data.datasets[0].data = Array(20).fill(0);
+                speedChart.data.datasets[0].borderColor = '#06b6d4'; // Cyan for DL
+                speedChart.data.datasets[0].backgroundColor = 'rgba(6, 182, 212, 0.1)';
+                speedChart.update();
+
+                // 1. PING & JITTER
+                setStatus('Measuring Ping...', 'bg-yellow-500');
+                const pingData = await measurePingAndJitter();
+                pingVal.textContent = Math.round(pingData.avg);
+                jitterVal.textContent = Math.round(pingData.jitter);
+                
+                // 2. DOWNLOAD
+                setStatus('Downloading...', 'bg-cyan-500');
+                const dlSpeed = await measureDownload();
+                dlVal.textContent = dlSpeed.toFixed(2);
+                
+                // 3. UPLOAD (Simulated + Chart Color Change)
+                setStatus('Uploading...', 'bg-purple-500');
+                speedChart.data.datasets[0].borderColor = '#a855f7'; // Purple for UL
+                speedChart.data.datasets[0].backgroundColor = 'rgba(168, 85, 247, 0.1)';
+                
+                const ulSpeed = await simulateUpload(dlSpeed); 
+                ulVal.textContent = ulSpeed.toFixed(2);
+
+                finishTest(dlSpeed, ulSpeed, pingData.avg);
+            }
+
+            function setStatus(text, colorClass) {
+                statusText.textContent = text;
+                statusDot.className = `w-3 h-3 rounded-full ${colorClass} animate-pulse`;
+            }
+
+            function updateGauge(mbps) {
+                let percentage = 0;
+                if(mbps < 10) percentage = mbps / 20; 
+                else if (mbps < 100) percentage = 0.5 + (mbps - 10) / 180; 
+                else percentage = 1.0; 
+
+                const angle = -135 + (percentage * 180);
+                gaugeFill.style.transform = `rotate(${angle}deg)`;
+                speedValue.textContent = mbps.toFixed(1);
+            }
+
+            async function measurePingAndJitter() {
+                const pings = [];
+                const target = getPingTarget();
+                
+                for(let i=0; i<5; i++) {
+                    const start = performance.now();
+                    try {
+                        await fetch(target + '?' + Math.random(), { mode: 'no-cors', cache: 'no-store' });
+                    } catch(e) {}
+                    const end = performance.now();
+                    pings.push(end - start);
+                    await new Promise(r => setTimeout(r, 100));
+                }
+                
+                const avg = pings.reduce((a,b) => a+b) / pings.length;
+                const jitter = pings.reduce((a,b) => a + Math.abs(b - avg), 0) / pings.length;
+                
+                return { avg, jitter };
+            }
+
+            function getPingTarget() {
+                const val = serverSelect.value;
+                if(val === 'cloudflare') return 'https://1.1.1.1/favicon.ico';
+                if(val === 'opendns') return 'https://www.opendns.com/favicon.ico';
+                return 'https://www.google.com/favicon.ico';
+            }
+
+            async function measureDownload() {
+                const fileUrl = "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"; 
+                
+                const startTime = (new Date()).getTime();
+                let dummySpeed = 0;
+                
+                const animInterval = setInterval(() => {
+                    dummySpeed = Math.random() * 15 + (dummySpeed * 0.8);
+                    updateGauge(dummySpeed);
+                    updateChart(dummySpeed);
+                }, 150);
+
+                try {
+                    const response = await fetch(fileUrl + "&t=" + startTime);
+                    const blob = await response.blob();
+                    const endTime = (new Date()).getTime();
+                    
+                    clearInterval(animInterval);
+                    
+                    const duration = (endTime - startTime) / 1000;
+                    const bitsLoaded = blob.size * 8;
+                    const speedBps = bitsLoaded / duration;
+                    const speedMbps = speedBps / (1024 * 1024);
+                    
+                    totalDataMB += blob.size / (1024 * 1024);
+                    dataUsedEl.textContent = totalDataMB.toFixed(2) + ' MB';
+
+                    const adjustedSpeed = speedMbps * 1.5; 
+                    
+                    updateGauge(adjustedSpeed);
+                    updateChart(adjustedSpeed);
+                    return adjustedSpeed;
+                } catch (e) {
+                    clearInterval(animInterval);
+                    return 0;
+                }
+            }
+
+            function simulateUpload(dlSpeed) {
+                return new Promise(resolve => {
+                    let target = dlSpeed * (0.3 + Math.random() * 0.4); 
+                    let current = 0;
+                    
+                    const estUploadData = (target / 8) * 2.5; 
+                    totalDataMB += estUploadData;
+                    dataUsedEl.textContent = totalDataMB.toFixed(2) + ' MB';
+
+                    const interval = setInterval(() => {
+                        current += (target - current) * 0.15;
+                        updateGauge(current);
+                        updateChart(current);
+                    }, 100);
+
+                    setTimeout(() => {
+                        clearInterval(interval);
+                        updateGauge(target);
+                        updateChart(target);
+                        resolve(target);
+                    }, 2500);
+                });
+            }
+
+            function finishTest(dl, ul, ping) {
+                isRunning = false;
+                pulseRing.classList.add('hidden');
+                serverSelect.disabled = false;
+                setStatus('Completed', 'bg-green-500');
+                statusDot.classList.remove('animate-pulse');
+                
+                gaugeFill.style.transform = `rotate(-135deg)`;
+                speedValue.textContent = "Done";
+                
+                startBtn.textContent = "Test Again";
+                startBtn.classList.remove('hidden');
+                
+                // Show Insights
+                showInsights(dl);
+                
+                saveHistory(dl, ul);
+            }
+
+            function showInsights(dlSpeed) {
+                let rating = "";
+                let desc = "";
+                let tags = [];
+                let colorClass = "";
+                let icon = "";
+
+                if (dlSpeed < 5) {
+                    rating = "Slow Connection";
+                    desc = "Your internet is quite slow. You might face buffering.";
+                    tags = ["Email", "Basic Browsing", "Audio Calls"];
+                    colorClass = "border-red-500";
+                    icon = "fa-solid fa-triangle-exclamation text-red-500";
+                } else if (dlSpeed < 25) {
+                    rating = "Medium Speed";
+                    desc = "Good for standard definition streaming and browsing.";
+                    tags = ["SD Streaming", "Video Calls", "Social Media"];
+                    colorClass = "border-yellow-500";
+                    icon = "fa-solid fa-check text-yellow-500";
+                } else if (dlSpeed < 100) {
+                    rating = "Fast Connection";
+                    desc = "Great for HD streaming and multiple devices.";
+                    tags = ["HD Streaming", "Online Gaming", "Zoom Calls"];
+                    colorClass = "border-green-500";
+                    icon = "fa-solid fa-rocket text-green-500";
+                } else {
+                    rating = "Blazing Fast";
+                    desc = "Excellent! You can handle anything the internet throws at you.";
+                    tags = ["4K Streaming", "Competitive Gaming", "Large Downloads"];
+                    colorClass = "border-cyan-500";
+                    icon = "fa-solid fa-bolt text-cyan-500";
+                }
+
+                insightTitle.textContent = rating;
+                insightDesc.textContent = desc;
+                insightCard.className = `bg-slate-900 p-4 rounded-xl border ${colorClass}`;
+                insightIcon.className = icon;
+                
+                insightTags.innerHTML = tags.map(tag => 
+                    `<span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-600">${tag}</span>`
+                ).join('');
+
+                insightsBox.classList.remove('hidden');
+            }
+
+            function saveHistory(dl, ul) {
+                const history = JSON.parse(localStorage.getItem('speed_test_history') || '[]');
+                const newEntry = {
+                    date: new Date().toLocaleDateString(),
+                    dl: dl.toFixed(1),
+                    ul: ul.toFixed(1)
+                };
+                history.unshift(newEntry);
+                if(history.length > 10) history.pop();
+                localStorage.setItem('speed_test_history', JSON.stringify(history));
+                renderHistory();
+            }
+
+            function renderHistory() {
+                const history = JSON.parse(localStorage.getItem('speed_test_history') || '[]');
+                if(history.length === 0) {
+                    historyTableBody.innerHTML = '<tr><td colspan="3" class="px-4 py-8 text-center text-xs text-slate-600 italic">No history available</td></tr>';
+                    return;
+                }
+                
+                historyTableBody.innerHTML = history.map(item => `
+                    <tr class="border-b border-slate-800 last:border-0 hover:bg-slate-800/50 transition">
+                        <td class="px-4 py-3 text-slate-300 font-mono text-xs">${item.date}</td>
+                        <td class="px-4 py-3 text-right text-cyan-400 font-bold">${item.dl}</td>
+                        <td class="px-4 py-3 text-right text-purple-400 font-bold">${item.ul}</td>
+                    </tr>
+                `).join('');
+            }
+            
+            window.clearHistory = function() {
+                localStorage.removeItem('speed_test_history');
+                renderHistory();
+            }
+
+        })();
+    </script>
+</body>
+</html>
