@@ -9,14 +9,6 @@
     <meta name="description" content="Build your resume by editing directly on the template. Features ATS-friendly layouts (selectable text), voice typing, auto-save, and instant PDF download.">
     <meta name="keywords" content="resume builder, direct edit resume, voice typing cv, free cv maker, online resume creator, pdf resume, ats resume, auto save resume">
     <meta name="author" content="Free Online Tools">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="Smart Resume Builder">
-    <meta property="og:description" content="Edit your resume directly. ATS-Friendly, Auto-Save, and Modern templates.">
-    
-    <!-- User's AdSense -->
-    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
-    <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,12 +19,14 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto:wght@400;500;700&family=Lora:wght@400;500;600&family=Tinos:wght@400;700&display=swap" rel="stylesheet">
 
+    <!-- No html2pdf needed for high quality print-to-pdf, but keeping logic just in case user prefers image download later -->
+
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
         
-        /* A4 Paper Dimensions */
+        /* A4 Paper Dimensions for Screen */
         .a4-page {
             width: 210mm;
             min-height: 297mm;
@@ -81,11 +75,13 @@
         .layout-formal {
             font-family: 'Tinos', serif;
             color: #000;
-            line-height: 1.5;
+            line-height: 1.4;
             display: none; 
-            height: 100%;
             border: 3px double #000;
             padding: 20px;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
         }
         .layout-formal.active { display: block; }
         
@@ -95,15 +91,15 @@
             font-size: 24px;
             text-decoration: underline;
             text-transform: uppercase;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .formal-section-title {
             font-weight: bold;
             font-size: 16px;
             text-decoration: underline;
-            margin-top: 20px;
-            margin-bottom: 10px;
+            margin-top: 15px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -114,28 +110,29 @@
         .formal-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 5px;
             font-size: 14px;
         }
         .formal-table th, .formal-table td {
             border: 1px solid #000;
-            padding: 5px 8px;
+            padding: 4px 6px;
             text-align: left;
         }
-        .formal-table th { font-weight: bold; text-align: center; background-color: #f3f3f3; -webkit-print-color-adjust: exact; }
+        .formal-table th { font-weight: bold; text-align: center; background-color: #f3f3f3; }
         
+        /* Grid for Basic Info */
         .formal-info-grid {
             display: grid;
-            grid-template-columns: 180px 20px 1fr 30px; 
-            gap: 5px;
+            grid-template-columns: 180px 10px 1fr 30px; 
+            gap: 4px 10px;
             font-size: 15px;
+            align-items: center;
         }
-        .formal-label { font-weight: 500; }
+        .formal-label { font-weight: 500; white-space: nowrap; }
         
         .formal-info-row { display: contents; }
         .formal-info-row.hidden { display: none; }
         
-        /* Hover Delete Button */
         .field-delete-btn {
             color: #ef4444;
             cursor: pointer;
@@ -146,6 +143,45 @@
             justify-content: center;
         }
         .formal-info-row:hover .field-delete-btn { opacity: 1; }
+
+        .formal-footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-top: 10px;
+        }
+        
+        /* Manage Fields Popup */
+        .field-manager-popup {
+            position: absolute;
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 50;
+            top: 100%;
+            left: 0;
+            width: 200px;
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            font-family: 'Inter', sans-serif;
+            font-weight: normal;
+            text-decoration: none;
+        }
+        .field-manager-popup.active { display: flex; }
+        .field-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+        }
+        .field-toggle-label:hover { background-color: #f1f5f9; }
 
         /* Restore Menu */
         .restore-menu {
@@ -175,14 +211,6 @@
             gap: 6px;
         }
         .restore-item:hover { background-color: #f1f5f9; color: #4f46e5; }
-        
-        .formal-footer {
-            margin-top: 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding-top: 20px;
-        }
 
         /* Editable Areas */
         [contenteditable]:empty:before { content: attr(placeholder); color: #cbd5e1; pointer-events: none; display: block; }
@@ -217,15 +245,62 @@
         .suggestion-item { padding: 8px 12px; cursor: pointer; color: #334155; }
         .suggestion-item:hover, .suggestion-item.active { background-color: #f1f5f9; color: #4f46e5; }
         
+        /* --- PRINT OPTIMIZATION (FULL PAGE BORDER FIX & EDGE COMPATIBILITY) --- */
         @media print {
-            body { background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            @page {
+                margin: 0; /* Remove default browser margins */
+                size: A4;
+            }
+            html, body { 
+                margin: 0;
+                padding: 0;
+                background: white; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+                width: 100%;
+                height: 100%;
+            }
             nav, .floating-toolbar, .ui-control, .suggestion-box, .no-print, .text-center.mb-6, .field-delete-btn, .add-row-btn { display: none !important; }
-            main { padding: 0; margin: 0; max-width: none; width: 100%; overflow: visible; }
-            .flex.justify-center.bg-gray-200\/50 { background: none; padding: 0; border: none; display: block; overflow: visible; }
-            .a4-page { box-shadow: none; margin: 0; padding: 12mm; width: 100%; min-height: auto; border: none; overflow: visible; }
-            .layout-formal.active { border: 3px double #000 !important; }
-            [contenteditable] { border: none !important; background: transparent !important; }
+            main { padding: 0; margin: 0; width: 100%; display: block; overflow: visible; }
+            .flex.justify-center.bg-gray-200\/50 { background: none; padding: 0; border: none; display: block; margin: 0; }
+            
+            /* A4 Container in Print */
+            .a4-page { 
+                box-shadow: none; 
+                margin: 0 auto;
+                padding: 5mm; /* Very small padding to prevent clip */
+                width: 210mm;
+                height: 296mm; /* Exact height for one page */
+                border: none; 
+                overflow: hidden; /* Critical: Prevent 2nd page spillover */
+                box-sizing: border-box;
+            }
+            
+            /* GRID FIX FOR PRINT: Remove 4th column completely */
+            .formal-info-grid {
+                grid-template-columns: 180px 10px 1fr !important;
+                gap: 2px 10px;
+                display: grid !important;
+                width: 100%;
+                page-break-inside: avoid;
+            }
+            .formal-info-row .field-delete-btn { display: none !important; }
+            
+            /* Formal Layout Full Page Border */
+            .layout-formal.active { 
+                border: 3px double #000 !important; 
+                padding: 15px;
+                width: 100%;
+                height: 100%; /* Fill the container completely */
+                box-sizing: border-box;
+                margin: 0;
+                display: block;
+                position: relative;
+            }
+            
+            [contenteditable] { border: none !important; background: transparent !important; padding: 0; }
             [contenteditable]:empty { display: none; }
+            
             h3, h2, h1, .formal-section-title { page-break-after: avoid; }
             .group\/item, tr { page-break-inside: avoid; }
         }
@@ -304,7 +379,7 @@
                                 </div>
                                 <div id="educationList" class="space-y-4"></div>
                             </section>
-                            <section class="section-hover relative group/section hidden" id="secProjects">
+                             <section class="section-hover relative group/section hidden" id="secProjects">
                                 <div class="flex justify-between items-center border-b border-gray-200 pb-1 mb-4 theme-border">
                                     <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest">Projects</h3>
                                     <button onclick="addProjectItem()" class="ui-control bg-indigo-50 text-indigo-600 hover:bg-indigo-100 p-1 rounded transition no-print"><i class="fa-solid fa-plus"></i></button>
@@ -490,7 +565,6 @@
                 
                 // Load Custom Fields
                 if (data.customFields && Array.isArray(data.customFields)) {
-                    // Remove existing custom fields first to avoid dupes
                     document.querySelectorAll('.formal-info-row.custom').forEach(r => r.remove());
                     data.customFields.forEach(cf => {
                         window.addCustomField(cf.label, cf.value);
@@ -548,7 +622,6 @@
                 const data = {};
                 document.querySelectorAll('.editable-field').forEach(el => {
                     const key = el.getAttribute('data-key');
-                    // Avoid saving custom field values here, handled separately
                     if (key && !key.startsWith('custom-val')) {
                         data[key] = (el.tagName === 'UL' || el.getAttribute('data-html') === 'true') ? el.innerHTML : el.innerText;
                     }
@@ -637,6 +710,105 @@
                 window.saveData();
                 handleSuggestions(e);
             });
+
+            // --- Suggestion Logic ---
+            function handleSuggestions(e) {
+                const target = e.target;
+                const type = target.getAttribute('data-suggest');
+                if (!type || !suggestionData[type]) {
+                    suggestionBox.style.display = 'none';
+                    return;
+                }
+                
+                let val = target.innerText.trim();
+                if(target.tagName === 'UL') return; 
+
+                if (val.length < 1) { suggestionBox.style.display = 'none'; return; }
+                
+                const matches = suggestionData[type].filter(item => 
+                    item.toLowerCase().includes(val.toLowerCase()) && item.toLowerCase() !== val.toLowerCase()
+                );
+
+                if (matches.length === 0) { suggestionBox.style.display = 'none'; return; }
+
+                suggestionBox.innerHTML = '';
+                matches.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.textContent = item;
+                    div.onclick = () => {
+                        target.innerText = item;
+                        suggestionBox.style.display = 'none';
+                        window.saveData();
+                    };
+                    suggestionBox.appendChild(div);
+                });
+
+                const rect = target.getBoundingClientRect();
+                suggestionBox.style.top = (rect.bottom + window.scrollY) + 'px';
+                suggestionBox.style.left = (rect.left + window.scrollX) + 'px';
+                suggestionBox.style.width = Math.max(rect.width, 200) + 'px';
+                suggestionBox.style.display = 'block';
+            }
+            
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.suggestion-box') && !e.target.hasAttribute('contenteditable')) {
+                    suggestionBox.style.display = 'none';
+                }
+                const menu = document.getElementById('sectionsMenu');
+                const btn = document.querySelector('[onclick="toggleSectionsMenu()"]');
+                if (menu && menu.classList.contains('active') && !menu.contains(e.target) && !btn.contains(e.target)) {
+                    menu.classList.remove('active');
+                }
+                
+                const restoreMenu = document.getElementById('restoreMenu');
+                const restoreBtn = document.querySelector('[onclick="toggleRestoreMenu()"]');
+                if (restoreMenu && restoreMenu.classList.contains('active') && !restoreMenu.contains(e.target) && !restoreBtn.contains(e.target)) {
+                    restoreMenu.classList.remove('active');
+                }
+            });
+
+            // --- List Handling (Bullets) ---
+            function initListListeners() {
+                document.querySelectorAll('ul[contenteditable]').forEach(ul => {
+                    const check = () => {
+                         if (ul.innerText.trim().length > 0 && ul.querySelectorAll('li').length === 0) {
+                             ul.innerHTML = `<li>${ul.innerText}</li>`;
+                         }
+                         if (ul.innerHTML.trim() === '') ul.innerHTML = '<li></li>';
+                    };
+                    ul.addEventListener('input', check);
+                    ul.addEventListener('focus', check);
+                });
+            }
+
+            // --- Photo Logic ---
+            window.loadPhoto = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imgs = document.querySelectorAll('#profilePhoto');
+                        const icons = document.querySelectorAll('#photoIcon');
+                        imgs.forEach(img => {
+                            img.src = e.target.result;
+                            img.classList.remove('hidden');
+                        });
+                        icons.forEach(icon => icon.classList.add('hidden'));
+                        window.saveData();
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            // --- Theme Color Logic ---
+            window.changeTheme = function(color) {
+                window.accentColor = color;
+                document.documentElement.style.setProperty('--accent-color', color);
+                document.querySelectorAll('.theme-border').forEach(el => el.style.borderColor = color);
+                document.querySelectorAll('.theme-text').forEach(el => el.style.color = color);
+                window.saveData();
+            };
 
             // --- Template Switching ---
             window.changeTemplate = function(template) {
@@ -857,24 +1029,12 @@
                 });
             } else { if(micBtn) micBtn.style.display = 'none'; }
 
+            // --- Print PDF (Native) ---
             window.printResume = function() {
                 const name = document.querySelector('[data-key="name"]')?.innerText.trim() || 'Resume';
                 document.title = name + " - Resume";
                 window.print();
             };
-            
-            function initListListeners() {
-                document.querySelectorAll('ul[contenteditable]').forEach(ul => {
-                    const check = () => {
-                         if (ul.innerText.trim().length > 0 && ul.querySelectorAll('li').length === 0) {
-                             ul.innerHTML = `<li>${ul.innerText}</li>`;
-                         }
-                         if (ul.innerHTML.trim() === '') ul.innerHTML = '<li></li>';
-                    };
-                    ul.addEventListener('input', check);
-                    ul.addEventListener('focus', check);
-                });
-            }
 
             // Init
             loadData();
