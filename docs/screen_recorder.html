@@ -41,6 +41,18 @@
             50% { transform: scale(1.2); opacity: 0.8; }
             100% { transform: scale(1); opacity: 1; }
         }
+        
+        /* Invisible but rendered video elements */
+        .invisible-source {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            width: 1px;
+            height: 1px;
+            z-index: -1;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -90,9 +102,9 @@
                 <video id="previewVideo" class="w-full h-full object-contain hidden" autoplay muted playsinline></video>
                 <video id="playbackVideo" class="w-full h-full object-contain hidden" controls playsinline></video>
 
-                <!-- Hidden source videos for Canvas mixing -->
-                <video id="hiddenScreen" class="hidden" autoplay muted playsinline></video>
-                <video id="hiddenCam" class="hidden" autoplay muted playsinline></video>
+                <!-- Hidden source videos for Canvas mixing (Fixed: Not using display:none) -->
+                <video id="hiddenScreen" class="invisible-source" autoplay muted playsinline></video>
+                <video id="hiddenCam" class="invisible-source" autoplay muted playsinline></video>
                 <canvas id="mixingCanvas" class="hidden"></canvas>
 
                 <!-- Initial State / Placeholder -->
@@ -196,9 +208,11 @@
 
                 <!-- Review Phase -->
                 <div id="controlsReview" class="hidden flex flex-col sm:flex-row justify-center items-center gap-4 fade-in">
-                    <button id="newRecBtn" class="bg-slate-700 hover:bg-slate-600 text-white font-medium py-2.5 px-6 rounded-lg transition flex items-center gap-2">
-                        <i class="fa-solid fa-rotate-left"></i> New Recording
+                    <!-- Discard/Delete Button -->
+                    <button id="newRecBtn" class="bg-red-900/20 text-red-400 hover:bg-red-900/40 border border-red-900/50 font-medium py-2.5 px-6 rounded-lg transition flex items-center gap-2">
+                        <i class="fa-solid fa-trash"></i> Discard & New
                     </button>
+                    <!-- Download Button -->
                     <button id="downloadBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-8 rounded-lg shadow-lg transition flex items-center gap-2 transform hover:scale-105">
                         <i class="fa-solid fa-download"></i> Download Video
                     </button>
@@ -390,12 +404,20 @@
             // --- Start Recording Process ---
             startBtn.addEventListener('click', async () => {
                 try {
+                    // Stop preview mic before starting actual recording
                     stopAudioVisualizer();
 
-                    // Mobile Friendly Constraints
+                    // Read Settings
+                    const fps = isMobile ? 30 : parseInt(fpsSelect.value || 30);
+                    const bitrate = parseInt(qualitySelect.value);
+
+                    // 1. Get Screen Stream First
                     const constraints = {
-                        video: isMobile ? true : { cursor: "always" },
-                        audio: true 
+                        video: isMobile ? true : { 
+                            cursor: "always",
+                            frameRate: fps
+                        },
+                        audio: true // Request system audio
                     };
 
                     screenStream = await navigator.mediaDevices.getDisplayMedia(constraints);
@@ -406,14 +428,15 @@
                         try {
                             camStream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
                             hiddenCam.srcObject = camStream;
+                            await hiddenCam.play(); // Force play
                         } catch (err) {
-                            console.warn("Camera access denied.");
+                            console.warn("Camera access denied, proceeding without facecam.");
                             isFacecamActive = false;
                         }
                     }
 
                     // 3. Get Mic Stream (if checked)
-                    let audioTracks = [...screenStream.getAudioTracks()]; 
+                    let audioTracks = [...screenStream.getAudioTracks()]; // Start with system audio
                     if (audioToggle.checked) {
                         try {
                             micStream = await navigator.mediaDevices.getUserMedia({ 
@@ -425,34 +448,46 @@
                         }
                     }
 
+                    // 4. Start Countdown
                     await startCountdown();
 
                     // 5. Setup Mixing
                     hiddenScreen.srcObject = screenStream;
-                    await new Promise(r => hiddenScreen.onloadedmetadata = r);
+                    await hiddenScreen.play(); // Force play
+                    
+                    // Wait for video to be ready to get dimensions
+                    await new Promise(r => {
+                        if (hiddenScreen.readyState >= 1) r();
+                        else hiddenScreen.onloadedmetadata = r;
+                    });
 
-                    const width = hiddenScreen.videoWidth || 1280;
-                    const height = hiddenScreen.videoHeight || 720;
+                    const width = hiddenScreen.videoWidth || 1920;
+                    const height = hiddenScreen.videoHeight || 1080;
                     
                     mixingCanvas.width = width;
                     mixingCanvas.height = height;
 
-                    const fps = isMobile ? 30 : parseInt(fpsSelect.value || 30);
+                    // Start Draw Loop (using selected FPS)
                     startMixingLoop(width, height, fps);
 
+                    // Get Stream from Canvas
                     const canvasStream = mixingCanvas.captureStream(fps); 
                     
+                    // Combine Canvas Video + All Audio Tracks
                     mixedStream = new MediaStream([
                         ...canvasStream.getVideoTracks(),
                         ...audioTracks
                     ]);
 
+                    // 6. Setup Recorder
                     previewVideo.srcObject = mixedStream;
                     previewVideo.muted = true;
                     previewVideo.classList.remove('hidden');
                     playbackVideo.classList.add('hidden');
+                    
+                    // Ensure preview video plays
+                    try { await previewVideo.play(); } catch(e) {}
 
-                    const bitrate = parseInt(qualitySelect.value);
                     const options = { videoBitsPerSecond: bitrate };
                     
                     // Prefer H.264 if available for better compatibility
@@ -470,6 +505,7 @@
 
                     mediaRecorder.onstop = finishRecording;
 
+                    // Stop if user clicks "Stop sharing"
                     screenStream.getVideoTracks()[0].onended = () => {
                         stopRecording();
                     };
@@ -477,6 +513,7 @@
                     mediaRecorder.start();
                     startTimer();
                     
+                    // UI Update
                     controlsRecording.classList.remove('hidden');
                     recIndicator.classList.remove('hidden');
 
@@ -487,7 +524,8 @@
                     
                     let errorMsg = "Could not start recording.";
                     if (err.name === 'NotAllowedError') {
-                        if (err.message.includes('permission policy')) {
+                        // Custom message for permission error
+                        if(err.message.includes('permission policy')) {
                              errorMsg = "Screen recording is blocked here. Please open this tool in a new tab/window.";
                         } else {
                              errorMsg = "Permission denied. Please allow screen/camera access.";
@@ -495,20 +533,24 @@
                     }
                     alert(errorMsg);
                     
+                    // Re-enable visualizer if checked
                     if(audioToggle.checked) initAudioVisualizer();
                 }
             });
 
             // --- Canvas Mixing Loop ---
             function startMixingLoop(w, h, fps) {
-                const camW = w * 0.2; 
-                const camH = (camW / 4) * 3; 
+                const camW = w * 0.2; // Cam width is 20% of screen
+                const camH = (camW / 4) * 3; // 4:3 aspect ratio
                 const padding = 20;
 
                 drawInterval = setInterval(() => {
+                    // Draw Screen
                     mixingCtx.drawImage(hiddenScreen, 0, 0, w, h);
                     
+                    // Draw Facecam (Bottom Right)
                     if (isFacecamActive && hiddenCam.readyState === 4) {
+                        // Draw border/shadow for cam
                         mixingCtx.save();
                         const x = w - camW - padding;
                         const y = h - camH - padding;
@@ -533,6 +575,7 @@
                     mediaRecorder.stop();
                     clearInterval(drawInterval);
                     
+                    // Stop all streams
                     if(screenStream) screenStream.getTracks().forEach(track => track.stop());
                     if(camStream) camStream.getTracks().forEach(track => track.stop());
                     if(micStream) micStream.getTracks().forEach(track => track.stop());
