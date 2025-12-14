@@ -1,39 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meme Generator Ultimate | Create Viral Memes</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Ultimate Meme Generator. Freehand drawing, rotation, layers, deep fry filters, and stickers. Create professional dank memes online for free.">
-    <meta name="keywords" content="meme generator, meme maker, drawing on image, deep fry meme, rotate text, layer editor, free online tools">
+    <meta name="description"
+        content="Ultimate Meme Generator. Freehand drawing, rotation, layers, deep fry filters, and stickers. Create professional dank memes online for free.">
+    <meta name="keywords"
+        content="meme generator, meme maker, drawing on image, deep fry meme, rotate text, layer editor, free online tools">
     <meta name="author" content="Free Online Tools">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Oswald:wght@700&family=Poppins:wght@700&family=Comic+Neue:wght@700&family=Anton&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Oswald:wght@700&family=Poppins:wght@700&family=Comic+Neue:wght@700&family=Anton&family=Permanent+Marker&display=swap"
+        rel="stylesheet">
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            overflow: hidden;
+        }
+
         /* Canvas Pattern */
         .canvas-bg {
             background-color: #d4d4d4;
             background-image: linear-gradient(45deg, #e5e5e5 25%, transparent 25%), linear-gradient(-45deg, #e5e5e5 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e5e5 75%), linear-gradient(-45deg, transparent 75%, #e5e5e5 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            cursor: grab;
+        }
+
+        .canvas-bg:active {
+            cursor: grabbing;
         }
 
         /* Custom Scrollbar */
-        .custom-scroll::-webkit-scrollbar { height: 6px; width: 6px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
         /* Tabs */
         .tab-btn.active {
@@ -48,41 +72,47 @@
             border-left: 3px solid transparent;
             user-select: none;
         }
+
         .layer-item.active {
             background-color: #f3e8ff;
             border-left-color: #7e22ce;
         }
+
         .layer-item.dragging {
             opacity: 0.5;
             background: #e2e8f0;
         }
-        
+
         /* Range Slider Style */
         input[type=range] {
             -webkit-appearance: none;
             background: transparent;
         }
+
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 16px; width: 16px;
+            height: 16px;
+            width: 16px;
             border-radius: 50%;
             background: #7e22ce;
             margin-top: -6px;
             cursor: pointer;
         }
+
         input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px;
+            width: 100%;
+            height: 4px;
             background: #e2e8f0;
             border-radius: 2px;
         }
-        
+
         /* Inline Editor */
         #inlineEditor {
             position: absolute;
-            background: transparent;
-            border: 2px dashed rgba(147, 51, 234, 0.5); /* Purple dashed */
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #9333ea;
             outline: none;
-            padding: 0;
+            padding: 5px;
             margin: 0;
             overflow: hidden;
             resize: none;
@@ -90,307 +120,395 @@
             display: none;
             text-align: center;
             line-height: 1.2;
-            color: transparent; 
-            caret-color: black;
+            color: white;
+            border-radius: 4px;
+            transform-origin: 0 0;
+        }
+
+        /* Zoom Container */
+        #zoomContainer {
+            transform-origin: center center;
+            transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            will-change: transform;
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen text-slate-800">
+
+<body class="flex flex-col h-screen text-slate-800">
 
     <!-- Navigation -->
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 flex-none h-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+            <div class="flex justify-between h-full items-center">
                 <div class="flex items-center gap-3">
                     <div class="bg-purple-700 text-white p-2 rounded-lg shadow-lg shadow-purple-200">
                         <i class="fa-solid fa-masks-theater text-xl"></i>
                     </div>
-                    <span class="font-extrabold text-xl tracking-tight text-gray-900">Meme<span class="text-purple-600">Ultimate</span></span>
+                    <span class="font-extrabold text-xl tracking-tight text-gray-900 hidden sm:inline">Meme<span
+                            class="text-purple-600">Ultimate</span></span>
+                    <span class="font-extrabold text-xl tracking-tight text-gray-900 sm:hidden">Meme<span
+                            class="text-purple-600">Pro</span></span>
                 </div>
                 <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
-                    <a href="index.html" class="hover:text-purple-600 transition">Home</a>
-                    <a href="contact.html" class="hover:text-purple-600 transition">Contact</a>
+                    <a href="../index.html" class="hover:text-purple-600 transition">Home</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-[1600px] mx-auto px-4 py-6 w-full">
-        
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-100px)]">
-            
-            <!-- LEFT: Tools & Layers -->
-            <div class="lg:col-span-3 flex flex-col gap-4 h-full overflow-hidden">
-                
-                <!-- Quick Tools -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                    <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Add Elements</h3>
-                    <div class="grid grid-cols-2 gap-2">
-                         <label class="cursor-pointer bg-purple-50 hover:bg-purple-100 text-purple-700 p-2 rounded-lg text-xs font-bold text-center transition border border-purple-100">
-                            <i class="fa-solid fa-image block text-lg mb-1"></i> Add Image
-                            <input type="file" id="addImageLayerInput" accept="image/*" class="hidden">
-                        </label>
-                        <button onclick="window.addTextLayer()" class="bg-purple-50 hover:bg-purple-100 text-purple-700 p-2 rounded-lg text-xs font-bold text-center transition border border-purple-100">
-                            <i class="fa-solid fa-font block text-lg mb-1"></i> Text
-                        </button>
-                        <label class="cursor-pointer bg-purple-50 hover:bg-purple-100 text-purple-700 p-2 rounded-lg text-xs font-bold text-center transition border border-purple-100">
-                            <i class="fa-solid fa-sticky-note block text-lg mb-1"></i> Sticker
-                            <input type="file" id="stickerInput" accept="image/*" class="hidden">
-                        </label>
-                        <button onclick="window.toggleDrawMode()" id="drawModeBtn" class="bg-purple-50 hover:bg-purple-100 text-purple-700 p-2 rounded-lg text-xs font-bold text-center transition border border-purple-100">
-                            <i class="fa-solid fa-pen-nib block text-lg mb-1"></i> Draw
-                        </button>
-                    </div>
-                </div>
+    <main class="flex-grow flex flex-col lg:flex-row h-[calc(100vh-64px)] overflow-hidden">
 
-                <!-- Layers Panel (Reorderable) -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 flex-grow flex flex-col overflow-hidden">
-                    <div class="p-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                        <h3 class="text-xs font-bold text-gray-700 uppercase">Layers (Drag to Order)</h3>
-                        <button onclick="window.clearCanvas()" class="text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i> Clear</button>
-                    </div>
-                    <div id="layersList" class="overflow-y-auto custom-scroll p-2 space-y-1 flex-grow">
-                        <div class="text-center text-xs text-gray-400 py-4">No layers yet</div>
-                    </div>
+        <!-- LEFT PANEL: Layers & Tools -->
+        <div class="lg:w-64 bg-white border-r border-gray-200 flex flex-col hidden lg:flex z-20">
+            <div class="p-4 border-b border-gray-100">
+                <h3 class="text-xs font-bold text-gray-500 uppercase mb-3">Add Elements</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <label
+                        class="cursor-pointer bg-purple-50 hover:bg-purple-100 text-purple-700 p-2 rounded-lg text-xs font-bold text-center transition border border-purple-100"
+                        title="Add Photo Layer">
+                        <i class="fa-solid fa-image block text-lg mb-1"></i> Add Photo
+                        <!-- Changed ID to addImageLayerInput -->
+                        <input type="file" id="addImageLayerInput" accept="image/*" class="hidden">
+                    </label>
+                    <button onclick="window.addTextLayer()"
+                        class="bg-purple-50 hover:bg-purple-100 text-purple-700 p-2 rounded-lg text-xs font-bold text-center transition border border-purple-100">
+                        <i class="fa-solid fa-font block text-lg mb-1"></i> Text
+                    </button>
+                    <label
+                        class="cursor-pointer bg-purple-50 hover:bg-purple-100 text-purple-700 p-2 rounded-lg text-xs font-bold text-center transition border border-purple-100">
+                        <i class="fa-solid fa-face-smile block text-lg mb-1"></i> Sticker
+                        <input type="file" id="stickerInput" accept="image/*" class="hidden">
+                    </label>
+                    <button onclick="window.toggleDrawMode()" id="drawModeBtn"
+                        class="bg-purple-50 hover:bg-purple-100 text-purple-700 p-2 rounded-lg text-xs font-bold text-center transition border border-purple-100">
+                        <i class="fa-solid fa-pen-nib block text-lg mb-1"></i> Draw
+                    </button>
                 </div>
             </div>
 
-            <!-- CENTER: Canvas -->
-            <div class="lg:col-span-6 flex flex-col h-full">
-                
-                <!-- Canvas Toolbar -->
-                <div class="bg-white rounded-t-xl border border-gray-200 border-b-0 p-2 flex flex-wrap justify-between items-center z-30 relative gap-2">
-                    <div class="flex gap-2 items-center">
-                        <button onclick="window.undo()" class="p-2 text-gray-500 hover:text-gray-900 transition" title="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
-                        <div class="w-px h-6 bg-gray-200 my-auto"></div>
-                        <label class="flex items-center gap-2 text-xs font-bold text-gray-600 cursor-pointer select-none">
-                            <input type="checkbox" id="watermarkCheck" class="rounded text-purple-600 focus:ring-purple-500"> Watermark
-                        </label>
+            <!-- Layers List -->
+            <div class="flex-grow flex flex-col overflow-hidden">
+                <div class="p-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase">Layers</h3>
+                    <button onclick="window.clearCanvas()" class="text-red-500 hover:text-red-700 text-xs"><i
+                            class="fa-solid fa-trash"></i> Clear</button>
+                </div>
+                <div id="layersList" class="overflow-y-auto custom-scroll p-2 space-y-1 flex-grow">
+                    <div class="text-center text-xs text-gray-400 py-4">No layers</div>
+                </div>
+                <div class="p-2 border-t border-gray-100 bg-gray-50 grid grid-cols-2 gap-2">
+                    <button onclick="window.moveLayer(1)"
+                        class="bg-white border text-gray-600 rounded p-1 text-xs hover:bg-gray-100"
+                        title="Bring Forward"><i class="fa-solid fa-arrow-up"></i> Up</button>
+                    <button onclick="window.moveLayer(-1)"
+                        class="bg-white border text-gray-600 rounded p-1 text-xs hover:bg-gray-100"
+                        title="Send Backward"><i class="fa-solid fa-arrow-down"></i> Down</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER: Canvas Area -->
+        <div class="flex-grow flex flex-col bg-gray-100 relative overflow-hidden">
+
+            <!-- Toolbar -->
+            <div
+                class="bg-white border-b border-gray-200 p-2 flex justify-between items-center z-30 shadow-sm flex-none">
+                <div class="flex items-center gap-2 overflow-x-auto custom-scroll">
+                    <!-- Mobile Add Buttons -->
+                    <label
+                        class="lg:hidden cursor-pointer p-2 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50"
+                        title="Add Photo Layer">
+                        <i class="fa-solid fa-image"></i>
+                        <input type="file" id="addImageLayerInputMobile" accept="image/*" class="hidden">
+                    </label>
+                    <button onclick="window.addTextLayer()"
+                        class="lg:hidden p-2 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50"><i
+                            class="fa-solid fa-font"></i></button>
+                    <button onclick="window.toggleDrawMode()"
+                        class="lg:hidden p-2 text-gray-600 hover:text-purple-600 rounded-lg hover:bg-purple-50"><i
+                            class="fa-solid fa-pen-nib"></i></button>
+
+                    <div class="h-6 w-px bg-gray-200 mx-1"></div>
+
+                    <button onclick="window.undo()" class="p-2 text-gray-500 hover:text-gray-900"
+                        title="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
+
+                    <div class="hidden sm:flex gap-1 items-center bg-gray-100 rounded-lg p-0.5">
+                        <button onclick="window.setAspectRatio('free')"
+                            class="px-2 py-1 text-[10px] font-bold text-gray-600 bg-white rounded shadow-sm">Free</button>
+                        <button onclick="window.setAspectRatio(1)"
+                            class="px-2 py-1 text-[10px] font-bold text-gray-500 hover:bg-white hover:shadow-sm rounded transition">1:1</button>
+                        <button onclick="window.setAspectRatio(16/9)"
+                            class="px-2 py-1 text-[10px] font-bold text-gray-500 hover:bg-white hover:shadow-sm rounded transition">16:9</button>
                     </div>
-                    
-                    <!-- Aspect Ratio Toggles (Restored) -->
-                    <div class="flex gap-1">
-                        <button onclick="window.setAspectRatio('free')" class="px-2 py-1 text-[10px] font-bold text-gray-600 bg-gray-100 rounded hover:bg-gray-200 border border-gray-200">Free</button>
-                        <button onclick="window.setAspectRatio(1)" class="px-2 py-1 text-[10px] font-bold text-gray-600 bg-gray-100 rounded hover:bg-gray-200 border border-gray-200">1:1</button>
-                        <button onclick="window.setAspectRatio(16/9)" class="px-2 py-1 text-[10px] font-bold text-gray-600 bg-gray-100 rounded hover:bg-gray-200 border border-gray-200">16:9</button>
-                    </div>
-                    
-                    <div class="flex gap-2">
-                        <!-- Project Controls -->
-                        <button onclick="window.saveProject()" class="text-xs font-bold text-purple-600 hover:bg-purple-50 px-3 py-1.5 rounded transition border border-transparent hover:border-purple-100" title="Save Project for later">
-                            <i class="fa-solid fa-floppy-disk mr-1"></i>
-                        </button>
-                         <label class="cursor-pointer text-xs font-bold text-purple-600 hover:bg-purple-50 px-3 py-1.5 rounded transition border border-transparent hover:border-purple-100" title="Load Project">
-                            <i class="fa-solid fa-folder-open mr-1"></i>
-                            <input type="file" id="loadProjectInput" accept=".meme" class="hidden">
-                        </label>
-                        
-                        <button onclick="window.downloadMeme()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md flex items-center gap-2 ml-2">
-                            <i class="fa-solid fa-download"></i> Export
-                        </button>
+
+                    <div class="flex items-center bg-gray-100 rounded-lg ml-2">
+                        <button onclick="window.zoomOut()" class="px-2 py-1 text-gray-600 hover:text-purple-600"><i
+                                class="fa-solid fa-minus"></i></button>
+                        <span id="zoomLevel" class="text-xs font-mono w-10 text-center">100%</span>
+                        <button onclick="window.zoomIn()" class="px-2 py-1 text-gray-600 hover:text-purple-600"><i
+                                class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
 
-                <!-- Canvas Area -->
-                <div class="canvas-bg flex-grow flex items-center justify-center relative overflow-hidden border-x border-gray-200 shadow-inner">
-                    <canvas id="memeCanvas" class="shadow-2xl cursor-default"></canvas>
-                    
-                    <!-- Draw Settings Overlay (High Z-Index) -->
-                    <div id="drawSettings" class="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white p-2 rounded-full shadow-2xl flex items-center gap-3 hidden z-50 border border-slate-700">
-                        <input type="color" id="drawColor" value="#ff0000" class="w-6 h-6 rounded-full border-none cursor-pointer bg-transparent">
-                        <input type="range" id="drawSize" min="1" max="20" value="5" class="w-20 accent-purple-500">
-                        <button onclick="window.toggleDrawMode()" class="text-xs bg-slate-700 px-2 py-1 rounded hover:bg-slate-600 font-bold border border-slate-600">Done</button>
-                    </div>
-                    
-                    <!-- Status Badge -->
-                    <div class="absolute bottom-4 left-4 z-40 pointer-events-none">
-                         <span id="canvasStatus" class="text-xs font-bold text-white bg-slate-900/80 px-2 py-1 rounded backdrop-blur">Editor Ready</span>
-                    </div>
+                <div class="flex items-center gap-2">
+                    <label
+                        class="flex items-center gap-1 text-xs font-bold text-gray-600 cursor-pointer select-none hidden sm:flex">
+                        <input type="checkbox" id="watermarkCheck"
+                            class="rounded text-purple-600 focus:ring-purple-500"> Mark
+                    </label>
+                    <button onclick="window.saveProject()" class="text-purple-600 hover:bg-purple-50 p-2 rounded-lg"
+                        title="Save Project"><i class="fa-solid fa-floppy-disk"></i></button>
+                    <button onclick="window.downloadMeme()"
+                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md flex items-center gap-2">
+                        <span class="hidden sm:inline">Download</span> <i class="fa-solid fa-download"></i>
+                    </button>
+                </div>
+            </div>
 
-                    <!-- Start Screen -->
-                    <div id="startScreen" class="absolute inset-0 flex flex-col items-center justify-center bg-white/90 backdrop-blur-sm z-10 p-6 text-center">
-                        <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
-                            <i class="fa-solid fa-wand-magic-sparkles text-4xl text-purple-500"></i>
-                        </div>
-                        <h2 class="text-2xl font-extrabold text-gray-900 mb-2">Meme Generator Ultimate</h2>
-                        <div class="flex gap-3 justify-center mb-6">
-                            <label class="cursor-pointer bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition transform hover:-translate-y-1 inline-flex items-center gap-2">
-                                <i class="fa-solid fa-upload"></i> Upload Image
-                                <input type="file" id="uploadInputStart" accept="image/*" class="hidden">
-                            </label>
-                            <button onclick="window.initBlankCanvas()" class="bg-white border-2 border-gray-200 hover:border-purple-500 text-gray-700 hover:text-purple-600 font-bold py-3 px-6 rounded-xl shadow-sm transition transform hover:-translate-y-1 inline-flex items-center gap-2">
-                                <i class="fa-solid fa-border-all"></i> Blank Canvas
-                            </button>
-                        </div>
-                        
-                        <!-- Mini Template Gallery -->
-                        <p class="text-xs font-bold text-gray-400 mt-2 mb-2 uppercase">Or pick a classic</p>
-                        <div class="flex gap-2 justify-center" id="miniTemplates"></div>
-                    </div>
-                    
+            <!-- Canvas Viewport -->
+            <div class="flex-grow relative overflow-auto custom-scroll flex items-center justify-center p-8 canvas-bg"
+                id="canvasViewport">
+
+                <!-- Draw Settings Overlay (FIXED POSITION) -->
+                <div id="drawSettings"
+                    class="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white p-2 rounded-full shadow-2xl flex items-center gap-3 hidden z-50 whitespace-nowrap border border-slate-700">
+                    <input type="color" id="drawColor" value="#ff0000"
+                        class="w-6 h-6 rounded-full border-none cursor-pointer bg-transparent">
+                    <input type="range" id="drawSize" min="1" max="20" value="5" class="w-20 accent-purple-500">
+                    <button onclick="window.toggleDrawMode()"
+                        class="text-xs bg-purple-600 px-3 py-1 rounded-full hover:bg-purple-500 font-bold">Done</button>
+                </div>
+
+                <div id="zoomContainer">
+                    <canvas id="memeCanvas" class="cursor-default bg-white shadow-2xl"></canvas>
                     <!-- Inline Editor -->
                     <textarea id="inlineEditor" spellcheck="false"></textarea>
                 </div>
-                
-                <!-- Bottom Info -->
-                <div class="bg-white rounded-b-xl border border-gray-200 border-t-0 p-2 text-center text-[10px] text-gray-400">
-                    Double-click text to edit inline • Drag to move • Use sidebar for advanced controls
-                </div>
-            </div>
 
-            <!-- RIGHT: Properties -->
-            <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-full overflow-hidden">
-                
-                <!-- Tabs -->
-                <div class="flex border-b border-gray-100">
-                    <button class="tab-btn flex-1 py-3 text-xs font-bold text-gray-500 active" onclick="window.switchTab('props', this)">Properties</button>
-                    <button class="tab-btn flex-1 py-3 text-xs font-bold text-gray-500" onclick="window.switchTab('filters', this)">Filters</button>
-                    <button class="tab-btn flex-1 py-3 text-xs font-bold text-gray-500" onclick="window.switchTab('stickers', this)">Stickers</button>
+                <!-- Status Badge -->
+                <div class="absolute bottom-4 left-4 z-40 pointer-events-none">
+                    <span id="canvasStatus"
+                        class="text-xs font-bold text-white bg-slate-900/80 px-2 py-1 rounded backdrop-blur">Editor
+                        Ready</span>
                 </div>
 
-                <!-- Tab: Properties -->
-                <div id="tab-props" class="p-4 space-y-5 overflow-y-auto custom-scroll flex-grow">
-                    <div id="noSelectionMsg" class="text-center text-gray-400 text-sm mt-10">
-                        <i class="fa-regular fa-hand-pointer text-2xl mb-2"></i><br>Select an element to edit
+                <!-- Start Screen -->
+                <div id="startScreen"
+                    class="absolute inset-0 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm z-40 p-6 text-center">
+                    <div
+                        class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                        <i class="fa-solid fa-wand-magic-sparkles text-4xl text-purple-500"></i>
                     </div>
+                    <h2 class="text-2xl font-extrabold text-gray-900 mb-2">Meme Generator Ultimate</h2>
+                    <p class="text-gray-500 mb-6 text-sm max-w-md">Create viral memes with advanced tools. Drag, drop,
+                        draw, and deep fry!</p>
 
-                    <div id="propControls" class="hidden space-y-4">
-                        <!-- Text Input -->
-                        <div id="textInputGroup">
-                            <label class="text-[10px] font-bold text-gray-500 uppercase">Text</label>
-                            <textarea id="textValue" rows="2" class="w-full border-gray-300 rounded-lg text-sm p-2 border"></textarea>
-                        </div>
-
-                        <!-- Sliders -->
-                        <div class="space-y-3">
-                            <div>
-                                <div class="flex justify-between"><label class="text-[10px] font-bold text-gray-500 uppercase">Size</label><span id="sizeVal" class="text-[10px]">40</span></div>
-                                <input type="range" id="propSize" min="10" max="200" value="40" class="w-full">
-                            </div>
-                            <div>
-                                <div class="flex justify-between"><label class="text-[10px] font-bold text-gray-500 uppercase">Rotation</label><span id="rotVal" class="text-[10px]">0°</span></div>
-                                <input type="range" id="propRotate" min="-180" max="180" value="0" class="w-full">
-                            </div>
-                        </div>
-
-                        <!-- Colors -->
-                        <div id="colorGroup" class="space-y-3">
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Fill Color</label>
-                                <div class="flex gap-2">
-                                    <input type="color" id="propColor" class="w-10 h-8 rounded cursor-pointer border border-gray-200 p-0.5">
-                                    <span class="text-xs text-gray-500 self-center">Text Color</span>
-                                </div>
-                            </div>
-                             <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Background Color (Box)</label>
-                                <div class="flex gap-2 items-center">
-                                    <input type="color" id="propBgColor" value="#ffffff" class="w-10 h-8 rounded cursor-pointer border border-gray-200 p-0.5">
-                                    <label class="text-xs text-gray-500 flex items-center gap-1 cursor-pointer">
-                                        <input type="checkbox" id="propBgEnabled" class="rounded text-purple-600"> Enable
-                                    </label>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Stroke</label>
-                                <input type="color" id="propStroke" class="w-full h-8 rounded cursor-pointer border border-gray-200 p-0.5">
-                            </div>
-                        </div>
-                        
-                        <!-- Font -->
-                        <div id="fontGroup">
-                             <label class="text-[10px] font-bold text-gray-500 uppercase">Font Family</label>
-                             <select id="propFont" class="w-full border-gray-300 rounded-lg text-xs p-2 border bg-white mt-1">
-                                 <option value="Oswald">Impact (Meme)</option>
-                                 <option value="Poppins">Poppins (Clean)</option>
-                                 <option value="Comic Neue">Comic (Fun)</option>
-                                 <option value="Permanent Marker">Marker (Hand)</option>
-                                 <option value="Anton">Anton (Tall)</option>
-                             </select>
-                        </div>
-                        
-                        <!-- Style Toggles -->
-                         <div id="styleGroup" class="flex gap-2">
-                            <label class="flex items-center gap-2 text-xs cursor-pointer select-none">
-                                <input type="checkbox" id="propShadow" class="rounded text-purple-600"> Shadow
-                            </label>
-                             <label class="flex items-center gap-2 text-xs cursor-pointer select-none">
-                                <input type="checkbox" id="propUppercase" class="rounded text-purple-600"> CAPS
-                            </label>
-                        </div>
-
-                        <div class="pt-4 border-t border-gray-100">
-                             <button onclick="window.deleteActiveLayer()" class="w-full bg-red-50 text-red-600 hover:bg-red-100 font-bold py-2 rounded-lg text-xs transition border border-red-100">
-                                Delete Element <span class="text-[9px] opacity-70">(Del)</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab: Filters -->
-                <div id="tab-filters" class="p-4 space-y-5 hidden overflow-y-auto custom-scroll flex-grow">
-                    
-                    <button onclick="window.applyDeepFry()" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-lg text-xs shadow-md shadow-orange-200 mb-4 transition transform active:scale-95">
-                        🔥 DEEP FRY (DANK)
-                    </button>
-
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between mb-1"><label class="text-[10px] font-bold text-gray-500 uppercase">Brightness</label><span onclick="window.resetFilter('brightness')" class="text-[10px] text-blue-500 cursor-pointer">Reset</span></div>
-                            <input type="range" id="filterBrightness" min="0" max="200" value="100" class="w-full accent-purple-600">
-                        </div>
-                        <div>
-                             <div class="flex justify-between mb-1"><label class="text-[10px] font-bold text-gray-500 uppercase">Contrast</label><span onclick="window.resetFilter('contrast')" class="text-[10px] text-blue-500 cursor-pointer">Reset</span></div>
-                            <input type="range" id="filterContrast" min="0" max="300" value="100" class="w-full accent-purple-600">
-                        </div>
-                        <div>
-                             <div class="flex justify-between mb-1"><label class="text-[10px] font-bold text-gray-500 uppercase">Saturation</label><span onclick="window.resetFilter('saturate')" class="text-[10px] text-blue-500 cursor-pointer">Reset</span></div>
-                            <input type="range" id="filterSaturate" min="0" max="300" value="100" class="w-full accent-purple-600">
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-3 gap-2 pt-4 border-t border-gray-100">
-                        <button onclick="window.toggleEffect('grayscale')" class="py-2 border rounded-lg text-[10px] font-bold hover:bg-gray-50">B&W</button>
-                        <button onclick="window.toggleEffect('sepia')" class="py-2 border rounded-lg text-[10px] font-bold hover:bg-gray-50">Sepia</button>
-                        <button onclick="window.toggleEffect('invert')" class="py-2 border rounded-lg text-[10px] font-bold hover:bg-gray-50">Invert</button>
-                    </div>
-                </div>
-
-                <!-- Tab: Stickers -->
-                <div id="tab-stickers" class="p-4 hidden overflow-y-auto custom-scroll flex-grow">
-                    <h4 class="text-xs font-bold text-gray-500 uppercase mb-3">Quick Stickers</h4>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button onclick="window.addEmoji('😂')" class="text-2xl hover:bg-gray-100 p-1 rounded">😂</button>
-                        <button onclick="window.addEmoji('😎')" class="text-2xl hover:bg-gray-100 p-1 rounded">😎</button>
-                        <button onclick="window.addEmoji('😭')" class="text-2xl hover:bg-gray-100 p-1 rounded">😭</button>
-                        <button onclick="window.addEmoji('🔥')" class="text-2xl hover:bg-gray-100 p-1 rounded">🔥</button>
-                        <button onclick="window.addEmoji('🤡')" class="text-2xl hover:bg-gray-100 p-1 rounded">🤡</button>
-                        <button onclick="window.addEmoji('💯')" class="text-2xl hover:bg-gray-100 p-1 rounded">💯</button>
-                        <button onclick="window.addEmoji('🕶️')" class="text-2xl hover:bg-gray-100 p-1 rounded">🕶️</button>
-                        <button onclick="window.addEmoji('🧢')" class="text-2xl hover:bg-gray-100 p-1 rounded">🧢</button>
-                        <button onclick="window.addEmoji('🚩')" class="text-2xl hover:bg-gray-100 p-1 rounded">🚩</button>
-                        <button onclick="window.addEmoji('💀')" class="text-2xl hover:bg-gray-100 p-1 rounded">💀</button>
-                        <button onclick="window.addEmoji('🍆')" class="text-2xl hover:bg-gray-100 p-1 rounded">🍆</button>
-                        <button onclick="window.addEmoji('🍑')" class="text-2xl hover:bg-gray-100 p-1 rounded">🍑</button>
-                    </div>
-                    <div class="mt-6 p-4 bg-gray-50 rounded-lg text-center">
-                        <p class="text-xs text-gray-500 mb-2">Upload your own transparent PNG</p>
-                        <label class="cursor-pointer text-xs font-bold text-purple-600 hover:underline">
-                            Browse Files
-                            <input type="file" id="stickerInputSide" accept="image/*" class="hidden">
+                    <div class="flex flex-wrap justify-center gap-3 mb-8">
+                        <label
+                            class="cursor-pointer bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition transform hover:-translate-y-1 inline-flex items-center gap-2">
+                            <i class="fa-solid fa-upload"></i> Upload Image
+                            <input type="file" id="uploadInputStart" accept="image/*" class="hidden">
+                        </label>
+                        <button onclick="window.initBlankCanvas()"
+                            class="bg-white border-2 border-gray-200 hover:border-purple-500 text-gray-700 hover:text-purple-600 font-bold py-3 px-6 rounded-xl shadow-sm transition transform hover:-translate-y-1 inline-flex items-center gap-2">
+                            <i class="fa-solid fa-border-all"></i> Blank Canvas
+                        </button>
+                        <label
+                            class="cursor-pointer bg-purple-50 border-2 border-purple-200 text-purple-700 font-bold py-3 px-6 rounded-xl shadow-sm transition inline-flex items-center gap-2 hover:bg-purple-100">
+                            <i class="fa-solid fa-folder-open"></i> Load Project
+                            <input type="file" id="loadProjectInput" accept=".meme" class="hidden">
                         </label>
                     </div>
+
+                    <p class="text-xs font-bold text-gray-400 mt-2 mb-2 uppercase">Quick Templates</p>
+                    <div class="flex gap-3 overflow-x-auto max-w-full pb-4 px-4" id="miniTemplates"></div>
                 </div>
 
             </div>
         </div>
+
+        <!-- RIGHT PANEL: Properties -->
+        <div
+            class="lg:w-80 bg-white border-l border-gray-200 flex flex-col h-[40vh] lg:h-full overflow-hidden flex-none z-20 shadow-xl">
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-100 flex-none">
+                <button class="tab-btn flex-1 py-3 text-xs font-bold text-gray-500 active"
+                    onclick="window.switchTab('props', this)">Properties</button>
+                <button class="tab-btn flex-1 py-3 text-xs font-bold text-gray-500"
+                    onclick="window.switchTab('filters', this)">Filters</button>
+                <button class="tab-btn flex-1 py-3 text-xs font-bold text-gray-500"
+                    onclick="window.switchTab('stickers', this)">Stickers</button>
+            </div>
+
+            <!-- Tab: Properties -->
+            <div id="tab-props" class="p-4 space-y-5 overflow-y-auto custom-scroll flex-grow">
+                <div id="noSelectionMsg" class="text-center text-gray-400 text-sm mt-10">
+                    <i class="fa-regular fa-hand-pointer text-2xl mb-2"></i><br>Select an element to edit
+                </div>
+
+                <div id="propControls" class="hidden space-y-4">
+                    <div id="textInputGroup">
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">Text</label>
+                        <textarea id="textValue" rows="2"
+                            class="w-full border-gray-300 rounded-lg text-sm p-2 border focus:ring-purple-500 focus:border-purple-500"></textarea>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between"><label
+                                    class="text-[10px] font-bold text-gray-500 uppercase">Size</label><span id="sizeVal"
+                                    class="text-[10px]">40</span></div>
+                            <input type="range" id="propSize" min="10" max="400" value="40"
+                                class="w-full accent-purple-600">
+                        </div>
+                        <div>
+                            <div class="flex justify-between"><label
+                                    class="text-[10px] font-bold text-gray-500 uppercase">Rotation</label><span
+                                    id="rotVal" class="text-[10px]">0°</span></div>
+                            <input type="range" id="propRotate" min="-180" max="180" value="0"
+                                class="w-full accent-purple-600">
+                        </div>
+                    </div>
+
+                    <div id="colorGroup" class="space-y-3">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase">Colors</label>
+                            <div class="flex gap-2">
+                                <div class="flex-1">
+                                    <input type="color" id="propColor"
+                                        class="w-full h-8 rounded cursor-pointer border border-gray-200 p-0.5">
+                                    <span class="text-[10px] text-gray-400 block text-center">Fill</span>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="color" id="propStroke"
+                                        class="w-full h-8 rounded cursor-pointer border border-gray-200 p-0.5">
+                                    <span class="text-[10px] text-gray-400 block text-center">Stroke</span>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="color" id="propBgColor"
+                                        class="w-full h-8 rounded cursor-pointer border border-gray-200 p-0.5">
+                                    <span class="text-[10px] text-gray-400 block text-center">Box</span>
+                                </div>
+                            </div>
+                        </div>
+                        <label class="flex items-center gap-2 text-xs cursor-pointer">
+                            <input type="checkbox" id="propBgEnabled" class="rounded text-purple-600"> Show Background
+                            Box
+                        </label>
+                    </div>
+
+                    <div id="fontGroup">
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">Font Family</label>
+                        <select id="propFont"
+                            class="w-full border-gray-300 rounded-lg text-xs p-2 border bg-white mt-1">
+                            <option value="Oswald">Impact (Meme)</option>
+                            <option value="Poppins">Poppins (Clean)</option>
+                            <option value="Comic Neue">Comic (Fun)</option>
+                            <option value="Permanent Marker">Marker (Hand)</option>
+                            <option value="Anton">Anton (Bold)</option>
+                        </select>
+                    </div>
+
+                    <div id="styleGroup" class="flex gap-4">
+                        <label class="flex items-center gap-2 text-xs cursor-pointer select-none">
+                            <input type="checkbox" id="propShadow" class="rounded text-purple-600"> Shadow
+                        </label>
+                        <label class="flex items-center gap-2 text-xs cursor-pointer select-none">
+                            <input type="checkbox" id="propUppercase" class="rounded text-purple-600"> CAPS
+                        </label>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-100">
+                        <button onclick="window.deleteActiveLayer()"
+                            class="w-full bg-red-50 text-red-600 hover:bg-red-100 font-bold py-2 rounded-lg text-xs transition border border-red-100">
+                            Delete Element <span class="text-[9px] opacity-70">(Del)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Filters -->
+            <div id="tab-filters" class="p-4 space-y-5 hidden overflow-y-auto custom-scroll flex-grow">
+                <button onclick="window.applyDeepFry()"
+                    class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-lg text-xs shadow-md shadow-orange-200 mb-4 transition transform active:scale-95">
+                    🔥 DEEP FRY (DANK)
+                </button>
+
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between mb-1"><label
+                                class="text-[10px] font-bold text-gray-500 uppercase">Brightness</label><span
+                                onclick="window.resetFilter('brightness')"
+                                class="text-[10px] text-blue-500 cursor-pointer">Reset</span></div>
+                        <input type="range" id="filterBrightness" min="0" max="200" value="100"
+                            class="w-full accent-purple-600">
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1"><label
+                                class="text-[10px] font-bold text-gray-500 uppercase">Contrast</label><span
+                                onclick="window.resetFilter('contrast')"
+                                class="text-[10px] text-blue-500 cursor-pointer">Reset</span></div>
+                        <input type="range" id="filterContrast" min="0" max="300" value="100"
+                            class="w-full accent-purple-600">
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1"><label
+                                class="text-[10px] font-bold text-gray-500 uppercase">Saturation</label><span
+                                onclick="window.resetFilter('saturate')"
+                                class="text-[10px] text-blue-500 cursor-pointer">Reset</span></div>
+                        <input type="range" id="filterSaturate" min="0" max="300" value="100"
+                            class="w-full accent-purple-600">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 pt-4 border-t border-gray-100">
+                    <button onclick="window.toggleEffect('grayscale')"
+                        class="py-2 border rounded-lg text-[10px] font-bold hover:bg-gray-50">B&W</button>
+                    <button onclick="window.toggleEffect('sepia')"
+                        class="py-2 border rounded-lg text-[10px] font-bold hover:bg-gray-50">Sepia</button>
+                    <button onclick="window.toggleEffect('invert')"
+                        class="py-2 border rounded-lg text-[10px] font-bold hover:bg-gray-50">Invert</button>
+                </div>
+            </div>
+
+            <!-- Tab: Stickers -->
+            <div id="tab-stickers" class="p-4 hidden overflow-y-auto custom-scroll flex-grow">
+                <h4 class="text-xs font-bold text-gray-500 uppercase mb-3">Quick Stickers</h4>
+                <div class="grid grid-cols-4 gap-2">
+                    <button onclick="window.addEmoji('😂')" class="text-2xl hover:bg-gray-100 p-1 rounded">😂</button>
+                    <button onclick="window.addEmoji('😎')" class="text-2xl hover:bg-gray-100 p-1 rounded">😎</button>
+                    <button onclick="window.addEmoji('😭')" class="text-2xl hover:bg-gray-100 p-1 rounded">😭</button>
+                    <button onclick="window.addEmoji('🔥')" class="text-2xl hover:bg-gray-100 p-1 rounded">🔥</button>
+                    <button onclick="window.addEmoji('🤡')" class="text-2xl hover:bg-gray-100 p-1 rounded">🤡</button>
+                    <button onclick="window.addEmoji('💯')" class="text-2xl hover:bg-gray-100 p-1 rounded">💯</button>
+                    <button onclick="window.addEmoji('🕶️')" class="text-2xl hover:bg-gray-100 p-1 rounded">🕶️</button>
+                    <button onclick="window.addEmoji('🧢')" class="text-2xl hover:bg-gray-100 p-1 rounded">🧢</button>
+                    <button onclick="window.addEmoji('🚩')" class="text-2xl hover:bg-gray-100 p-1 rounded">🚩</button>
+                    <button onclick="window.addEmoji('💀')" class="text-2xl hover:bg-gray-100 p-1 rounded">💀</button>
+                    <button onclick="window.addEmoji('🍆')" class="text-2xl hover:bg-gray-100 p-1 rounded">🍆</button>
+                    <button onclick="window.addEmoji('🍑')" class="text-2xl hover:bg-gray-100 p-1 rounded">🍑</button>
+                </div>
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg text-center">
+                    <p class="text-xs text-gray-500 mb-2">Upload your own transparent PNG</p>
+                    <label class="cursor-pointer text-xs font-bold text-purple-600 hover:underline">
+                        Browse Files
+                        <input type="file" id="stickerInputSide" accept="image/*" class="hidden">
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
     </main>
 
     <footer class="bg-white border-t border-gray-200 mt-auto">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <p class="text-center text-sm text-gray-500">
-                &copy; 2023 Free Online Tools. <a href="privacy.html" class="text-purple-600 hover:text-purple-500">Privacy Policy</a>
+                &copy; 2023 Free Online Tools. <a href="../privacy.html"
+                    class="text-purple-600 hover:text-purple-500">Privacy Policy</a>
             </p>
         </div>
     </footer>
@@ -403,29 +521,31 @@
             const startScreen = document.getElementById('startScreen');
             const templateList = document.getElementById('templateList');
             const miniTemplates = document.getElementById('miniTemplates');
-            
+            const zoomContainer = document.getElementById('zoomContainer');
+            const zoomLevelEl = document.getElementById('zoomLevel');
+            const inlineEditor = document.getElementById('inlineEditor');
+            const layersList = document.getElementById('layersList');
+            const drawSettings = document.getElementById('drawSettings');
+
             // Inputs
-            const uploadInput = document.getElementById('uploadInput');
-            const uploadInputStart = document.getElementById('uploadInputStart');
+            const uploadInput = document.getElementById('uploadInput'); // Now hidden/not used? No, unused in prev version
+            // Actually Left Panel "Add Image" button is ID: addImageLayerInput
             const addImageLayerInput = document.getElementById('addImageLayerInput');
+            const uploadInputStart = document.getElementById('uploadInputStart');
+            const addImageLayerInputMobile = document.getElementById('uploadInputMobile'); // ID from HTML above
             const stickerInput = document.getElementById('stickerInput');
             const stickerInputSide = document.getElementById('stickerInputSide');
             const loadProjectInput = document.getElementById('loadProjectInput');
-            const inlineEditor = document.getElementById('inlineEditor');
-            const layersList = document.getElementById('layersList');
-            const canvasStatus = document.getElementById('canvasStatus');
-            const drawSettings = document.getElementById('drawSettings');
             const watermarkCheck = document.getElementById('watermarkCheck');
-            
-            // Property Refs
+            const canvasWrapper = document.getElementById('canvasViewport');
+
+            // Property Inputs
             const propControls = document.getElementById('propControls');
             const noSelectionMsg = document.getElementById('noSelectionMsg');
             const textInputGroup = document.getElementById('textInputGroup');
             const colorGroup = document.getElementById('colorGroup');
             const fontGroup = document.getElementById('fontGroup');
             const styleGroup = document.getElementById('styleGroup');
-            
-            // Inputs
             const textValue = document.getElementById('textValue');
             const propSize = document.getElementById('propSize');
             const propRotate = document.getElementById('propRotate');
@@ -436,57 +556,54 @@
             const propFont = document.getElementById('propFont');
             const propShadow = document.getElementById('propShadow');
             const propUppercase = document.getElementById('propUppercase');
-            
-            // Filter Refs
+
+            // Filter Inputs
             const filterBrightness = document.getElementById('filterBrightness');
             const filterContrast = document.getElementById('filterContrast');
             const filterSaturate = document.getElementById('filterSaturate');
 
             // State
             let baseImage = null;
-            let layers = []; // { type, content, x, y, rotation, size, color... }
+            let layers = [];
             let activeLayerIndex = -1;
             let isDragging = false;
             let isDrawing = false;
             let dragStartX, dragStartY;
-            let history = []; 
+            let history = [];
             let imgFilters = { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0, invert: 0 };
-            
-            // Drawing Mode State
+            let zoom = 1.0;
             let drawMode = false;
-            let drawingPath = []; 
-            let drawings = []; 
-            let dragAction = 'none'; 
-            let initialDragData = {}; 
+            let drawingPath = [];
+            let drawings = [];
+            let dragAction = 'none';
+            let initialDragData = {};
 
-            // Templates
+            // Initialize Templates
             const templates = [
                 "https://i.imgflip.com/30b1gx.jpg", "https://i.imgflip.com/1ur9b0.jpg", "https://i.imgflip.com/1g8my4.jpg", "https://i.imgflip.com/261o3j.jpg"
             ];
-            
+
             if (miniTemplates) {
                 templates.forEach(url => {
                     const img = document.createElement('img');
                     img.src = url;
-                    img.className = "w-12 h-12 rounded object-cover cursor-pointer hover:scale-110 transition border border-gray-200";
+                    img.className = "w-16 h-16 rounded object-cover cursor-pointer hover:scale-110 transition border border-gray-200 bg-gray-100";
                     img.onclick = (e) => { e.stopPropagation(); window.loadBaseImage(url); };
                     miniTemplates.appendChild(img);
                 });
             }
-            
-            // Sidebar Full Templates
-            const fullTemplates = [...templates, "https://i.imgflip.com/24y43o.jpg", "https://i.imgflip.com/1jwhww.jpg", "https://i.imgflip.com/3lmzyx.jpg", "https://i.imgflip.com/43a45p.png"];
-            
+
             if (templateList) {
+                const fullTemplates = [...templates, "https://i.imgflip.com/24y43o.jpg", "https://i.imgflip.com/1jwhww.jpg", "https://i.imgflip.com/3lmzyx.jpg", "https://i.imgflip.com/43a45p.png"];
                 fullTemplates.forEach(url => {
-                     const div = document.createElement('div');
-                     div.className = "flex-shrink-0";
-                     div.innerHTML = `<img src="${url}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:border-purple-500 border border-gray-200" onclick="window.loadBaseImage('${url}')">`;
-                     templateList.appendChild(div);
+                    const div = document.createElement('div');
+                    div.className = "flex-shrink-0";
+                    div.innerHTML = `<img src="${url}" class="w-16 h-16 rounded-lg object-cover cursor-pointer hover:border-purple-500 border border-gray-200" onclick="window.loadBaseImage('${url}')">`;
+                    templateList.appendChild(div);
                 });
             }
 
-            // --- Load Image ---
+            // --- CORE FUNCTIONS ---
             window.loadBaseImage = (src) => {
                 const img = new Image();
                 img.crossOrigin = "Anonymous";
@@ -497,64 +614,57 @@
                     imgFilters = { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0, invert: 0 };
                     resizeCanvas();
                     startScreen.classList.add('hidden');
-                    
-                    window.addTextLayer("TOP TEXT", canvas.width/2, 60);
-                    window.addTextLayer("BOTTOM TEXT", canvas.width/2, canvas.height - 40);
-                    
+                    window.resetZoom();
+                    window.addTextLayer("TOP TEXT", canvas.width / 2, 60);
+                    window.addTextLayer("BOTTOM TEXT", canvas.width / 2, canvas.height - 40);
                     saveState();
                     draw();
                     renderLayerList();
                 };
                 img.src = src;
             };
-            
+
             window.initBlankCanvas = () => {
-                baseImage = new Image(); // Empty placeholder
-                baseImage.width = 800;
-                baseImage.height = 800;
-                // Create a white canvas data URL
+                baseImage = new Image();
+                baseImage.width = 800; baseImage.height = 800;
                 const c = document.createElement('canvas');
                 c.width = 800; c.height = 800;
                 const cx = c.getContext('2d');
-                cx.fillStyle = "#ffffff";
-                cx.fillRect(0,0,800,800);
+                cx.fillStyle = "#ffffff"; cx.fillRect(0, 0, 800, 800);
                 baseImage.src = c.toDataURL();
-                
-                layers = [];
-                drawings = [];
+
+                layers = []; drawings = [];
                 imgFilters = { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0, invert: 0 };
                 resizeCanvas();
                 startScreen.classList.add('hidden');
-                
-                saveState();
-                draw();
-                renderLayerList();
+                window.resetZoom();
+                saveState(); draw(); renderLayerList();
             };
-            
-            function handleUpload(e) {
+
+            // Handle Start Screen Upload (Replaces Base)
+            function handleUploadStart(e) {
                 const file = e.target.files[0];
-                if(file) {
+                if (file) {
                     const reader = new FileReader();
                     reader.onload = (evt) => window.loadBaseImage(evt.target.result);
                     reader.readAsDataURL(file);
                 }
                 e.target.value = '';
             }
-            
-            if(uploadInput) uploadInput.addEventListener('change', handleUpload);
-            if(uploadInputStart) uploadInputStart.addEventListener('change', handleUpload);
-            
+            if (uploadInputStart) uploadInputStart.addEventListener('change', handleUploadStart);
+
+            // Handle Add Photo (Layer)
             function handleImageLayerUpload(e) {
                 const file = e.target.files[0];
-                if(file && baseImage) {
+                if (file && baseImage) {
                     const reader = new FileReader();
                     reader.onload = (evt) => {
                         const img = new Image();
                         img.onload = () => {
                             let w = img.width; let h = img.height;
                             const maxS = canvas.width / 2;
-                            if(w > maxS) { h *= maxS/w; w = maxS; }
-                            layers.push({ type: 'image', content: img, x: canvas.width/2, y: canvas.height/2, width: w, height: h, rotation: 0 });
+                            if (w > maxS) { h *= maxS / w; w = maxS; }
+                            layers.push({ type: 'image', content: img, x: canvas.width / 2, y: canvas.height / 2, width: w, height: h, rotation: 0 });
                             activeLayerIndex = layers.length - 1;
                             saveState();
                             draw();
@@ -564,33 +674,32 @@
                     }
                     reader.readAsDataURL(file);
                 }
-                e.target.value = ''; 
+                e.target.value = '';
             }
-            if(addImageLayerInput) addImageLayerInput.addEventListener('change', handleImageLayerUpload);
-            if(stickerInput) stickerInput.addEventListener('change', handleImageLayerUpload);
-            if(stickerInputSide) stickerInputSide.addEventListener('change', handleImageLayerUpload);
+            if (addImageLayerInput) addImageLayerInput.addEventListener('change', handleImageLayerUpload);
+            if (addImageLayerInputMobile) addImageLayerInputMobile.addEventListener('change', handleImageLayerUpload);
+            if (stickerInput) stickerInput.addEventListener('change', handleImageLayerUpload);
+            if (stickerInputSide) stickerInputSide.addEventListener('change', handleImageLayerUpload);
 
-            // --- Canvas Core ---
             function resizeCanvas() {
-                if(!baseImage) return;
-                const maxWidth = 1000;
-                const maxHeight = 800;
+                if (!baseImage) return;
+                const maxWidth = 2500;
+                const maxHeight = 2500;
                 let w = baseImage.width;
                 let h = baseImage.height;
-                const ratio = Math.min(maxWidth / w, maxHeight / h);
-                if (ratio < 1) { w *= ratio; h *= ratio; }
+                if (w > maxWidth || h > maxHeight) {
+                    const ratio = Math.min(maxWidth / w, maxHeight / h);
+                    w *= ratio; h *= ratio;
+                }
                 canvas.width = w;
                 canvas.height = h;
             }
 
-            // Aspect Ratio Resizer
             window.setAspectRatio = (ratio) => {
-                if(!baseImage) return;
-                
+                if (!baseImage) return;
                 if (ratio === 'free') {
-                    resizeCanvas(); // Reset to image natural aspect
+                    resizeCanvas();
                 } else {
-                    // Force crop/resize canvas to ratio
                     const currentW = canvas.width;
                     const newH = currentW / ratio;
                     canvas.height = newH;
@@ -598,13 +707,33 @@
                 draw();
             };
 
+            window.zoomIn = () => { zoom = Math.min(zoom + 0.1, 3.0); updateZoom(); };
+            window.zoomOut = () => { zoom = Math.max(zoom - 0.1, 0.1); updateZoom(); };
+            window.resetZoom = () => { zoom = 1.0; updateZoom(); };
+
+            function updateZoom() {
+                if (zoomContainer) zoomContainer.style.transform = `scale(${zoom})`;
+                if (zoomLevelEl) zoomLevelEl.innerText = Math.round(zoom * 100) + '%';
+            }
+
+            if (canvasWrapper) {
+                canvasWrapper.addEventListener('wheel', (e) => {
+                    if (e.ctrlKey) {
+                        e.preventDefault();
+                        if (e.deltaY < 0) window.zoomIn(); else window.zoomOut();
+                    }
+                });
+            }
+
             function draw() {
-                if(!baseImage) return;
-                
+                if (!baseImage) return;
+
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+
                 ctx.filter = `brightness(${imgFilters.brightness}%) contrast(${imgFilters.contrast}%) saturate(${imgFilters.saturate}%) grayscale(${imgFilters.grayscale}%) sepia(${imgFilters.sepia}%) invert(${imgFilters.invert}%)`;
                 ctx.fillStyle = "#ffffff";
-                ctx.fillRect(0, 0, canvas.width, canvas.height); // BG
-                
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
                 ctx.filter = 'none';
 
@@ -615,25 +744,25 @@
                     ctx.lineWidth = d.size;
                     ctx.beginPath();
                     d.points.forEach((p, i) => {
-                        if(i===0) ctx.moveTo(p.x, p.y);
+                        if (i === 0) ctx.moveTo(p.x, p.y);
                         else ctx.lineTo(p.x, p.y);
                     });
                     ctx.stroke();
                 });
-                
-                if(drawingPath.length > 0) {
-                     const colorEl = document.getElementById('drawColor');
-                     const sizeEl = document.getElementById('drawSize');
-                     if(colorEl && sizeEl) {
-                         ctx.strokeStyle = colorEl.value;
-                         ctx.lineWidth = sizeEl.value;
-                         ctx.beginPath();
-                         drawingPath.forEach((p, i) => {
-                            if(i===0) ctx.moveTo(p.x, p.y);
+
+                if (drawingPath.length > 0) {
+                    const colorEl = document.getElementById('drawColor');
+                    const sizeEl = document.getElementById('drawSize');
+                    if (colorEl && sizeEl) {
+                        ctx.strokeStyle = colorEl.value;
+                        ctx.lineWidth = sizeEl.value;
+                        ctx.beginPath();
+                        drawingPath.forEach((p, i) => {
+                            if (i === 0) ctx.moveTo(p.x, p.y);
                             else ctx.lineTo(p.x, p.y);
-                         });
-                         ctx.stroke();
-                     }
+                        });
+                        ctx.stroke();
+                    }
                 }
 
                 layers.forEach((layer, i) => {
@@ -641,192 +770,136 @@
                     ctx.translate(layer.x, layer.y);
                     ctx.rotate(layer.rotation * Math.PI / 180);
 
-                    if(layer.type === 'text') {
+                    if (layer.type === 'text') {
                         ctx.font = `900 ${layer.size}px '${layer.font}', sans-serif`;
                         ctx.textAlign = "center";
                         ctx.textBaseline = "middle";
-                        
+
                         const txt = layer.uppercase ? layer.content.toUpperCase() : layer.content;
-                        
-                        if(layer.bgColor && layer.bgEnabled) {
-                             const metrics = ctx.measureText(txt);
-                             const bgW = metrics.width + 20;
-                             const bgH = layer.size * 1.2;
-                             ctx.fillStyle = layer.bgColor;
-                             ctx.fillRect(-bgW/2, -bgH/2, bgW, bgH);
+
+                        if (layer.bgEnabled) {
+                            const metrics = ctx.measureText(txt);
+                            const bgW = metrics.width + (layer.size * 0.5);
+                            const bgH = layer.size * 1.2;
+                            ctx.fillStyle = layer.bgColor;
+                            ctx.fillRect(-bgW / 2, -bgH / 2, bgW, bgH);
                         }
 
                         ctx.fillStyle = layer.color;
                         ctx.strokeStyle = layer.stroke;
                         ctx.lineWidth = Math.max(2, layer.size / 15);
                         ctx.lineJoin = "round";
-                        
-                        if(layer.shadow) {
+
+                        if (layer.shadow) {
                             ctx.shadowColor = "rgba(0,0,0,0.8)";
                             ctx.shadowBlur = 10;
                             ctx.shadowOffsetX = 3;
                             ctx.shadowOffsetY = 3;
                         }
-                        
+
                         ctx.strokeText(txt, 0, 0);
                         ctx.fillText(txt, 0, 0);
-                        
-                        if(i === activeLayerIndex && !drawMode) {
-                            ctx.shadowColor = "transparent"; 
-                             const metrics = ctx.measureText(txt);
-                             drawSelectionBox(0, 0, metrics.width, layer.size);
+
+                        if (i === activeLayerIndex && !drawMode) {
+                            ctx.shadowColor = "transparent";
+                            const metrics = ctx.measureText(txt);
+                            drawSelectionBox(0, 0, metrics.width, layer.size);
                         }
-                    } 
+                    }
                     else if (layer.type === 'image') {
-                        ctx.drawImage(layer.content, -layer.width/2, -layer.height/2, layer.width, layer.height);
-                        if(i === activeLayerIndex && !drawMode) drawSelectionBox(0, 0, layer.width, layer.height);
+                        ctx.drawImage(layer.content, -layer.width / 2, -layer.height / 2, layer.width, layer.height);
+                        if (i === activeLayerIndex && !drawMode) drawSelectionBox(0, 0, layer.width, layer.height);
                     }
                     ctx.restore();
                 });
-                
-                // Watermark
-                if(watermarkCheck.checked) {
+
+                if (watermarkCheck && watermarkCheck.checked) {
                     ctx.save();
-                    ctx.font = "bold 16px sans-serif";
+                    ctx.font = "bold 20px sans-serif";
                     ctx.textAlign = "right";
                     ctx.textBaseline = "bottom";
                     ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-                    ctx.shadowColor = "rgba(0,0,0,0.5)";
+                    ctx.shadowColor = "rgba(0,0,0,0.8)";
                     ctx.shadowBlur = 4;
-                    ctx.fillText("Made with Techo", canvas.width - 10, canvas.height - 10);
+                    ctx.fillText("Made with Techo", canvas.width - 20, canvas.height - 20);
                     ctx.restore();
                 }
-                
+
                 updatePropPanel();
             }
 
             function drawSelectionBox(x, y, w, h) {
-                const hw = w/2 + 10; 
-                const hh = h/2 + 10; 
-                
-                ctx.strokeStyle = "#9333ea"; 
-                ctx.lineWidth = 1;
-                ctx.setLineDash([4, 4]);
-                ctx.strokeRect(-hw, -hh, w + 20, h + 20);
-                ctx.setLineDash([]);
-                
-                const handleSize = 8;
-                ctx.fillStyle = "#ffffff";
-                ctx.strokeStyle = "#9333ea";
-                ctx.lineWidth = 1;
+                const hw = w / 2 + 10; const hh = h / 2 + 10; const handleSize = 12;
+                ctx.strokeStyle = "#9333ea"; ctx.lineWidth = 2;
+                ctx.setLineDash([6, 4]); ctx.strokeRect(-hw, -hh, w + 20, h + 20); ctx.setLineDash([]);
 
-                function drawHandle(hx, hy) {
-                    ctx.beginPath();
-                    ctx.rect(hx - handleSize/2, hy - handleSize/2, handleSize, handleSize);
-                    ctx.fill();
-                    ctx.stroke();
-                }
+                ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#9333ea"; ctx.lineWidth = 2;
+                function drawHandle(hx, hy) { ctx.beginPath(); ctx.rect(hx - handleSize / 2, hy - handleSize / 2, handleSize, handleSize); ctx.fill(); ctx.stroke(); }
+                drawHandle(-hw, -hh); drawHandle(hw, -hh); drawHandle(-hw, hh); drawHandle(hw, hh);
 
-                drawHandle(-hw, -hh); 
-                drawHandle(hw, -hh);  
-                drawHandle(-hw, hh);  
-                drawHandle(hw, hh);   
-                
-                ctx.beginPath();
-                ctx.moveTo(0, -hh);
-                ctx.lineTo(0, -hh - 25);
-                ctx.stroke();
-                
-                ctx.beginPath();
-                ctx.arc(0, -hh - 25, 5, 0, Math.PI * 2);
-                ctx.fillStyle = "#9333ea";
-                ctx.fill();
+                ctx.beginPath(); ctx.moveTo(0, -hh); ctx.lineTo(0, -hh - 25); ctx.stroke();
+                ctx.beginPath(); ctx.arc(0, -hh - 25, 6, 0, Math.PI * 2); ctx.fillStyle = "#9333ea"; ctx.fill();
 
-                ctx.beginPath();
-                ctx.arc(hw, -hh, 8, 0, Math.PI * 2);
-                ctx.fillStyle = "#ef4444";
-                ctx.fill();
-                ctx.fillStyle = "#fff";
-                ctx.font = "bold 10px sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText("X", hw, -hh);
+                ctx.beginPath(); ctx.arc(hw, -hh, 10, 0, Math.PI * 2); ctx.fillStyle = "#ef4444"; ctx.fill();
+                ctx.fillStyle = "#fff"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("×", hw, -hh);
             }
-            
-            // Listen to watermark checkbox
-            watermarkCheck.addEventListener('change', draw);
 
+            if (watermarkCheck) watermarkCheck.addEventListener('change', draw);
+
+            // --- Interaction ---
             function getPos(e) {
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                return {
-                    x: (clientX - rect.left) * (canvas.width / rect.width),
-                    y: (clientY - rect.top) * (canvas.height / rect.height)
-                };
+                // Important: calculate based on rendered size vs actual size
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
             }
 
             function toLocal(layer, gx, gy) {
-                const dx = gx - layer.x;
-                const dy = gy - layer.y;
+                const dx = gx - layer.x; const dy = gy - layer.y;
                 const rad = -layer.rotation * Math.PI / 180;
-                const lx = dx * Math.cos(rad) - dy * Math.sin(rad);
-                const ly = dx * Math.sin(rad) + dy * Math.cos(rad);
-                return { x: lx, y: ly };
+                return { x: dx * Math.cos(rad) - dy * Math.sin(rad), y: dx * Math.sin(rad) + dy * Math.cos(rad) };
             }
 
             function getLayerDims(layer) {
-                if(layer.type === 'text') {
+                if (layer.type === 'text') {
                     ctx.font = `900 ${layer.size}px '${layer.font}', sans-serif`;
                     const txt = layer.uppercase ? layer.content.toUpperCase() : layer.content;
                     return { w: ctx.measureText(txt).width, h: layer.size };
-                } else {
-                    return { w: layer.width, h: layer.height };
-                }
+                } else { return { w: layer.width, h: layer.height }; }
             }
 
             function checkHandleHit(layer, lx, ly) {
                 const dims = getLayerDims(layer);
-                const hw = dims.w/2 + 10;
-                const hh = dims.h/2 + 10;
-                const handleSize = 20; // Increased hit area
-
-                if(Math.abs(lx - 0) < handleSize && Math.abs(ly - (-hh - 25)) < handleSize) return 'rotate';
-                if(Math.abs(lx - hw) < handleSize && Math.abs(ly - (-hh)) < handleSize) return 'delete';
-                if(Math.abs(lx - (-hw)) < handleSize && Math.abs(ly - (-hh)) < handleSize) return 'resize-tl';
-                if(Math.abs(lx - hw) < handleSize && Math.abs(ly - (-hh)) < handleSize) return 'resize-tr';
-                if(Math.abs(lx - (-hw)) < handleSize && Math.abs(ly - hh) < handleSize) return 'resize-bl';
-                if(Math.abs(lx - hw) < handleSize && Math.abs(ly - hh) < handleSize) return 'resize-br';
-
+                const hw = dims.w / 2 + 10; const hh = dims.h / 2 + 10; const handleSize = 30;
+                if (Math.abs(lx - 0) < handleSize && Math.abs(ly - (-hh - 25)) < handleSize) return 'rotate';
+                if (Math.abs(lx - hw) < handleSize && Math.abs(ly - (-hh)) < handleSize) return 'delete';
+                if (Math.abs(lx - (-hw)) < handleSize && Math.abs(ly - (-hh)) < handleSize) return 'resize-tl';
+                if (Math.abs(lx - hw) < handleSize && Math.abs(ly - (-hh)) < handleSize) return 'resize-tr';
+                if (Math.abs(lx - (-hw)) < handleSize && Math.abs(ly - hh) < handleSize) return 'resize-bl';
+                if (Math.abs(lx - hw) < handleSize && Math.abs(ly - hh) < handleSize) return 'resize-br';
                 return null;
             }
 
             canvas.addEventListener('mousedown', startInteract);
-            canvas.addEventListener('touchstart', startInteract, {passive: false});
+            canvas.addEventListener('touchstart', startInteract, { passive: false });
             canvas.addEventListener('mousemove', moveInteract);
-            canvas.addEventListener('touchmove', moveInteract, {passive: false});
+            canvas.addEventListener('touchmove', moveInteract, { passive: false });
             canvas.addEventListener('mouseup', endInteract);
             canvas.addEventListener('touchend', endInteract);
-            
-            // Double Click Text Edit
+
             canvas.addEventListener('dblclick', (e) => {
-                if(drawMode) return;
+                if (drawMode) return;
                 const pos = getPos(e);
-                if(activeLayerIndex !== -1 && layers[activeLayerIndex].type === 'text') {
-                     showInlineEditor(layers[activeLayerIndex]);
-                }
+                if (activeLayerIndex !== -1 && layers[activeLayerIndex].type === 'text') showInlineEditor(layers[activeLayerIndex]);
             });
 
-            // Keyboard Shortcuts
             document.addEventListener('keydown', (e) => {
-                // Delete Key
-                if (e.key === 'Delete' || e.key === 'Backspace') {
-                    // Only if not editing text
-                    if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA' && activeLayerIndex !== -1) {
-                         window.deleteActiveLayer();
-                    }
-                }
-                // Ctrl+Z
-                if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-                    e.preventDefault();
-                    window.undo();
-                }
-                // Arrows to Nudge
+                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+                if (e.key === 'Delete' || e.key === 'Backspace') { if (activeLayerIndex !== -1) window.deleteActiveLayer(); }
+                if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); window.undo(); }
                 if (activeLayerIndex !== -1 && !isDrawing) {
                     const step = e.shiftKey ? 10 : 1;
                     if (e.key === 'ArrowLeft') layers[activeLayerIndex].x -= step;
@@ -834,496 +907,250 @@
                     else if (e.key === 'ArrowUp') layers[activeLayerIndex].y -= step;
                     else if (e.key === 'ArrowDown') layers[activeLayerIndex].y += step;
                     else return;
-                    draw();
-                    e.preventDefault();
+                    draw(); e.preventDefault();
                 }
             });
 
             function startInteract(e) {
-                if(!baseImage) return;
-                if(e.type === 'touchstart') e.preventDefault();
+                if (!baseImage) return;
+                if (e.type === 'touchstart') e.preventDefault();
                 const pos = getPos(e);
-                
-                if(drawMode) {
-                    isDrawing = true;
-                    drawingPath = [pos];
-                    return;
-                }
-                
-                if(inlineEditor && inlineEditor.style.display === 'block' && e.target !== inlineEditor) hideInlineEditor();
+
+                if (drawMode) { isDrawing = true; drawingPath = [pos]; return; }
+                if (inlineEditor && inlineEditor.style.display === 'block' && e.target !== inlineEditor) hideInlineEditor();
 
                 if (activeLayerIndex !== -1) {
                     const l = layers[activeLayerIndex];
                     const local = toLocal(l, pos.x, pos.y);
                     const handle = checkHandleHit(l, local.x, local.y);
-                    
                     if (handle) {
-                        if (handle === 'delete') {
-                             window.deleteActiveLayer();
-                             return;
-                        }
-                        isDragging = true;
-                        dragAction = handle;
-                        dragStartX = pos.x;
-                        dragStartY = pos.y;
-                        
-                        initialDragData = {
-                            x: l.x, y: l.y, 
-                            w: l.width, h: l.height, 
-                            size: l.size,
-                            rot: l.rotation,
-                            startAng: Math.atan2(pos.y - l.y, pos.x - l.x)
-                        };
+                        if (handle === 'delete') { window.deleteActiveLayer(); return; }
+                        isDragging = true; dragAction = handle; dragStartX = pos.x; dragStartY = pos.y;
+                        initialDragData = { x: l.x, y: l.y, w: l.width, h: l.height, size: l.size, rot: l.rotation, startAng: Math.atan2(pos.y - l.y, pos.x - l.x) };
                         return;
                     }
                 }
 
                 let found = -1;
-                for(let i = layers.length - 1; i >= 0; i--) {
-                    const l = layers[i];
-                    const local = toLocal(l, pos.x, pos.y);
-                    const dims = getLayerDims(l);
-                    if (local.x >= -dims.w/2 - 10 && local.x <= dims.w/2 + 10 &&
-                        local.y >= -dims.h/2 - 10 && local.y <= dims.h/2 + 10) {
-                        found = i;
-                        break;
-                    }
+                for (let i = layers.length - 1; i >= 0; i--) {
+                    const l = layers[i]; const local = toLocal(l, pos.x, pos.y); const dims = getLayerDims(l);
+                    if (local.x >= -dims.w / 2 - 10 && local.x <= dims.w / 2 + 10 && local.y >= -dims.h / 2 - 10 && local.y <= dims.h / 2 + 10) { found = i; break; }
                 }
-                
-                activeLayerIndex = found;
-                renderLayerList();
-                
-                if(found !== -1) {
-                    isDragging = true;
-                    dragAction = 'move';
-                    dragStartX = pos.x;
-                    dragStartY = pos.y;
-                }
-                draw();
-                updatePropPanel();
+                activeLayerIndex = found; renderLayerList();
+                if (found !== -1) { isDragging = true; dragAction = 'move'; dragStartX = pos.x; dragStartY = pos.y; }
+                draw(); updatePropPanel();
             }
 
             function moveInteract(e) {
                 const pos = getPos(e);
-                
-                if(drawMode && isDrawing) {
-                    drawingPath.push(pos);
-                    draw();
-                    return;
-                }
-                
-                if(isDragging && activeLayerIndex !== -1) {
-                    e.preventDefault();
-                    const l = layers[activeLayerIndex];
-                    
+                if (drawMode && isDrawing) { drawingPath.push(pos); draw(); return; }
+
+                if (isDragging && activeLayerIndex !== -1) {
+                    e.preventDefault(); const l = layers[activeLayerIndex];
                     if (dragAction === 'move') {
-                        const dx = pos.x - dragStartX;
-                        const dy = pos.y - dragStartY;
-                        l.x += dx;
-                        l.y += dy;
-                        dragStartX = pos.x;
-                        dragStartY = pos.y;
-                    } 
-                    else if (dragAction === 'rotate') {
-                        const currentAng = Math.atan2(pos.y - l.y, pos.x - l.x);
-                        const delta = (currentAng - initialDragData.startAng) * 180 / Math.PI;
-                        l.rotation = initialDragData.rot + delta;
+                        l.x += pos.x - dragStartX; l.y += pos.y - dragStartY; dragStartX = pos.x; dragStartY = pos.y;
+                    } else if (dragAction === 'rotate') {
+                        const curAng = Math.atan2(pos.y - l.y, pos.x - l.x);
+                        l.rotation = initialDragData.rot + (curAng - initialDragData.startAng) * 180 / Math.PI;
+                    } else if (dragAction.startsWith('resize')) {
+                        const distStart = Math.sqrt(Math.pow(dragStartX - initialDragData.x, 2) + Math.pow(dragStartY - initialDragData.y, 2));
+                        const distCurr = Math.sqrt(Math.pow(pos.x - initialDragData.x, 2) + Math.pow(pos.y - initialDragData.y, 2));
+                        const scale = distCurr / (distStart || 1);
+                        if (l.type === 'text') l.size = Math.max(10, initialDragData.size * scale);
+                        else { l.width = Math.max(20, initialDragData.w * scale); l.height = Math.max(20, initialDragData.h * scale); }
                     }
-                    else if (dragAction.startsWith('resize')) {
-                         const distStart = Math.sqrt(Math.pow(dragStartX - initialDragData.x, 2) + Math.pow(dragStartY - initialDragData.y, 2));
-                         const distCurr = Math.sqrt(Math.pow(pos.x - initialDragData.x, 2) + Math.pow(pos.y - initialDragData.y, 2));
-                         const scale = distCurr / (distStart || 1); 
-                         
-                         if(l.type === 'text') {
-                             l.size = Math.max(10, initialDragData.size * scale);
-                         } else {
-                             l.width = Math.max(20, initialDragData.w * scale);
-                             l.height = Math.max(20, initialDragData.h * scale);
-                         }
-                    }
-                    
-                    draw();
-                    updatePropPanel(); 
+                    draw(); updatePropPanel();
                 } else {
+                    let cursorStyle = 'default';
                     if (activeLayerIndex !== -1) {
-                         const l = layers[activeLayerIndex];
-                         const local = toLocal(l, pos.x, pos.y);
-                         const handle = checkHandleHit(l, local.x, local.y);
-                         if (handle) {
-                             if(handle === 'rotate') canvas.style.cursor = 'grab';
-                             else if(handle === 'delete') canvas.style.cursor = 'pointer';
-                             else if(handle.startsWith('resize')) canvas.style.cursor = 'nwse-resize';
-                             else canvas.style.cursor = 'default';
-                             return;
-                         }
-                    }
-                    let hover = false;
-                    for(let i = layers.length - 1; i >= 0; i--) {
-                        const l = layers[i];
-                        const local = toLocal(l, pos.x, pos.y);
-                        const dims = getLayerDims(l);
-                        if (local.x >= -dims.w/2 - 10 && local.x <= dims.w/2 + 10 &&
-                            local.y >= -dims.h/2 - 10 && local.y <= dims.h/2 + 10) {
-                            hover = true;
-                            break;
+                        const l = layers[activeLayerIndex]; const local = toLocal(l, pos.x, pos.y); const handle = checkHandleHit(l, local.x, local.y);
+                        if (handle) {
+                            if (handle === 'rotate') cursorStyle = 'grab'; else if (handle === 'delete') cursorStyle = 'pointer'; else if (handle.startsWith('resize')) cursorStyle = 'nwse-resize';
                         }
                     }
-                    canvas.style.cursor = hover ? 'move' : 'default';
+                    if (cursorStyle === 'default') {
+                        for (let i = layers.length - 1; i >= 0; i--) {
+                            const l = layers[i]; const local = toLocal(l, pos.x, pos.y); const dims = getLayerDims(l);
+                            if (local.x >= -dims.w / 2 - 10 && local.x <= dims.w / 2 + 10 && local.y >= -dims.h / 2 - 10 && local.y <= dims.h / 2 + 10) { cursorStyle = 'move'; break; }
+                        }
+                    }
+                    canvas.style.cursor = cursorStyle;
                 }
             }
 
             function endInteract() {
-                if(drawMode && isDrawing) {
+                if (drawMode && isDrawing) {
                     isDrawing = false;
-                    drawings.push({
-                        points: drawingPath,
-                        color: document.getElementById('drawColor').value,
-                        size: document.getElementById('drawSize').value
-                    });
-                    drawingPath = [];
-                    saveState();
-                    draw();
-                    return;
+                    drawings.push({ points: drawingPath, color: document.getElementById('drawColor').value, size: document.getElementById('drawSize').value });
+                    drawingPath = []; saveState(); draw(); return;
                 }
-                
-                if(isDragging) {
-                    saveState();
-                    isDragging = false;
-                    dragAction = 'none';
-                }
+                if (isDragging) { saveState(); isDragging = false; dragAction = 'none'; }
             }
 
             window.toggleDrawMode = () => {
                 drawMode = !drawMode;
                 const btn = document.getElementById('drawModeBtn');
-                if(drawMode) {
-                    if(btn) {
-                        btn.classList.remove('bg-purple-50', 'text-purple-700');
-                        btn.classList.add('bg-purple-600', 'text-white');
-                    }
+                if (drawMode) {
+                    if (btn) { btn.classList.remove('bg-purple-50', 'text-purple-700'); btn.classList.add('bg-purple-600', 'text-white'); }
                     canvas.style.cursor = 'crosshair';
                     canvasStatus.innerText = "Drawing Mode";
                     canvasStatus.className = "text-xs font-bold text-white bg-purple-600 px-2 py-1 rounded";
-                    if(drawSettings) drawSettings.classList.remove('hidden');
-                    activeLayerIndex = -1; 
-                    draw();
+                    if (drawSettings) drawSettings.classList.remove('hidden');
+                    activeLayerIndex = -1; draw();
                 } else {
-                    if(btn) {
-                        btn.classList.remove('bg-purple-600', 'text-white');
-                        btn.classList.add('bg-purple-50', 'text-purple-700');
-                    }
+                    if (btn) { btn.classList.remove('bg-purple-600', 'text-white'); btn.classList.add('bg-purple-50', 'text-purple-700'); }
                     canvas.style.cursor = 'default';
                     canvasStatus.innerText = "Editor Ready";
                     canvasStatus.className = "text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded";
-                    if(drawSettings) drawSettings.classList.add('hidden');
+                    if (drawSettings) drawSettings.classList.add('hidden');
                 }
             };
-            
+
             window.addTextLayer = (text = "TEXT", x, y) => {
-                if(!baseImage) return alert("Upload image first!");
-                layers.push({
-                    type: 'text', content: text, x: x || canvas.width/2, y: y || 60,
-                    size: 50, color: '#ffffff', stroke: '#000000', font: 'Oswald',
-                    rotation: 0, shadow: true, uppercase: true,
-                    bgColor: '#ffffff', bgEnabled: false
-                });
-                activeLayerIndex = layers.length - 1;
-                saveState();
-                draw();
-                renderLayerList();
+                if (!baseImage) return alert("Upload image first!");
+                layers.push({ type: 'text', content: text, x: x || canvas.width / 2, y: y || 60, size: 60, color: '#ffffff', stroke: '#000000', font: 'Oswald', rotation: 0, shadow: true, uppercase: true, bgColor: '#ffffff', bgEnabled: false });
+                activeLayerIndex = layers.length - 1; saveState(); draw(); renderLayerList();
             };
-            window.addEmoji = (e) => window.addTextLayer(e, canvas.width/2, canvas.height/2);
+            window.addEmoji = (e) => window.addTextLayer(e, canvas.width / 2, canvas.height / 2);
 
             function updatePropPanel() {
-                if(activeLayerIndex === -1) {
-                    noSelectionMsg.classList.remove('hidden');
-                    propControls.classList.add('hidden');
-                    return;
-                }
-                noSelectionMsg.classList.add('hidden');
-                propControls.classList.remove('hidden');
-                
+                if (activeLayerIndex === -1) { noSelectionMsg.classList.remove('hidden'); propControls.classList.add('hidden'); return; }
+                noSelectionMsg.classList.add('hidden'); propControls.classList.remove('hidden');
                 const l = layers[activeLayerIndex];
-                
-                if(l.type === 'text') {
-                    textInputGroup.classList.remove('hidden');
-                    colorGroup.classList.remove('hidden');
-                    fontGroup.classList.remove('hidden');
-                    styleGroup.classList.remove('hidden');
-                    
-                    textValue.value = l.content;
-                    propSize.value = l.size;
-                    propRotate.value = l.rotation;
-                    propColor.value = l.color;
-                    propStroke.value = l.stroke;
-                    propBgColor.value = l.bgColor || '#ffffff';
-                    propBgEnabled.checked = l.bgEnabled || false;
-                    propFont.value = l.font;
-                    propShadow.checked = l.shadow;
-                    propUppercase.checked = l.uppercase;
-                    document.getElementById('sizeVal').innerText = Math.round(l.size);
-                    document.getElementById('rotVal').innerText = Math.round(l.rotation) + '°';
+                if (l.type === 'text') {
+                    textInputGroup.classList.remove('hidden'); colorGroup.classList.remove('hidden'); fontGroup.classList.remove('hidden'); styleGroup.classList.remove('hidden');
+                    textValue.value = l.content; propSize.value = l.size; propRotate.value = l.rotation; propColor.value = l.color; propStroke.value = l.stroke;
+                    propBgColor.value = l.bgColor || '#ffffff'; propBgEnabled.checked = l.bgEnabled; propFont.value = l.font; propShadow.checked = l.shadow; propUppercase.checked = l.uppercase;
+                    document.getElementById('sizeVal').innerText = Math.round(l.size); document.getElementById('rotVal').innerText = Math.round(l.rotation) + '°';
                 } else {
-                    textInputGroup.classList.add('hidden');
-                    colorGroup.classList.add('hidden');
-                    fontGroup.classList.add('hidden');
-                    styleGroup.classList.add('hidden');
-                    propRotate.value = l.rotation;
-                    document.getElementById('rotVal').innerText = Math.round(l.rotation) + '°';
+                    textInputGroup.classList.add('hidden'); colorGroup.classList.add('hidden'); fontGroup.classList.add('hidden'); styleGroup.classList.add('hidden');
+                    propRotate.value = l.rotation; document.getElementById('rotVal').innerText = Math.round(l.rotation) + '°';
                 }
             }
 
-            if(textValue) textValue.addEventListener('input', e => { if(activeLayerIndex > -1) layers[activeLayerIndex].content = e.target.value; draw(); });
-            if(propSize) propSize.addEventListener('input', e => { if(activeLayerIndex > -1) { layers[activeLayerIndex].size = parseInt(e.target.value); draw(); } });
-            if(propRotate) propRotate.addEventListener('input', e => { if(activeLayerIndex > -1) { layers[activeLayerIndex].rotation = parseInt(e.target.value); draw(); } });
-            if(propColor) propColor.addEventListener('input', e => { if(activeLayerIndex > -1) layers[activeLayerIndex].color = e.target.value; draw(); });
-            if(propStroke) propStroke.addEventListener('input', e => { if(activeLayerIndex > -1) layers[activeLayerIndex].stroke = e.target.value; draw(); });
-            if(propBgColor) propBgColor.addEventListener('input', e => { if(activeLayerIndex > -1) { layers[activeLayerIndex].bgColor = e.target.value; draw(); } });
-            if(propBgEnabled) propBgEnabled.addEventListener('change', e => { if(activeLayerIndex > -1) { layers[activeLayerIndex].bgEnabled = e.target.checked; draw(); } });
-            if(propFont) propFont.addEventListener('change', e => { if(activeLayerIndex > -1) layers[activeLayerIndex].font = e.target.value; draw(); });
-            if(propShadow) propShadow.addEventListener('change', e => { if(activeLayerIndex > -1) layers[activeLayerIndex].shadow = e.target.checked; draw(); });
-            if(propUppercase) propUppercase.addEventListener('change', e => { if(activeLayerIndex > -1) layers[activeLayerIndex].uppercase = e.target.checked; draw(); });
-            
-            if(filterBrightness) filterBrightness.addEventListener('input', e => { imgFilters.brightness = e.target.value; draw(); });
-            if(filterContrast) filterContrast.addEventListener('input', e => { imgFilters.contrast = e.target.value; draw(); });
-            if(filterSaturate) filterSaturate.addEventListener('input', e => { imgFilters.saturate = e.target.value; draw(); });
-            
-            window.applyDeepFry = () => {
-                imgFilters.contrast = 200;
-                imgFilters.saturate = 300;
-                if(filterContrast) filterContrast.value = 200;
-                if(filterSaturate) filterSaturate.value = 300;
-                draw();
-            };
-            window.resetFilter = (key) => {
-                imgFilters[key] = 100;
-                if(key==='brightness' && filterBrightness) filterBrightness.value=100;
-                if(key==='contrast' && filterContrast) filterContrast.value=100;
-                if(key==='saturate' && filterSaturate) filterSaturate.value=100;
-                draw();
-            };
-            window.toggleEffect = (eff) => {
-                imgFilters[eff] = imgFilters[eff] ? 0 : 100;
-                draw();
-            };
-            
-            window.deleteActiveLayer = () => {
-                if(activeLayerIndex > -1) {
-                    layers.splice(activeLayerIndex, 1);
-                    activeLayerIndex = -1;
-                    saveState();
-                    draw();
-                    renderLayerList();
-                }
-            };
-            
-            window.clearCanvas = () => {
-                if(confirm("Clear all layers & drawings?")) {
-                    layers = []; drawings = []; activeLayerIndex = -1;
-                    imgFilters = { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0, invert: 0 };
-                    if(filterBrightness) filterBrightness.value = 100; 
-                    if(filterContrast) filterContrast.value = 100;
-                    saveState(); draw(); renderLayerList();
-                }
-            };
-            
+            if (textValue) textValue.addEventListener('input', e => { if (activeLayerIndex > -1) layers[activeLayerIndex].content = e.target.value; draw(); });
+            if (propSize) propSize.addEventListener('input', e => { if (activeLayerIndex > -1) { layers[activeLayerIndex].size = parseInt(e.target.value); draw(); } });
+            if (propRotate) propRotate.addEventListener('input', e => { if (activeLayerIndex > -1) { layers[activeLayerIndex].rotation = parseInt(e.target.value); draw(); } });
+            if (propColor) propColor.addEventListener('input', e => { if (activeLayerIndex > -1) layers[activeLayerIndex].color = e.target.value; draw(); });
+            if (propStroke) propStroke.addEventListener('input', e => { if (activeLayerIndex > -1) layers[activeLayerIndex].stroke = e.target.value; draw(); });
+            if (propBgColor) propBgColor.addEventListener('input', e => { if (activeLayerIndex > -1) { layers[activeLayerIndex].bgColor = e.target.value; draw(); } });
+            if (propBgEnabled) propBgEnabled.addEventListener('change', e => { if (activeLayerIndex > -1) { layers[activeLayerIndex].bgEnabled = e.target.checked; draw(); } });
+            if (propFont) propFont.addEventListener('change', e => { if (activeLayerIndex > -1) layers[activeLayerIndex].font = e.target.value; draw(); });
+            if (propShadow) propShadow.addEventListener('change', e => { if (activeLayerIndex > -1) layers[activeLayerIndex].shadow = e.target.checked; draw(); });
+            if (propUppercase) propUppercase.addEventListener('change', e => { if (activeLayerIndex > -1) layers[activeLayerIndex].uppercase = e.target.checked; draw(); });
+
+            if (filterBrightness) filterBrightness.addEventListener('input', e => { imgFilters.brightness = e.target.value; draw(); });
+            if (filterContrast) filterContrast.addEventListener('input', e => { imgFilters.contrast = e.target.value; draw(); });
+            if (filterSaturate) filterSaturate.addEventListener('input', e => { imgFilters.saturate = e.target.value; draw(); });
+
+            window.applyDeepFry = () => { imgFilters.contrast = 200; imgFilters.saturate = 300; if (filterContrast) filterContrast.value = 200; if (filterSaturate) filterSaturate.value = 300; draw(); };
+            window.resetFilter = (key) => { imgFilters[key] = 100; if (key === 'brightness') filterBrightness.value = 100; if (key === 'contrast') filterContrast.value = 100; if (key === 'saturate') filterSaturate.value = 100; draw(); };
+            window.toggleEffect = (eff) => { imgFilters[eff] = imgFilters[eff] ? 0 : 100; draw(); };
+
+            window.deleteActiveLayer = () => { if (activeLayerIndex > -1) { layers.splice(activeLayerIndex, 1); activeLayerIndex = -1; saveState(); draw(); renderLayerList(); } };
+            window.clearCanvas = () => { if (confirm("Clear all?")) { layers = []; drawings = []; activeLayerIndex = -1; imgFilters = { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0, invert: 0 }; if (filterBrightness) filterBrightness.value = 100; if (filterContrast) filterContrast.value = 100; saveState(); draw(); renderLayerList(); if (uploadInput) uploadInput.value = ''; if (uploadInputStart) uploadInputStart.value = ''; } };
+
             window.moveLayer = (dir) => {
-                if(activeLayerIndex === -1) return;
-                const newIndex = activeLayerIndex + dir;
-                if(newIndex >= 0 && newIndex < layers.length) {
-                    const temp = layers[activeLayerIndex];
-                    layers[activeLayerIndex] = layers[newIndex];
-                    layers[newIndex] = temp;
-                    activeLayerIndex = newIndex;
-                    draw();
-                    renderLayerList();
-                }
+                if (activeLayerIndex === -1) return;
+                const n = activeLayerIndex + dir;
+                if (n >= 0 && n < layers.length) { [layers[activeLayerIndex], layers[n]] = [layers[n], layers[activeLayerIndex]]; activeLayerIndex = n; draw(); renderLayerList(); }
             };
-            
+
             function renderLayerList() {
-                if(!layersList) return;
+                if (!layersList) return;
                 layersList.innerHTML = '';
                 layers.slice().reverse().forEach((l, i) => {
                     const trueIndex = layers.length - 1 - i;
                     const div = document.createElement('div');
-                    div.className = `layer-item p-2 text-xs font-bold cursor-pointer rounded flex justify-between items-center ${trueIndex === activeLayerIndex ? 'active' : 'bg-gray-50 hover:bg-gray-100'}`;
-                    
+                    div.className = `layer-item p-2 text-xs font-bold cursor-pointer rounded mb-1 ${trueIndex === activeLayerIndex ? 'active' : 'bg-gray-50 hover:bg-gray-100'}`;
                     let preview = l.type === 'text' ? `"${l.content.substring(0, 15)}..."` : 'Sticker Image';
-                    div.innerHTML = `
-                        <span>${preview}</span>
-                        <i class="fa-solid fa-grip-lines text-gray-300"></i>
-                    `;
-                    div.onclick = () => {
-                        activeLayerIndex = trueIndex;
-                        draw();
-                        renderLayerList();
-                    };
+                    div.innerHTML = `<span>${preview}</span><i class="fa-solid fa-grip-lines text-gray-300"></i>`;
+                    div.onclick = () => { activeLayerIndex = trueIndex; draw(); renderLayerList(); };
                     layersList.appendChild(div);
                 });
-                if(layers.length === 0) layersList.innerHTML = '<div class="text-center text-xs text-gray-400 py-4">No layers</div>';
+                if (layers.length === 0) layersList.innerHTML = '<div class="text-center text-xs text-gray-400 py-4">No layers</div>';
             }
-            
+
             function showInlineEditor(layer) {
-                if(!inlineEditor) return;
+                if (!inlineEditor) return;
                 const rect = canvas.getBoundingClientRect();
-                const scaleX = rect.width / canvas.width;
-                const scaleY = rect.height / canvas.height;
-                const screenX = layer.x * scaleX;
-                const screenY = layer.y * scaleY;
-                const fontSize = layer.size * scaleY;
-                
-                inlineEditor.style.display = 'block';
-                inlineEditor.value = layer.content;
-                inlineEditor.style.fontFamily = layer.font;
-                inlineEditor.style.fontSize = fontSize + 'px';
-                inlineEditor.style.fontWeight = '900';
-                
-                ctx.font = `900 ${layer.size}px '${layer.font}', sans-serif`;
-                const metrics = ctx.measureText(layer.content);
-                const w = (metrics.width * scaleX) + 50; 
-                
-                inlineEditor.style.width = w + 'px';
-                inlineEditor.style.height = (fontSize * 1.5) + 'px';
-                inlineEditor.style.left = (rect.left + window.scrollX + screenX - w/2) + 'px';
-                inlineEditor.style.top = (rect.top + window.scrollY + screenY - fontSize/2) + 'px';
-                
-                inlineEditor.classList.add('active');
-                inlineEditor.focus();
+                const scaleX = rect.width / canvas.width; const scaleY = rect.height / canvas.height;
+                const screenX = layer.x * scaleX; const screenY = layer.y * scaleY; const fontSize = layer.size * scaleY;
+                inlineEditor.style.display = 'block'; inlineEditor.value = layer.content; inlineEditor.style.fontFamily = layer.font; inlineEditor.style.fontSize = fontSize + 'px'; inlineEditor.style.fontWeight = '900';
+                ctx.font = `900 ${layer.size}px '${layer.font}', sans-serif`; const metrics = ctx.measureText(layer.content); const w = (metrics.width * scaleX) + 50;
+                inlineEditor.style.width = w + 'px'; inlineEditor.style.height = (fontSize * 1.5) + 'px';
+                inlineEditor.style.left = (rect.left + window.scrollX + screenX - w / 2) + 'px'; inlineEditor.style.top = (rect.top + window.scrollY + screenY - fontSize / 2) + 'px';
+                inlineEditor.classList.add('active'); inlineEditor.focus();
             }
-            
+
             function hideInlineEditor() {
-                 if(activeLayerIndex !== -1 && layers[activeLayerIndex].type === 'text') {
-                    layers[activeLayerIndex].content = inlineEditor.value;
-                }
-                inlineEditor.style.display = 'none';
-                inlineEditor.classList.remove('active');
-                draw();
-                saveState();
+                if (activeLayerIndex !== -1 && layers[activeLayerIndex].type === 'text') layers[activeLayerIndex].content = inlineEditor.value;
+                inlineEditor.style.display = 'none'; inlineEditor.classList.remove('active'); draw(); saveState();
             }
-            
-            if(inlineEditor) inlineEditor.addEventListener('keydown', (e) => { if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); hideInlineEditor(); }});
-            
+
+            if (inlineEditor) inlineEditor.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); hideInlineEditor(); } });
+
             window.switchTab = (id, btn) => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                if(btn) btn.classList.add('active');
+                if (btn) btn.classList.add('active');
                 ['props', 'filters', 'stickers'].forEach(t => document.getElementById(`tab-${t}`).classList.add('hidden'));
                 document.getElementById(`tab-${id}`).classList.remove('hidden');
             };
 
             function saveState() {
-                if(history.length > 10) history.shift();
+                if (history.length > 10) history.shift();
                 history.push(JSON.stringify({ layers, drawings, imgFilters }));
             }
             window.undo = () => {
-                if(history.length > 0) {
-                    history.pop(); 
-                    const prev = history[history.length - 1];
-                    if(prev) {
+                if (history.length > 0) {
+                    history.pop(); const prev = history[history.length - 1];
+                    if (prev) {
                         try {
-                            const data = JSON.parse(prev);
-                            layers = data.layers.filter(l => l.type !== 'image'); // Keep text
-                            imgFilters = data.imgFilters;
-                            drawings = data.drawings;
-                            
-                            if(filterBrightness) filterBrightness.value = imgFilters.brightness;
-                            if(filterContrast) filterContrast.value = imgFilters.contrast;
-                            if(filterSaturate) filterSaturate.value = imgFilters.saturate;
-                            
+                            const data = JSON.parse(prev); layers = data.layers.filter(l => l.type !== 'image'); imgFilters = data.imgFilters; drawings = data.drawings;
+                            if (filterBrightness) filterBrightness.value = imgFilters.brightness; if (filterContrast) filterContrast.value = imgFilters.contrast; if (filterSaturate) filterSaturate.value = imgFilters.saturate;
                             draw();
-                        } catch(e) {}
+                        } catch (e) { }
                     }
                 }
             };
-            
-            // SAVE & LOAD PROJECT
+
             window.saveProject = () => {
-                 if(!baseImage) return alert("Nothing to save!");
-                 
-                 // We need to convert baseImage to DataURL if it's not already
-                 // (It might be tainted if external URL without CORS, but we set anonymous)
-                 const canvasBase = document.createElement('canvas');
-                 canvasBase.width = baseImage.width;
-                 canvasBase.height = baseImage.height;
-                 const ctxBase = canvasBase.getContext('2d');
-                 ctxBase.drawImage(baseImage, 0, 0);
-                 const baseData = canvasBase.toDataURL('image/png');
-                 
-                 // Need to handle sticker images too.
-                 // This is complex for a simple file. 
-                 // For now, we save text layers and base image.
-                 const projectData = {
-                     version: 1,
-                     baseImage: baseData,
-                     layers: layers.map(l => {
-                         if (l.type === 'image') {
-                             // Try to save image data
-                             const c = document.createElement('canvas');
-                             c.width = l.width; c.height = l.height;
-                             c.getContext('2d').drawImage(l.content, 0, 0, l.width, l.height);
-                             return { ...l, contentData: c.toDataURL() };
-                         }
-                         return l;
-                     }),
-                     imgFilters, drawings
-                 };
-                 
-                 const blob = new Blob([JSON.stringify(projectData)], {type: "application/json"});
-                 const url = URL.createObjectURL(blob);
-                 const a = document.createElement('a');
-                 a.href = url;
-                 a.download = `project-${Date.now()}.meme`;
-                 a.click();
+                if (!baseImage) return alert("Nothing to save!");
+                const canvasBase = document.createElement('canvas'); canvasBase.width = baseImage.width; canvasBase.height = baseImage.height;
+                const ctxBase = canvasBase.getContext('2d'); ctxBase.drawImage(baseImage, 0, 0); const baseData = canvasBase.toDataURL('image/png');
+                const projectData = { version: 1, baseImage: baseData, layers: layers.map(l => { if (l.type === 'image') { const c = document.createElement('canvas'); c.width = l.width; c.height = l.height; c.getContext('2d').drawImage(l.content, 0, 0, l.width, l.height); return { ...l, contentData: c.toDataURL() }; } return l; }), imgFilters, drawings };
+                const blob = new Blob([JSON.stringify(projectData)], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `project-${Date.now()}.meme`; a.click();
             };
-            
-            loadProjectInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                const reader = new FileReader();
-                reader.onload = (evt) => {
-                    try {
-                        const data = JSON.parse(evt.target.result);
-                        if (data.baseImage) {
-                            window.loadBaseImage(data.baseImage);
-                            // Restore layers after image loads (need delay or callback logic in loadBaseImage)
-                            // Hacking it: override onload of baseImage slightly or wait
-                            setTimeout(() => {
-                                imgFilters = data.imgFilters || imgFilters;
-                                drawings = data.drawings || [];
-                                
-                                // Restore layers
-                                layers = data.layers.map(l => {
-                                    if(l.type === 'image' && l.contentData) {
-                                        const img = new Image();
-                                        img.src = l.contentData;
-                                        l.content = img;
-                                    }
-                                    return l;
-                                });
-                                draw();
-                                renderLayerList();
-                            }, 500); 
-                        }
-                    } catch(err) {
-                        alert("Invalid project file");
-                    }
-                };
-                reader.readAsText(file);
-                e.target.value = '';
-            });
+
+            if (loadProjectInput) {
+                loadProjectInput.addEventListener('change', (e) => {
+                    const file = e.target.files[0]; if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        try {
+                            const data = JSON.parse(evt.target.result);
+                            if (data.baseImage) {
+                                window.loadBaseImage(data.baseImage);
+                                setTimeout(() => {
+                                    imgFilters = data.imgFilters || imgFilters; drawings = data.drawings || [];
+                                    layers = data.layers.map(l => { if (l.type === 'image' && l.contentData) { const img = new Image(); img.src = l.contentData; l.content = img; } return l; });
+                                    draw(); renderLayerList();
+                                }, 500);
+                            }
+                        } catch (err) { alert("Invalid project file"); }
+                    };
+                    reader.readAsText(file); e.target.value = '';
+                });
+            }
 
             window.downloadMeme = () => {
-                if(!baseImage) return;
-                const prev = activeLayerIndex;
-                activeLayerIndex = -1; draw();
-                const link = document.createElement('a');
-                link.download = `meme-${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                if (!baseImage) return;
+                const prev = activeLayerIndex; activeLayerIndex = -1; draw();
+                const link = document.createElement('a'); link.download = `meme-${Date.now()}.png`; link.href = canvas.toDataURL('image/png'); link.click();
                 activeLayerIndex = prev; draw();
             };
-
         });
     </script>
 </body>
+
 </html>
