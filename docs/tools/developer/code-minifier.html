@@ -1,0 +1,471 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Minifier (HTML/CSS/JS) | Free Online Tools</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Free online Code Minifier. Compress HTML, CSS, and JavaScript code instantly to improve website load speed and performance.">
+    <meta name="keywords" content="code minifier, html minifier, css minifier, js minifier, code compressor, online code optimizer, free developer tools">
+    <meta name="author" content="Free Online Tools">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Code Minifier (HTML/CSS/JS)">
+    <meta property="og:description" content="Compress your code instantly to boost website performance.">
+    
+    <!-- User's AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
+    <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Active Tab Style */
+        .tab-active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .tab-inactive {
+            background-color: #1e293b;
+            color: #94a3b8;
+            border-color: #334155;
+        }
+        .tab-inactive:hover {
+            border-color: #475569;
+            color: #cbd5e1;
+        }
+        
+        /* Drag Active State */
+        .drag-active {
+            border-color: #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-300 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-file-code"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-white">MinifyCode</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-slate-400">
+                    <a href="../../index.html" class="hover:text-blue-400 transition">Home</a>
+                    <a href="https://jansuchnaforall.blogspot.com" target="_blank" class="hover:text-blue-400 transition">Blog</a>
+                    <a href="../../pages/contact.html" class="hover:text-blue-400 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 sm:px-6 w-full">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white mb-3">Code Minifier</h1>
+            <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                Remove unnecessary characters, comments, and whitespace to reduce file size.
+            </p>
+        </div>
+
+        <!-- Language Tabs -->
+        <div class="flex justify-center mb-6">
+            <div class="flex gap-2 bg-slate-800 p-1.5 rounded-xl border border-slate-700">
+                <button onclick="setMode('html')" id="tabHTML" class="tab-active px-6 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 border">
+                    <i class="fa-brands fa-html5"></i> HTML
+                </button>
+                <button onclick="setMode('css')" id="tabCSS" class="tab-inactive px-6 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 border">
+                    <i class="fa-brands fa-css3-alt"></i> CSS
+                </button>
+                <button onclick="setMode('js')" id="tabJS" class="tab-inactive px-6 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 border">
+                    <i class="fa-brands fa-js"></i> JS
+                </button>
+            </div>
+        </div>
+
+        <!-- Editor Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[600px]">
+            
+            <!-- Input -->
+            <div class="flex flex-col">
+                <div class="flex justify-between items-center mb-2 px-1">
+                    <span class="text-xs font-bold uppercase text-slate-500">Input Code</span>
+                    <div class="flex gap-3">
+                        <!-- Upload Button -->
+                        <label class="cursor-pointer text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 hover:bg-slate-800 px-2 py-1 rounded transition">
+                            <i class="fa-solid fa-upload"></i> Upload File
+                            <input type="file" id="fileInput" class="hidden" onchange="handleFileUpload(this)">
+                        </label>
+                        <button onclick="loadSample()" class="text-xs text-slate-400 hover:text-white underline">Sample</button>
+                        <button onclick="clearAll()" class="text-xs text-red-400 hover:text-red-300 underline">Clear</button>
+                    </div>
+                </div>
+                <div id="dropZone" class="flex-grow relative group border border-slate-700 rounded-xl overflow-hidden transition-colors">
+                    <textarea id="inputCode" class="w-full h-full bg-slate-800 text-slate-300 p-4 font-mono text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition resize-none custom-scrollbar leading-relaxed bg-transparent" placeholder="Paste your code here or drag & drop a file..." spellcheck="false"></textarea>
+                    
+                    <!-- Drag Overlay -->
+                    <div id="dragOverlay" class="absolute inset-0 bg-blue-500/10 flex flex-col items-center justify-center pointer-events-none opacity-0 transition-opacity">
+                        <i class="fa-solid fa-file-arrow-up text-4xl text-blue-400 mb-2"></i>
+                        <p class="text-blue-200 font-bold">Drop file here</p>
+                    </div>
+                </div>
+                <div class="mt-2 text-right text-xs text-slate-500">
+                    Original Size: <span id="origSize" class="text-slate-300 font-mono">0 B</span>
+                </div>
+            </div>
+
+            <!-- Output -->
+            <div class="flex flex-col">
+                <div class="flex justify-between items-center mb-2 px-1">
+                    <span class="text-xs font-bold uppercase text-slate-500">Minified Output</span>
+                    <div class="flex gap-2">
+                         <button onclick="downloadOutput()" id="downloadBtn" class="text-xs bg-green-700 hover:bg-green-600 text-white px-2 py-1 rounded transition flex items-center gap-1 hidden">
+                            <i class="fa-solid fa-download"></i> Save
+                        </button>
+                        <button onclick="copyOutput()" id="copyBtn" class="text-xs bg-slate-700 hover:bg-slate-600 text-white px-2 py-1 rounded transition flex items-center gap-1">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-grow relative bg-slate-800 border border-slate-700 rounded-xl overflow-hidden group">
+                    <textarea id="outputCode" class="w-full h-full bg-slate-800 text-green-400 p-4 font-mono text-sm resize-none custom-scrollbar leading-relaxed focus:outline-none" readonly placeholder="Minified code will appear here..."></textarea>
+                    
+                    <!-- Action Overlay (Visible on Empty) -->
+                    <div id="actionOverlay" class="absolute inset-0 flex items-center justify-center bg-slate-900/50 backdrop-blur-[1px] transition-opacity">
+                        <button onclick="minify()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition flex items-center gap-2">
+                            <i class="fa-solid fa-compress-arrows-alt"></i> Minify Now
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-2 flex justify-between items-center text-xs">
+                    <span class="text-green-500 font-bold" id="savingsBadge"></span>
+                    <span class="text-slate-500">Minified Size: <span id="minSize" class="text-slate-300 font-mono">0 B</span></span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-8 bg-slate-800 rounded-xl border border-slate-700 p-6">
+            <h3 class="font-bold text-white mb-2"><i class="fa-solid fa-circle-info text-blue-400 mr-2"></i>How it works</h3>
+            <p class="text-sm text-slate-400 mb-2">
+                This tool helps developers compress code files. Simply upload your file or paste the code, and it will strip out unnecessary characters.
+            </p>
+            <ul class="list-disc list-inside text-sm text-slate-500 space-y-1">
+                <li><strong class="text-slate-400">HTML:</strong> Removes comments, collapses whitespace between tags.</li>
+                <li><strong class="text-slate-400">CSS:</strong> Removes comments, whitespace, and unnecessary semicolons.</li>
+                <li><strong class="text-slate-400">JS:</strong> Removes comments and multi-line spaces.</li>
+            </ul>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-800 border-t border-slate-700 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-slate-500">
+                &copy; 2023 Free Online Tools. <a href="../../pages/privacy.html" class="text-blue-500 hover:text-blue-400">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            const inputCode = document.getElementById('inputCode');
+            const outputCode = document.getElementById('outputCode');
+            const origSizeEl = document.getElementById('origSize');
+            const minSizeEl = document.getElementById('minSize');
+            const savingsBadge = document.getElementById('savingsBadge');
+            const actionOverlay = document.getElementById('actionOverlay');
+            const copyBtn = document.getElementById('copyBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const dropZone = document.getElementById('dropZone');
+            const dragOverlay = document.getElementById('dragOverlay');
+            
+            // Tabs
+            const tabs = {
+                html: document.getElementById('tabHTML'),
+                css: document.getElementById('tabCSS'),
+                js: document.getElementById('tabJS')
+            };
+
+            let currentMode = 'html';
+
+            // Format Bytes
+            function formatBytes(bytes) {
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // Switch Mode
+            window.setMode = function(mode) {
+                currentMode = mode;
+                
+                // Reset all tabs safely
+                const tabKeys = ['html', 'css', 'js'];
+                for (let i = 0; i < tabKeys.length; i++) {
+                    const key = tabKeys[i];
+                    if (tabs[key]) {
+                        tabs[key].classList.remove('tab-active');
+                        tabs[key].classList.add('tab-inactive');
+                    }
+                }
+                
+                // Set active tab
+                const activeTab = tabs[mode];
+                if (activeTab) {
+                    activeTab.classList.remove('tab-inactive');
+                    activeTab.classList.add('tab-active');
+                }
+                
+                // Trigger re-minify if content exists
+                if(inputCode.value.trim()) minify();
+            }
+
+            // Update Sizes
+            function updateStats(original, minified) {
+                const oSize = new Blob([original]).size;
+                const mSize = new Blob([minified]).size;
+                
+                origSizeEl.textContent = formatBytes(oSize);
+                minSizeEl.textContent = formatBytes(mSize);
+
+                if(oSize > 0 && mSize < oSize) {
+                    const saved = ((oSize - mSize) / oSize * 100).toFixed(1);
+                    savingsBadge.textContent = `Saved ${saved}%`;
+                } else {
+                    savingsBadge.textContent = '';
+                }
+            }
+
+            // Minify Logic
+            window.minify = function() {
+                const source = inputCode.value;
+                if(!source.trim()) return;
+
+                let minified = '';
+
+                try {
+                    if (currentMode === 'html') {
+                        minified = source
+                            .replace("/<!--[\s\S]*?-->/g", "") // Remove comments
+                            .replace("/\s+/g", " ")            // Collapse whitespace
+                            .replace("/>\s+</g", "><");        // Remove space between tags
+                    } 
+                    else if (currentMode === 'css') {
+                        minified = source
+                            .replace(/\/\*[\s\S]*?\*\//g, "") // Remove comments
+                            .replace(/\s+/g, " ")            // Collapse whitespace
+                            .replace(/\s*([:;{}])\s*/g, "$1") // Remove space around separators
+                            .replace(/;}/g, "}")             // Remove last semicolon
+                            .trim();
+                    } 
+                    else if (currentMode === 'js') {
+                        minified = source
+                            .replace(/\/\*[\s\S]*?\*\//g, "") // Block comments
+                            .replace(/^\s*\/\/.*/gm, "") // Line comments
+                            // Simple line collapsing (Safe approach)
+                            .split('\n')
+                            .map(line => {
+                                line = line.trim();
+                                // Remove trailing inline comments cautiously
+                                // Only if // is not inside quotes (basic check)
+                                if(line.includes('//') && !line.includes('"') && !line.includes("'")) {
+                                     line = line.split('//')[0].trim();
+                                }
+                                return line;
+                            })
+                            .filter(line => line.length > 0)
+                            .join('\n');
+                    }
+
+                    outputCode.value = minified;
+                    updateStats(source, minified);
+                    actionOverlay.classList.add('hidden');
+                    downloadBtn.style.display = 'inline-flex';
+                    
+                } catch (e) {
+                    console.error("Minification error", e);
+                    outputCode.value = "Error minifying code. Please check syntax.";
+                }
+            }
+
+            // Utility Functions
+            window.clearAll = function() {
+                inputCode.value = '';
+                outputCode.value = '';
+                origSizeEl.textContent = '0 B';
+                minSizeEl.textContent = '0 B';
+                savingsBadge.textContent = '';
+                actionOverlay.classList.remove('hidden');
+                downloadBtn.style.display = 'none';
+                // Also reset file input
+                const fileInput = document.getElementById('fileInput');
+                if(fileInput) fileInput.value = '';
+            }
+
+            window.copyOutput = function() {
+                if(!outputCode.value) return;
+                outputCode.select();
+                document.execCommand('copy');
+                
+                const original = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+                copyBtn.classList.replace('bg-slate-700', 'bg-green-700');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = original;
+                    copyBtn.classList.replace('bg-green-700', 'bg-slate-700');
+                }, 1500);
+            }
+            
+            // Handle File Upload
+            window.handleFileUpload = function(input) {
+                const file = input.files[0];
+                if (!file) return;
+                
+                // Show loading
+                inputCode.value = "Reading file...";
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    inputCode.value = content;
+                    
+                    // Auto-detect type based on extension
+                    const name = file.name.toLowerCase();
+                    if(name.endsWith('.css')) setMode('css');
+                    else if(name.endsWith('.js')) setMode('js');
+                    else setMode('html');
+                    
+                    // Trigger minify after short delay to update UI
+                    setTimeout(minify, 100);
+                    
+                    // Reset input to allow re-uploading same file
+                    input.value = '';
+                };
+                reader.onerror = function() {
+                    inputCode.value = "Error reading file.";
+                };
+                reader.readAsText(file);
+            }
+
+            // Drag and Drop Handlers
+            if (dropZone) {
+                const events = ['dragenter', 'dragover', 'dragleave', 'drop'];
+                for (let i = 0; i < events.length; i++) {
+                    dropZone.addEventListener(events[i], preventDefaults, false);
+                }
+
+                dropZone.addEventListener('dragenter', () => {
+                    dropZone.classList.add('drag-active');
+                    dragOverlay.classList.remove('opacity-0');
+                });
+
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('drag-active');
+                    dragOverlay.classList.add('opacity-0');
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    dropZone.classList.remove('drag-active');
+                    dragOverlay.classList.add('opacity-0');
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        // Reuse the file reading logic but we need a dummy input object or direct call
+                        // Let's call logic directly
+                        const reader = new FileReader();
+                        reader.onload = function(ev) {
+                            inputCode.value = ev.target.result;
+                            const name = file.name.toLowerCase();
+                            if(name.endsWith('.css')) setMode('css');
+                            else if(name.endsWith('.js')) setMode('js');
+                            else setMode('html');
+                            setTimeout(minify, 100);
+                        };
+                        reader.readAsText(file);
+                    }
+                });
+            }
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            // Handle File Download
+            window.downloadOutput = function() {
+                const content = outputCode.value;
+                if (!content) return;
+                
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                
+                let ext = 'html';
+                if(currentMode === 'css') ext = 'css';
+                if(currentMode === 'js') ext = 'js';
+                
+                a.download = `minified.${ext}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }
+
+            window.loadSample = function() {
+                let sample = '';
+                if(currentMode === 'html') {
+                    sample = `<!-- Header Section -->\n<div class="container">\n    <h1>   Hello World   </h1>\n    <p>  This is a sample paragraph.  </p>\n</div>`;
+                } else if (currentMode === 'css') {
+                    sample = `/* Main Body Style */\nbody {\n    background-color: #fff;\n    color: #333;\n    font-size: 16px;\n}\n\n/* Header */\nh1 {\n    margin: 0;\n    padding: 10px;\n}`;
+                } else {
+                    sample = `// Calculate Sum function\nfunction add(a, b) {\n    return a + b;\n}\n\n/* \n  Call function \n*/\nconsole.log(  add(5, 10)  );`;
+                }
+                inputCode.value = sample;
+                minify();
+            }
+
+            // Auto-update input size
+            inputCode.addEventListener('input', () => {
+                updateStats(inputCode.value, outputCode.value);
+                if(!inputCode.value.trim()) {
+                    actionOverlay.classList.remove('hidden');
+                    downloadBtn.style.display = 'none';
+                }
+            });
+
+        })();
+    </script>
+</body>
+</html>

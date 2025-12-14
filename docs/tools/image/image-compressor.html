@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compressor | Free Online Tools</title>
+    <!-- SEO / Social meta tags - please update description and canonical URL -->
+    <meta name="description" content="Compress images quickly online while preserving quality. Replace with a page-specific description that highlights features and benefits.">
+    <meta name="keywords" content="image compressor, compress images online, reduce image size, free tools">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://nkd2000.github.io/Daily_tools/imageCompressor.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Image Compressor | Free Online Tools">
+    <meta property="og:description" content="Compress images quickly online while preserving quality.">
+    <meta property="og:url" content="https://nkd2000.github.io/Daily_tools/imageCompressor.html">
+    <meta property="og:image" content="https://nkd2000.github.io/Daily_tools/assets/og-default.svg">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Image Compressor | Free Online Tools">
+    <meta name="twitter:description" content="Compress images quickly online while preserving quality.">
+
+    <meta name="author" content="FreeTools">
+        <meta name="theme-color" content="#0369a1">
+
+        <!-- JSON-LD: Organization + WebSite -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@graph": [
+                { "@type": "Organization", "@id": "https://nkd2000.github.io/Daily_tools/#org", "name": "Free Online Tools", "url": "https://nkd2000.github.io/Daily_tools/", "logo": "https://nkd2000.github.io/Daily_tools/assets/og-default.svg" },
+                { "@type": "WebSite", "url": "https://nkd2000.github.io/Daily_tools/", "name": "Free Online Tools", "publisher": { "@id": "https://nkd2000.github.io/Daily_tools/#org" } }
+            ]
+        }
+        </script>
+    
+    <!-- User's AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3793390054330330" crossorigin="anonymous"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .drag-active { border-color: #3b82f6; background-color: #eff6ff; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Radio Button styling */
+        .radio-card:checked + div { border-color: #3b82f6; background-color: #eff6ff; color: #1d4ed8; }
+        .radio-card:checked + div .check-icon { opacity: 1; }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-compress"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">ImgCompress</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
+                    <a href="../../index.html" class="hover:text-blue-600 transition">Home</a>
+                    <a href="https://jansuchnaforall.blogspot.com" target="_blank" class="hover:text-blue-600 transition">Blog</a>
+                    <a href="../../pages/contact.html" class="hover:text-blue-600 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 sm:px-6 w-full">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Compress Images Online</h1>
+            <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+                Reduce file size while maintaining quality. 
+                <a href="smart_image_processor.html" class="text-blue-600 hover:underline font-medium ml-1">Try Smart Processor <i class="fa-solid fa-arrow-right text-xs"></i></a>
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Column: Controls -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Upload Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-upload mr-2 text-blue-500"></i>Upload Image</h3>
+                    </div>
+                    <div class="p-6">
+                        <label id="dropZone" class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition duration-200 group">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i class="fa-solid fa-image text-3xl text-gray-400 group-hover:text-blue-500 mb-3 transition"></i>
+                                <p class="mb-1 text-sm text-gray-500"><span class="font-semibold text-gray-700">Click to upload</span> or drag & drop</p>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="previewImage()">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Settings Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-sliders mr-2 text-blue-500"></i>Settings</h3>
+                    </div>
+                    <div class="p-6 space-y-5">
+                        
+                        <!-- Mode Selection -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Compression Mode</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="cursor-pointer relative">
+                                    <input type="radio" name="compressionType" value="pixel" checked class="radio-card sr-only">
+                                    <div class="border border-gray-200 rounded-lg p-3 text-center hover:bg-gray-50 transition">
+                                        <i class="fa-solid fa-ruler-combined mb-1 block text-lg"></i>
+                                        <span class="text-sm font-medium">Pixel Size</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="radio" name="compressionType" value="percentage" class="radio-card sr-only">
+                                    <div class="border border-gray-200 rounded-lg p-3 text-center hover:bg-gray-50 transition">
+                                        <i class="fa-solid fa-percent mb-1 block text-lg"></i>
+                                        <span class="text-sm font-medium">Percentage</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Value Input -->
+                        <div>
+                            <label for="compressionValue" class="block text-sm font-medium text-gray-700 mb-1">Compression Value</label>
+                            <div class="relative rounded-md shadow-sm">
+                                <input type="number" id="compressionValue" placeholder="e.g. 50" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-4 pr-12 sm:text-sm border-gray-300 rounded-lg py-2.5 border">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm" id="valueUnit">px/%</span>
+                                </div>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-400">For Pixel: Enter width. For %: Enter 1-100.</p>
+                        </div>
+
+                        <!-- Action Button -->
+                        <button onclick="compressImage()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition duration-150 ease-in-out flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-bolt"></i> Compress Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Preview -->
+            <div class="lg:col-span-7">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden min-h-[500px] flex flex-col">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-eye mr-2 text-blue-500"></i>Result</h3>
+                        <div id="sizeBadge" class="hidden bg-gray-100 text-gray-600 text-xs font-semibold px-2.5 py-1 rounded-full border border-gray-200">
+                            Waiting...
+                        </div>
+                    </div>
+                    
+                    <div class="flex-grow p-6 bg-slate-50 flex flex-col items-center justify-center relative">
+                        <!-- Empty State -->
+                        <div id="emptyState" class="text-center text-gray-400">
+                            <i class="fa-regular fa-image text-6xl mb-4 opacity-50"></i>
+                            <p>Upload an image to start</p>
+                        </div>
+
+                        <!-- Preview Image -->
+                        <img id="preview" src="" alt="Preview" class="hidden max-w-full max-h-[400px] rounded-lg shadow-md object-contain border border-gray-200">
+                    </div>
+
+                    <!-- Stats & Download -->
+                    <div id="resultPanel" class="hidden p-6 bg-white border-t border-gray-100 fade-in">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                <p class="text-xs text-gray-500 uppercase font-semibold">Original Size</p>
+                                <p id="originalSizeText" class="text-lg font-bold text-gray-800">-</p>
+                            </div>
+                            <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                <p class="text-xs text-blue-600 uppercase font-semibold">Compressed Size</p>
+                                <p id="compressedSizeText" class="text-lg font-bold text-blue-700">-</p>
+                            </div>
+                        </div>
+                        <button id="downloadButton" onclick="downloadCompressedImage()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow hover:shadow-lg transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Download Image
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex justify-between items-center">
+                    <button onclick="history.back()" class="text-gray-500 hover:text-gray-700 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Back
+                    </button>
+                    <a href="smart_image_processor.html" class="text-xs text-blue-500 hover:underline bg-blue-50 px-3 py-1 rounded-full">
+                        Need more tools? Try Smart Processor
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">
+                &copy; 2023 Free Online Tools. <a href="../../pages/privacy.html" class="text-blue-600 hover:text-blue-500">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Native Logic -->
+    <script>
+        let compressedBlob;
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        // Drag & Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-active'), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-active'), false);
+        });
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+            previewImage();
+        });
+
+        function formatBytes(bytes, decimals = 2) {
+            if (!+bytes) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+        }
+
+        function previewImage() {
+            const preview = document.getElementById('preview');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+
+            // Show UI Elements
+            document.getElementById('emptyState').classList.add('hidden');
+            preview.classList.remove('hidden');
+            document.getElementById('sizeBadge').classList.remove('hidden');
+            document.getElementById('sizeBadge').textContent = "Original Loaded";
+
+            // Set Stats
+            document.getElementById('originalSizeText').textContent = formatBytes(file.size);
+            document.getElementById('resultPanel').classList.add('hidden'); // Hide result until processed
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function compressImage() {
+            if (!fileInput.files[0]) {
+                alert("Please select an image first.");
+                return;
+            }
+
+            const compressionType = document.querySelector('input[name="compressionType"]:checked').value;
+            const compressionValue = document.getElementById('compressionValue').value;
+
+            if (!compressionValue) {
+                alert("Please enter a compression value.");
+                return;
+            }
+
+            const image = new Image();
+            image.src = URL.createObjectURL(fileInput.files[0]);
+
+            image.onload = function () {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                let maxWidth, maxHeight;
+                if (compressionType === 'pixel') {
+                    // Simple logic from original code: maintain aspect ratio based on width?
+                    // Original code: maxWidth = maxHeight = parseInt(compressionValue);
+                    // Improved logic: Scale based on aspect ratio using the input as Max Dimension
+                    const val = parseInt(compressionValue);
+                    const ratio = image.width / image.height;
+                    
+                    if (ratio > 1) {
+                        // Landscape
+                        maxWidth = val;
+                        maxHeight = val / ratio;
+                    } else {
+                        // Portrait or Square
+                        maxHeight = val;
+                        maxWidth = val * ratio;
+                    }
+
+                } else {
+                    maxWidth = image.width * (compressionValue / 100);
+                    maxHeight = image.height * (compressionValue / 100);
+                }
+
+                canvas.width = maxWidth;
+                canvas.height = maxHeight;
+
+                // Fill white background for transparancy safety
+                context.fillStyle = "#FFFFFF";
+                context.fillRect(0,0, canvas.width, canvas.height);
+                
+                context.drawImage(image, 0, 0, maxWidth, maxHeight);
+
+                canvas.toBlob(function (blob) {
+                    compressedBlob = blob;
+
+                    document.getElementById('compressedSizeText').textContent = formatBytes(compressedBlob.size);
+                    
+                    const preview = document.getElementById('preview');
+                    preview.src = URL.createObjectURL(compressedBlob);
+
+                    // Show Result Panel
+                    document.getElementById('resultPanel').classList.remove('hidden');
+                    document.getElementById('sizeBadge').textContent = "Compression Complete";
+                    document.getElementById('sizeBadge').className = "bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-200";
+
+                }, 'image/jpeg', 0.85);
+            };
+        }
+
+        function downloadCompressedImage() {
+            if(!compressedBlob) return;
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(compressedBlob);
+            downloadLink.download = 'compressed_image.jpg';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    </script>
+</body>
+</html>
+
+
+
+<!--  -->

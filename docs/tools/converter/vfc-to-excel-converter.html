@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCF to Excel Converter | Free Online Tools</title>
+    <!-- SEO meta tags - edit description & canonical URL for your domain -->
+    <meta name="description" content="Convert VCF (vCard) contact files to a well-formatted Excel spreadsheet in your browser. No server uploads required.">
+    <meta name="keywords" content="vcf to excel, vcard converter, contacts to excel, vcf converter">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://nkd2000.github.io/Daily_tools/vfc_to_excel_converter.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="VCF to Excel Converter | Free Online Tools">
+    <meta property="og:description" content="Convert VCF (vCard) contact files to a well-formatted Excel spreadsheet in your browser.">
+    <meta property="og:url" content="https://nkd2000.github.io/Daily_tools/vfc_to_excel_converter.html">
+    <meta property="og:image" content="https://nkd2000.github.io/Daily_tools/assets/og-default.svg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VCF to Excel Converter | Free Online Tools">
+    <meta name="twitter:description" content="Convert VCF contact files to Excel quickly and privately in your browser.">
+
+    <meta name="author" content="FreeTools">
+        <meta name="theme-color" content="#047857">
+
+        <!-- JSON-LD: Organization + WebSite -->
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@graph": [
+                { "@type": "Organization", "@id": "https://nkd2000.github.io/Daily_tools/#org", "name": "Free Online Tools", "url": "https://nkd2000.github.io/Daily_tools/docs/tools/converter/vfc-to-excel-converter.html", "logo": "https://nkd2000.github.io/Daily_tools/assets/og-default.svg" },
+                { "@type": "WebSite", "url": "https://nkd2000.github.io/Daily_tools/", "name": "Free Online Tools", "publisher": { "@id": "https://nkd2000.github.io/Daily_tools/#org" } }
+            ]
+        }
+        </script>
+    
+    <!-- User's AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3793390054330330" crossorigin="anonymous"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- SheetJS (XLSX) Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .drag-active { border-color: #059669; background-color: #ecfdf5; } /* Green theme */
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Scrollbar for table */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-green-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-file-excel"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">VCF2Excel</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
+                    <a href="../../index.html" class="hover:text-green-600 transition">Home</a>
+                    <a href="https://jansuchnaforall.blogspot.com" target="_blank" class="hover:text-green-600 transition">Blog</a>
+                    <a href="../../pages/contact.html" class="hover:text-green-600 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 sm:px-6 w-full">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">VCF to Excel Converter</h1>
+            <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+                Convert your phone contacts (VCard) to an organized Excel spreadsheet instantly.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Column: Upload -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-upload mr-2 text-green-500"></i>Upload VCF</h3>
+                    </div>
+                    <div class="p-6">
+                        <label id="dropZone" class="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition duration-200 group">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <i class="fa-solid fa-address-book text-4xl text-gray-400 group-hover:text-green-500 mb-3 transition"></i>
+                                <p class="mb-1 text-sm text-gray-500"><span class="font-semibold text-gray-700">Click to upload</span> or drag</p>
+                                <p class="text-xs text-gray-400">.vcf files only</p>
+                            </div>
+                            <input type="file" id="fileInput" accept=".vcf" class="hidden">
+                        </label>
+                        
+                        <div id="fileInfo" class="hidden mt-4 bg-green-50 text-green-800 text-sm p-3 rounded-lg flex items-center justify-between">
+                            <span id="fileName" class="truncate font-medium">file.vcf</span>
+                            <button id="clearBtn" class="text-green-600 hover:text-green-800 ml-2"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Card (Hidden initially) -->
+                <div id="statsCard" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hidden fade-in">
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-500">Contacts Found</span>
+                            <span id="contactCount" class="text-xl font-bold text-gray-800">0</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2.5 mb-4">
+                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 100%"></div>
+                        </div>
+                        <button id="downloadBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition duration-150 ease-in-out flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-file-export"></i> Download Excel
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Preview -->
+            <div class="lg:col-span-8">
+                
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden flex flex-col min-h-[500px]">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-table mr-2 text-green-500"></i>Data Preview</h3>
+                        <div id="loading" class="hidden flex items-center gap-2 text-sm text-gray-500">
+                            <i class="fa-solid fa-circle-notch fa-spin text-green-500"></i> Processing...
+                        </div>
+                    </div>
+
+                    <!-- Table Container -->
+                    <div class="flex-grow overflow-auto custom-scrollbar relative">
+                        
+                        <!-- Empty State -->
+                        <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
+                            <i class="fa-regular fa-folder-open text-5xl mb-4 opacity-30"></i>
+                            <p>Upload a VCF file to preview contacts</p>
+                        </div>
+
+                        <!-- Data Table -->
+                        <table id="dataTable" class="hidden min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0 z-10">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Rows injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex justify-start">
+                     <button onclick="history.back()" class="text-gray-500 hover:text-gray-700 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Tools
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">
+                &copy; 2023 Free Online Tools. <a href="../../pages/privacy.html" class="text-green-600 hover:text-green-500">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            // Elements
+            const fileInput = document.getElementById('fileInput');
+            const dropZone = document.getElementById('dropZone');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const clearBtn = document.getElementById('clearBtn');
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('emptyState');
+            const dataTable = document.getElementById('dataTable');
+            const tableBody = document.getElementById('tableBody');
+            const statsCard = document.getElementById('statsCard');
+            const contactCount = document.getElementById('contactCount');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            let parsedData = [];
+
+            // --- Drag & Drop ---
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, preventDefaults, false));
+            function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+            ['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.add('drag-active')));
+            ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.remove('drag-active')));
+            
+            dropZone.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
+            fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+            function handleFile(file) {
+                if (!file) return;
+                
+                // Reset UI
+                tableBody.innerHTML = '';
+                parsedData = [];
+                
+                // Show File Info
+                fileName.textContent = file.name;
+                fileInfo.classList.remove('hidden');
+                loading.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+                dataTable.classList.add('hidden');
+                statsCard.classList.add('hidden');
+
+                // Read File
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    processVCF(e.target.result);
+                };
+                reader.readAsText(file);
+            }
+
+            function processVCF(content) {
+                const lines = content.split('\n');
+                let contact = {};
+                parsedData = [];
+
+                // Simple State Machine for VCard parsing
+                lines.forEach(line => {
+                    line = line.trim();
+                    if (line.startsWith('BEGIN:VCARD')) {
+                        contact = {};
+                    } else if (line.startsWith('END:VCARD')) {
+                        // Push if name exists
+                        if (contact['FN'] || contact['N']) {
+                            parsedData.push({
+                                Name: contact['FN'] || 'Unknown',
+                                Phone: contact['TEL'] || '',
+                                Email: contact['EMAIL'] || ''
+                            });
+                        }
+                    } else if (line.includes(':')) {
+                        // Split only on the first colon
+                        const parts = line.split(':');
+                        const keyPart = parts[0];
+                        const valuePart = parts.slice(1).join(':').trim(); // Rejoin rest in case value has colons
+                        
+                        // Extract base key (remove params like ;TYPE=CELL)
+                        const key = keyPart.split(';')[0];
+                        
+                        // Basic Mapping
+                        if (key === 'FN') contact['FN'] = valuePart;
+                        if (key === 'TEL' && !contact['TEL']) contact['TEL'] = valuePart; // Grab first phone
+                        if (key === 'EMAIL' && !contact['EMAIL']) contact['EMAIL'] = valuePart; // Grab first email
+                    }
+                });
+
+                // Update UI
+                loading.classList.add('hidden');
+                if (parsedData.length > 0) {
+                    renderTable(parsedData);
+                    dataTable.classList.remove('hidden');
+                    statsCard.classList.remove('hidden');
+                    contactCount.textContent = parsedData.length;
+                } else {
+                    emptyState.innerHTML = '<p class="text-red-500">No valid contacts found in this file.</p>';
+                    emptyState.classList.remove('hidden');
+                }
+            }
+
+            function renderTable(data) {
+                // Render first 100 rows for performance, logic for more could be added (virtual scroll)
+                // For now, render all but be mindful of huge lists
+                const limit = 500; 
+                const displayData = data.slice(0, limit);
+
+                const fragment = document.createDocumentFragment();
+                displayData.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-gray-50 transition";
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${row.Name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${row.Phone}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${row.Email}</td>
+                    `;
+                    fragment.appendChild(tr);
+                });
+                tableBody.appendChild(fragment);
+                
+                if (data.length > limit) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500 italic">...and ${data.length - limit} more rows (visible in download)</td>`;
+                    tableBody.appendChild(tr);
+                }
+            }
+
+            // Clear Action
+            clearBtn.addEventListener('click', () => {
+                fileInput.value = '';
+                fileInfo.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                dataTable.classList.add('hidden');
+                statsCard.classList.add('hidden');
+                emptyState.innerHTML = '<i class="fa-regular fa-folder-open text-5xl mb-4 opacity-30"></i><p>Upload a VCF file to preview contacts</p>';
+            });
+
+            // Download Action
+            downloadBtn.addEventListener('click', () => {
+                if (parsedData.length === 0) return;
+
+                // Create Worksheet
+                const worksheet = XLSX.utils.json_to_sheet(parsedData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Contacts');
+
+                // Write File
+                XLSX.writeFile(workbook, 'contacts_export.xlsx');
+            });
+
+        })();
+    </script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
+    <!-- AdSense script moved to head -->
+    <title>VCF to Excel Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        #loading {
+            display: none;
+            color: #555;
+            font-style: italic;
+        }
+        #excelTable {
+            display: none;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        #excelTable th, #excelTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #excelTable th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        #downloadLink {
+            display: block;
+            margin-top: 20px;
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        #downloadLink:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+        <header style="background:#2c3e50;color:#fff;padding:12px 0;text-align:center">
+            <nav style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap">
+                <a href="../../index.html" style="color:#fff; text-decoration:none; font-weight:600">Home</a>
+                <a href="../../pages/privacy.html" style="color:#fff; text-decoration:none">Privacy</a>
+                <a href="../../pages/contact.html" style="color:#fff; text-decoration:none">Contact</a>
+            </nav>
+        </header>
+        <h1>VCF to Excel Converter</h1>
+    <form id="uploadForm">
+        <input type="file" id="vcfFile" accept=".vcf" required>
+        <button type="submit">Upload and Convert</button>
+    </form>
+    <div id="loading">Converting... Please wait.</div>
+    <table id="excelTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <a id="downloadLink" style="display:none;">Download Excel</a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('vcfFile');
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            // Show loading message
+            document.getElementById('loading').style.display = 'block';
+
+            reader.onload = function(e) {
+                const vcfContent = e.target.result;
+
+                // Parse VCF data
+                const lines = vcfContent.split('\n');
+                const contacts = [];
+                let contact = {};
+
+                lines.forEach(line => {
+                    if (line.startsWith('BEGIN:VCARD')) {
+                        contact = {}; // Reset for new contact
+                    } else if (line.startsWith('END:VCARD')) {
+                        contacts.push(contact); // Add contact to list
+                    } else {
+                        const parts = line.split(':', 2);
+                        if (parts.length === 2) {
+                            const key = parts[0].split(';')[0]; // Remove any parameters (e.g., TEL;TYPE=HOME)
+                            contact[key] = parts[1];
+                        }
+                    }
+                });
+
+                // Map to structured data for Excel and table display
+                const data = contacts.map(contact => ({
+                    Name: contact['FN'] || '',
+                    Phone: contact['TEL'] || '',
+                    Email: contact['EMAIL'] || ''
+                }));
+
+                // Generate Excel file
+                const worksheet = XLSX.utils.json_to_sheet(data);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Contacts');
+                const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+
+                // Update download link
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = url;
+                downloadLink.download = 'contacts.xlsx';
+                downloadLink.style.display = 'block';
+                downloadLink.innerText = 'Download Excel';
+
+                // Hide loading message
+                document.getElementById('loading').style.display = 'none';
+
+                // Display data in table format
+                const tableBody = document.getElementById('excelTable').querySelector('tbody');
+                tableBody.innerHTML = ''; // Clear previous entries
+
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${row.Name}</td><td>${row.Phone}</td><td>${row.Email}</td>`;
+                    tableBody.appendChild(tr);
+                });
+
+                // Show the table
+                document.getElementById('excelTable').style.display = 'table';
+            };
+
+            reader.readAsText(file);
+        });
+        </script>
+        <footer style="text-align:center;padding:18px;background:#f4f4f4;margin-top:30px">
+            <a href="../../pages/privacy.html">Privacy</a> • <a href="../../pages/contact.html">Contact</a>
+            <div style="font-size:0.9em;color:#666;margin-top:6px">&copy; Free Online Tools</div>
+        </footer>
+</body>
+</html> -->

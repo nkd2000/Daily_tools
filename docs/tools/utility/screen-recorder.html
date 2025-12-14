@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Screen Recorder with Facecam | Free Online Tools</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Professional online screen recorder with Facecam (Webcam) support. Capture screen and video simultaneously. HD 60FPS, No watermark.">
+    <meta name="keywords" content="screen recorder with facecam, webcam recorder, online screen capture, record browser tab, 60fps screen recorder, free video recorder">
+    <meta name="author" content="Free Online Tools">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Pro Screen Recorder with Facecam">
+    <meta property="og:description" content="Record your screen and face simultaneously in HD.">
+    
+    <!-- User's AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
+    <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f1f5f9; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Countdown Animation */
+        .countdown-overlay {
+            animation: pulse-count 1s infinite;
+        }
+        @keyframes pulse-count {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Invisible but rendered video elements */
+        .invisible-source {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            width: 1px;
+            height: 1px;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-rose-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-video"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-white">ScreenRec <span class="text-rose-500 text-xs align-top">PRO</span></span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-slate-400">
+                    <a href="../../index.html" class="hover:text-rose-500 transition">Home</a>
+                    <a href="../../pages/contact.html" class="hover:text-rose-500 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-12 sm:px-6 w-full flex flex-col items-center">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">Pro Screen Recorder</h1>
+            <p class="text-slate-400 text-lg max-w-2xl mx-auto">
+                Capture screen with <span class="text-rose-400 font-bold">Facecam Overlay</span> + System Audio.
+            </p>
+        </div>
+        
+        <!-- Mobile Warning -->
+        <div id="mobileWarning" class="hidden w-full max-w-4xl bg-yellow-900/30 border border-yellow-700/50 p-4 rounded-xl mb-6 text-center">
+            <p class="text-yellow-200 text-sm">
+                <i class="fa-solid fa-triangle-exclamation mr-2"></i>
+                Mobile recording has limitations. System audio might not be captured. For best results, use a Desktop.
+            </p>
+        </div>
+
+        <div class="w-full max-w-4xl bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl relative">
+            
+            <!-- Video Preview Area -->
+            <div class="relative bg-black aspect-video flex items-center justify-center group overflow-hidden" id="videoContainer">
+                
+                <video id="previewVideo" class="w-full h-full object-contain hidden" autoplay muted playsinline></video>
+                <video id="playbackVideo" class="w-full h-full object-contain hidden" controls playsinline></video>
+
+                <!-- Hidden source videos for Canvas mixing (Fixed: Not using display:none) -->
+                <video id="hiddenScreen" class="invisible-source" autoplay muted playsinline></video>
+                <video id="hiddenCam" class="invisible-source" autoplay muted playsinline></video>
+                <canvas id="mixingCanvas" class="hidden"></canvas>
+
+                <!-- Initial State / Placeholder -->
+                <div id="placeholder" class="text-center p-6">
+                    <div class="w-20 h-20 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                        <i class="fa-solid fa-video text-4xl text-slate-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-300 mb-2">Ready to Record?</h3>
+                    <p class="text-slate-500 text-sm">Enable Facecam for tutorials or reaction videos.</p>
+                </div>
+
+                <!-- Countdown Overlay -->
+                <div id="countdownOverlay" class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm z-30 flex items-center justify-center hidden">
+                    <div class="text-9xl font-bold text-white countdown-overlay" id="countdownNum">3</div>
+                </div>
+
+                <!-- Recording Indicator -->
+                <div id="recIndicator" class="absolute top-4 right-4 bg-red-600/90 backdrop-blur text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 hidden shadow-lg animate-pulse z-20">
+                    <div class="w-2 h-2 bg-white rounded-full"></div> REC <span id="timer">00:00</span>
+                </div>
+            </div>
+
+            <!-- Controls Toolbar -->
+            <div class="p-6 md:p-8 bg-slate-800 border-t border-slate-700">
+                
+                <!-- Setup Phase -->
+                <div id="controlsSetup" class="fade-in">
+                    
+                    <div class="flex flex-col xl:flex-row items-center justify-between gap-6 mb-6">
+                        
+                        <!-- Settings Group -->
+                        <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                            
+                            <!-- Mic Toggle -->
+                            <label class="flex items-center gap-2 cursor-pointer group bg-slate-700/50 px-3 py-2 rounded-lg border border-slate-600 hover:border-slate-500 transition">
+                                <div class="relative">
+                                    <input type="checkbox" id="audioToggle" class="sr-only peer" checked>
+                                    <div class="w-9 h-5 bg-slate-500 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500"></div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-300 group-hover:text-white transition uppercase"><i class="fa-solid fa-microphone mr-1"></i> Mic</span>
+                            </label>
+
+                            <!-- Facecam Toggle -->
+                            <label class="flex items-center gap-2 cursor-pointer group bg-slate-700/50 px-3 py-2 rounded-lg border border-slate-600 hover:border-slate-500 transition">
+                                <div class="relative">
+                                    <input type="checkbox" id="camToggle" class="sr-only peer">
+                                    <div class="w-9 h-5 bg-slate-500 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500"></div>
+                                </div>
+                                <span class="text-xs font-bold text-slate-300 group-hover:text-white transition uppercase"><i class="fa-solid fa-user mr-1"></i> Facecam</span>
+                            </label>
+
+                            <!-- Quality -->
+                            <div class="relative">
+                                <select id="qualitySelect" class="bg-slate-700/50 text-slate-300 text-xs font-bold rounded-lg border border-slate-600 block w-full p-2.5 focus:ring-rose-500 focus:border-rose-500 cursor-pointer uppercase">
+                                    <option value="2500000">SD Quality</option>
+                                    <option value="5000000" selected>HD Quality</option>
+                                    <option value="8000000">Ultra (4K)</option>
+                                </select>
+                            </div>
+                            
+                            <!-- FPS (Hidden on Mobile) -->
+                            <div class="relative hidden md:block">
+                                <select id="fpsSelect" class="bg-slate-700/50 text-slate-300 text-xs font-bold rounded-lg border border-slate-600 block w-full p-2.5 focus:ring-rose-500 focus:border-rose-500 cursor-pointer uppercase">
+                                    <option value="30">30 FPS</option>
+                                    <option value="60">60 FPS</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Start Button -->
+                        <button id="startBtn" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-rose-900/50 transition transform hover:scale-105 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-dot"></i> Start Recording
+                        </button>
+                    </div>
+
+                    <!-- Audio Visualizer (Hidden initially) -->
+                    <div id="audioVisContainer" class="hidden">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fa-solid fa-microphone-lines text-xs text-rose-400"></i>
+                            <span class="text-xs text-slate-400 uppercase font-bold">Audio Level</span>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded-full overflow-hidden w-full max-w-md">
+                            <div id="audioLevelBar" class="h-full bg-gradient-to-r from-green-400 to-rose-500 w-0 transition-all duration-75"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recording Phase -->
+                <div id="controlsRecording" class="hidden flex flex-col sm:flex-row justify-center items-center gap-6 fade-in">
+                    <div class="flex items-center gap-2">
+                        <span class="relative flex h-3 w-3">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+                        </span>
+                        <p class="text-slate-300 font-medium">Recording Active</p>
+                    </div>
+                    <button id="stopBtn" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-8 rounded-full border border-slate-600 transition flex items-center gap-2 hover:border-red-500 hover:text-red-400">
+                        <i class="fa-solid fa-square"></i> Stop Recording
+                    </button>
+                </div>
+
+                <!-- Review Phase -->
+                <div id="controlsReview" class="hidden flex flex-col sm:flex-row justify-center items-center gap-4 fade-in">
+                    <!-- Discard/Delete Button -->
+                    <button id="newRecBtn" class="bg-red-900/20 text-red-400 hover:bg-red-900/40 border border-red-900/50 font-medium py-2.5 px-6 rounded-lg transition flex items-center gap-2">
+                        <i class="fa-solid fa-trash"></i> Discard & New
+                    </button>
+                    <!-- Download Button -->
+                    <button id="downloadBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-8 rounded-lg shadow-lg transition flex items-center gap-2 transform hover:scale-105">
+                        <i class="fa-solid fa-download"></i> Download Video
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl text-left">
+            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                <i class="fa-solid fa-user-tag text-rose-500 text-2xl mb-3"></i>
+                <h3 class="text-white font-bold mb-2">Facecam Overlay</h3>
+                <p class="text-sm text-slate-400">Add a personal touch by recording your webcam video on top of your screen capture.</p>
+            </div>
+            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                <i class="fa-solid fa-wand-magic-sparkles text-blue-500 text-2xl mb-3"></i>
+                <h3 class="text-white font-bold mb-2">Smart Composer</h3>
+                <p class="text-sm text-slate-400">We automatically merge your screen and camera into a single professional video.</p>
+            </div>
+            <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                <i class="fa-solid fa-clock text-green-500 text-2xl mb-3"></i>
+                <h3 class="text-white font-bold mb-2">Countdown</h3>
+                <p class="text-sm text-slate-400">Get ready with a 3-second countdown timer before recording starts.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-slate-500">
+                &copy; 2023 Free Online Tools. <a href="../../pages/privacy.html" class="text-rose-500 hover:text-rose-400">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            // UI Elements
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const newRecBtn = document.getElementById('newRecBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const audioToggle = document.getElementById('audioToggle');
+            const camToggle = document.getElementById('camToggle');
+            const fpsSelect = document.getElementById('fpsSelect');
+            const qualitySelect = document.getElementById('qualitySelect');
+            
+            const controlsSetup = document.getElementById('controlsSetup');
+            const controlsRecording = document.getElementById('controlsRecording');
+            const controlsReview = document.getElementById('controlsReview');
+            
+            const placeholder = document.getElementById('placeholder');
+            const previewVideo = document.getElementById('previewVideo');
+            const playbackVideo = document.getElementById('playbackVideo');
+            const recIndicator = document.getElementById('recIndicator');
+            const timerEl = document.getElementById('timer');
+            const mobileWarning = document.getElementById('mobileWarning');
+            
+            const audioVisContainer = document.getElementById('audioVisContainer');
+            const audioLevelBar = document.getElementById('audioLevelBar');
+            const countdownOverlay = document.getElementById('countdownOverlay');
+            const countdownNum = document.getElementById('countdownNum');
+            
+            // Hidden Elements for Mixing
+            const hiddenScreen = document.getElementById('hiddenScreen');
+            const hiddenCam = document.getElementById('hiddenCam');
+            const mixingCanvas = document.getElementById('mixingCanvas');
+            const mixingCtx = mixingCanvas.getContext('2d');
+
+            // State
+            let mediaRecorder;
+            let recordedChunks = [];
+            let timerInterval;
+            let drawInterval;
+            let startTime;
+            let screenStream;
+            let camStream;
+            let micStream;
+            let mixedStream;
+            let isFacecamActive = false;
+            let audioContext;
+            let analyser;
+            let microphone;
+            let javascriptNode;
+            
+            // Mobile Detection
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                mobileWarning.classList.remove('hidden');
+                if (fpsSelect) fpsSelect.parentElement.classList.add('hidden'); // Hide FPS on mobile
+            }
+            
+            // Check Support
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+                 if(isMobile) {
+                      startBtn.innerText = "Desktop Required";
+                      startBtn.disabled = true;
+                      startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                 }
+            }
+
+            // --- Audio Visualizer ---
+            audioToggle.addEventListener('change', () => {
+                if(audioToggle.checked) {
+                    initAudioVisualizer();
+                } else {
+                    stopAudioVisualizer();
+                }
+            });
+
+            async function initAudioVisualizer() {
+                try {
+                    const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    window.tempAudioStream = audioStream;
+                    startVisualizer(audioStream);
+                    audioVisContainer.classList.remove('hidden');
+                } catch(e) {
+                    console.error("Mic error", e);
+                    audioToggle.checked = false;
+                    alert("Could not access microphone. Please check permissions.");
+                }
+            }
+
+            function startVisualizer(stream) {
+                 if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                 analyser = audioContext.createAnalyser();
+                 microphone = audioContext.createMediaStreamSource(stream);
+                 javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+
+                 analyser.smoothingTimeConstant = 0.8;
+                 analyser.fftSize = 1024;
+
+                 microphone.connect(analyser);
+                 analyser.connect(javascriptNode);
+                 javascriptNode.connect(audioContext.destination);
+
+                 javascriptNode.onaudioprocess = function() {
+                     const array = new Uint8Array(analyser.frequencyBinCount);
+                     analyser.getByteFrequencyData(array);
+                     let values = 0;
+                     const length = array.length;
+                     for (let i = 0; i < length; i++) {
+                         values += array[i];
+                     }
+                     const average = values / length;
+                     const width = Math.min(100, average * 2);
+                     if(audioLevelBar) audioLevelBar.style.width = width + '%';
+                 }
+            }
+
+            function stopAudioVisualizer() {
+                if(javascriptNode) {
+                    javascriptNode.disconnect();
+                    javascriptNode.onaudioprocess = null;
+                }
+                if(microphone) microphone.disconnect();
+                if(analyser) analyser.disconnect();
+                if(window.tempAudioStream) window.tempAudioStream.getTracks().forEach(track => track.stop());
+                
+                audioVisContainer.classList.add('hidden');
+                audioLevelBar.style.width = '0%';
+            }
+
+            // --- Countdown Function ---
+            function startCountdown() {
+                return new Promise(resolve => {
+                    controlsSetup.classList.add('hidden');
+                    placeholder.classList.add('hidden');
+                    countdownOverlay.classList.remove('hidden');
+                    let count = 3;
+                    countdownNum.innerText = count;
+                    
+                    const interval = setInterval(() => {
+                        count--;
+                        if (count > 0) {
+                            countdownNum.innerText = count;
+                        } else {
+                            clearInterval(interval);
+                            countdownOverlay.classList.add('hidden');
+                            resolve();
+                        }
+                    }, 1000);
+                });
+            }
+
+            // --- Start Recording Process ---
+            startBtn.addEventListener('click', async () => {
+                try {
+                    // Stop preview mic before starting actual recording
+                    stopAudioVisualizer();
+
+                    // Read Settings
+                    const fps = isMobile ? 30 : parseInt(fpsSelect.value || 30);
+                    const bitrate = parseInt(qualitySelect.value);
+
+                    // 1. Get Screen Stream First
+                    const constraints = {
+                        video: isMobile ? true : { 
+                            cursor: "always",
+                            frameRate: fps
+                        },
+                        audio: true // Request system audio
+                    };
+
+                    screenStream = await navigator.mediaDevices.getDisplayMedia(constraints);
+                    
+                    // 2. Get Camera Stream (if checked)
+                    isFacecamActive = camToggle.checked;
+                    if (isFacecamActive) {
+                        try {
+                            camStream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
+                            hiddenCam.srcObject = camStream;
+                            await hiddenCam.play(); // Force play
+                        } catch (err) {
+                            console.warn("Camera access denied, proceeding without facecam.");
+                            isFacecamActive = false;
+                        }
+                    }
+
+                    // 3. Get Mic Stream (if checked)
+                    let audioTracks = [...screenStream.getAudioTracks()]; // Start with system audio
+                    if (audioToggle.checked) {
+                        try {
+                            micStream = await navigator.mediaDevices.getUserMedia({ 
+                                audio: { echoCancellation: true, noiseSuppression: true } 
+                            });
+                            audioTracks = [...audioTracks, ...micStream.getAudioTracks()];
+                        } catch(err) {
+                            console.log("Mic access failed", err);
+                        }
+                    }
+
+                    // 4. Start Countdown
+                    await startCountdown();
+
+                    // 5. Setup Mixing
+                    hiddenScreen.srcObject = screenStream;
+                    await hiddenScreen.play(); // Force play
+                    
+                    // Wait for video to be ready to get dimensions
+                    await new Promise(r => {
+                        if (hiddenScreen.readyState >= 1) r();
+                        else hiddenScreen.onloadedmetadata = r;
+                    });
+
+                    const width = hiddenScreen.videoWidth || 1920;
+                    const height = hiddenScreen.videoHeight || 1080;
+                    
+                    mixingCanvas.width = width;
+                    mixingCanvas.height = height;
+
+                    // Start Draw Loop (using selected FPS)
+                    startMixingLoop(width, height, fps);
+
+                    // Get Stream from Canvas
+                    const canvasStream = mixingCanvas.captureStream(fps); 
+                    
+                    // Combine Canvas Video + All Audio Tracks
+                    mixedStream = new MediaStream([
+                        ...canvasStream.getVideoTracks(),
+                        ...audioTracks
+                    ]);
+
+                    // 6. Setup Recorder
+                    previewVideo.srcObject = mixedStream;
+                    previewVideo.muted = true;
+                    previewVideo.classList.remove('hidden');
+                    playbackVideo.classList.add('hidden');
+                    
+                    // Ensure preview video plays
+                    try { await previewVideo.play(); } catch(e) {}
+
+                    const options = { videoBitsPerSecond: bitrate };
+                    
+                    // Prefer H.264 if available for better compatibility
+                    if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) {
+                        options.mimeType = 'video/webm;codecs=h264';
+                    } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+                        options.mimeType = 'video/webm;codecs=vp9';
+                    }
+
+                    mediaRecorder = new MediaRecorder(mixedStream, options);
+
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) recordedChunks.push(e.data);
+                    };
+
+                    mediaRecorder.onstop = finishRecording;
+
+                    // Stop if user clicks "Stop sharing"
+                    screenStream.getVideoTracks()[0].onended = () => {
+                        stopRecording();
+                    };
+
+                    mediaRecorder.start();
+                    startTimer();
+                    
+                    // UI Update
+                    controlsRecording.classList.remove('hidden');
+                    recIndicator.classList.remove('hidden');
+
+                } catch (err) {
+                    console.error("Error: ", err);
+                    controlsSetup.classList.remove('hidden'); 
+                    placeholder.classList.remove('hidden');
+                    
+                    let errorMsg = "Could not start recording.";
+                    if (err.name === 'NotAllowedError') {
+                        // Custom message for permission error
+                        if(err.message.includes('permission policy')) {
+                             errorMsg = "Screen recording is blocked here. Please open this tool in a new tab/window.";
+                        } else {
+                             errorMsg = "Permission denied. Please allow screen/camera access.";
+                        }
+                    }
+                    alert(errorMsg);
+                    
+                    // Re-enable visualizer if checked
+                    if(audioToggle.checked) initAudioVisualizer();
+                }
+            });
+
+            // --- Canvas Mixing Loop ---
+            function startMixingLoop(w, h, fps) {
+                const camW = w * 0.2; // Cam width is 20% of screen
+                const camH = (camW / 4) * 3; // 4:3 aspect ratio
+                const padding = 20;
+
+                drawInterval = setInterval(() => {
+                    // Draw Screen
+                    mixingCtx.drawImage(hiddenScreen, 0, 0, w, h);
+                    
+                    // Draw Facecam (Bottom Right)
+                    if (isFacecamActive && hiddenCam.readyState === 4) {
+                        // Draw border/shadow for cam
+                        mixingCtx.save();
+                        const x = w - camW - padding;
+                        const y = h - camH - padding;
+                        
+                        mixingCtx.shadowColor = "rgba(0, 0, 0, 0.5)";
+                        mixingCtx.shadowBlur = 20;
+                        mixingCtx.strokeStyle = "white";
+                        mixingCtx.lineWidth = 5;
+                        
+                        mixingCtx.strokeRect(x, y, camW, camH);
+                        mixingCtx.drawImage(hiddenCam, x, y, camW, camH);
+                        mixingCtx.restore();
+                    }
+                }, 1000 / fps); 
+            }
+
+            // --- Stop Recording ---
+            stopBtn.addEventListener('click', stopRecording);
+
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                    clearInterval(drawInterval);
+                    
+                    // Stop all streams
+                    if(screenStream) screenStream.getTracks().forEach(track => track.stop());
+                    if(camStream) camStream.getTracks().forEach(track => track.stop());
+                    if(micStream) micStream.getTracks().forEach(track => track.stop());
+                    if(mixedStream) mixedStream.getTracks().forEach(track => track.stop());
+                }
+            }
+
+            function finishRecording() {
+                clearInterval(timerInterval);
+                recIndicator.classList.add('hidden');
+                
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                
+                previewVideo.classList.add('hidden');
+                playbackVideo.src = url;
+                playbackVideo.classList.remove('hidden');
+                playbackVideo.controls = true;
+                
+                controlsRecording.classList.add('hidden');
+                controlsReview.classList.remove('hidden');
+                
+                downloadBtn.onclick = () => {
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `recording_${new Date().getTime()}.webm`;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => { document.body.removeChild(a); }, 100);
+                };
+            }
+
+            // --- Reset ---
+            newRecBtn.addEventListener('click', () => {
+                recordedChunks = [];
+                playbackVideo.src = '';
+                playbackVideo.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                controlsReview.classList.add('hidden');
+                controlsSetup.classList.remove('hidden');
+                
+                if(audioToggle.checked) initAudioVisualizer();
+            });
+
+            // --- Timer Logic ---
+            function startTimer() {
+                startTime = Date.now();
+                timerInterval = setInterval(() => {
+                    const diff = Date.now() - startTime;
+                    const secs = Math.floor((diff / 1000) % 60);
+                    const mins = Math.floor((diff / (1000 * 60)) % 60);
+                    timerEl.innerText = `${pad(mins)}:${pad(secs)}`;
+                }, 1000);
+            }
+
+            function pad(n) {
+                return n < 10 ? '0' + n : n;
+            }
+
+        })();
+    </script>
+</body>
+</html>

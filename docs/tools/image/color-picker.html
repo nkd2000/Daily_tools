@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker & Converter | Free Online Tools</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Free online color picker and converter. Convert HEX to RGB, HSL, CMYK. Generate color palettes, shades, and tints instantly for designers.">
+    <meta name="keywords" content="color picker, hex to rgb, color converter, color palette generator, web color tool, hex code finder">
+    <meta name="author" content="Free Online Tools">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Color Picker & Converter">
+    <meta property="og:description" content="Pick colors, convert formats, and generate palettes instantly.">
+    
+    <!-- User's AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
+    <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Color Input */
+        input[type="color"] {
+            -webkit-appearance: none;
+            appearance: none;
+            border: none;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            background: none;
+            cursor: pointer;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 0.75rem; }
+    </style>
+</head>
+<body class="bg-gray-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-gradient-to-br from-pink-500 to-orange-400 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-palette"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">ColorPick</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
+                    <a href="../../index.html" class="hover:text-pink-600 transition">Home</a>
+                    <a href="https://jansuchnaforall.blogspot.com" target="_blank" class="hover:text-pink-600 transition">Blog</a>
+                    <a href="../../pages/contact.html" class="hover:text-pink-600 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 sm:px-6 w-full">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Color Picker & Converter</h1>
+            <p class="text-gray-500 text-lg max-w-2xl mx-auto">
+                Pick colors, convert between HEX, RGB, HSL, and generate beautiful palettes.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Column: Picker -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Main Picker Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-eye-dropper mr-2 text-pink-500"></i>Pick a Color</h3>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        
+                        <!-- Visual Picker -->
+                        <div class="relative h-48 w-full rounded-xl shadow-inner border border-gray-200 overflow-hidden group">
+                            <input type="color" id="colorInput" value="#3b82f6" class="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer">
+                            <div id="colorDisplay" class="w-full h-full bg-blue-500 transition-colors duration-200"></div>
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <span class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-bold shadow-sm text-gray-700 group-hover:scale-110 transition">
+                                    Click to Change
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- HEX Input -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">HEX Code</label>
+                            <div class="flex rounded-md shadow-sm">
+                                <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">#</span>
+                                <input type="text" id="hexInput" value="3B82F6" class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border-gray-300 focus:ring-pink-500 focus:border-pink-500 sm:text-sm font-mono uppercase border" placeholder="000000" maxlength="6">
+                            </div>
+                        </div>
+
+                        <!-- RGB Sliders -->
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-red-500 w-4">R</span>
+                                <input type="range" id="rInput" min="0" max="255" class="w-full h-2 bg-red-100 rounded-lg appearance-none cursor-pointer accent-red-500">
+                                <span id="rVal" class="text-xs font-mono text-gray-600 w-8 text-right">0</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-green-500 w-4">G</span>
+                                <input type="range" id="gInput" min="0" max="255" class="w-full h-2 bg-green-100 rounded-lg appearance-none cursor-pointer accent-green-500">
+                                <span id="gVal" class="text-xs font-mono text-gray-600 w-8 text-right">0</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold text-blue-500 w-4">B</span>
+                                <input type="range" id="bInput" min="0" max="255" class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                                <span id="bVal" class="text-xs font-mono text-gray-600 w-8 text-right">0</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Codes & Palettes -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Codes Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- RGB -->
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-bold text-gray-400 uppercase">RGB</span>
+                            <button onclick="copyToClipboard('rgbVal')" class="text-gray-400 hover:text-pink-600"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                        <div id="rgbVal" class="font-mono text-lg text-gray-800 font-medium select-all">rgb(59, 130, 246)</div>
+                    </div>
+
+                    <!-- HSL -->
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-bold text-gray-400 uppercase">HSL</span>
+                            <button onclick="copyToClipboard('hslVal')" class="text-gray-400 hover:text-pink-600"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                        <div id="hslVal" class="font-mono text-lg text-gray-800 font-medium select-all">hsl(217, 91%, 60%)</div>
+                    </div>
+
+                    <!-- CSS -->
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition sm:col-span-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-bold text-gray-400 uppercase">CSS Code</span>
+                            <button onclick="copyToClipboard('cssVal')" class="text-gray-400 hover:text-pink-600"><i class="fa-regular fa-copy"></i></button>
+                        </div>
+                        <div id="cssVal" class="font-mono text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-100 select-all">background-color: #3b82f6;</div>
+                    </div>
+                </div>
+
+                <!-- Palette Generator -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                    <div class="p-5 border-b border-gray-100 bg-gray-50">
+                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-swatchbook mr-2 text-pink-500"></i>Shades & Tints</h3>
+                    </div>
+                    
+                    <div class="p-6">
+                        <p class="text-sm text-gray-500 mb-3">Tints (Lighter)</p>
+                        <div id="tintsContainer" class="flex h-16 rounded-lg overflow-hidden mb-6 shadow-sm border border-gray-100"></div>
+                        
+                        <p class="text-sm text-gray-500 mb-3">Shades (Darker)</p>
+                        <div id="shadesContainer" class="flex h-16 rounded-lg overflow-hidden shadow-sm border border-gray-100"></div>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex justify-between items-center">
+                    <button onclick="history.back()" class="text-gray-500 hover:text-gray-700 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Tools
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">
+                &copy; 2023 Free Online Tools. <a href="../../pages/privacy.html" class="text-pink-600 hover:text-pink-500">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            // Elements
+            const colorInput = document.getElementById('colorInput');
+            const colorDisplay = document.getElementById('colorDisplay');
+            const hexInput = document.getElementById('hexInput');
+            
+            const rInput = document.getElementById('rInput');
+            const gInput = document.getElementById('gInput');
+            const bInput = document.getElementById('bInput');
+            const rVal = document.getElementById('rVal');
+            const gVal = document.getElementById('gVal');
+            const bVal = document.getElementById('bVal');
+
+            const rgbVal = document.getElementById('rgbVal');
+            const hslVal = document.getElementById('hslVal');
+            const cssVal = document.getElementById('cssVal');
+            
+            const tintsContainer = document.getElementById('tintsContainer');
+            const shadesContainer = document.getElementById('shadesContainer');
+
+            // --- State Management ---
+            let currentHex = "#3b82f6";
+
+            // Initialize
+            updateAll(currentHex);
+
+            // Event Listeners
+            colorInput.addEventListener('input', (e) => updateAll(e.target.value));
+            
+            hexInput.addEventListener('input', (e) => {
+                let val = e.target.value;
+                if(!val.startsWith('#')) val = '#' + val;
+                if (/^#[0-9A-F]{6}$/i.test(val)) {
+                    updateAll(val);
+                }
+            });
+
+            [rInput, gInput, bInput].forEach(el => {
+                el.addEventListener('input', () => {
+                    const hex = rgbToHex(parseInt(rInput.value), parseInt(gInput.value), parseInt(bInput.value));
+                    updateAll(hex);
+                });
+            });
+
+            // --- Core Functions ---
+            function updateAll(hex) {
+                currentHex = hex;
+                
+                // Update Inputs (avoid infinite loop by checking active element)
+                if(document.activeElement !== hexInput) {
+                    hexInput.value = hex.substring(1).toUpperCase();
+                }
+                colorInput.value = hex;
+                colorDisplay.style.backgroundColor = hex;
+
+                // RGB
+                const rgb = hexToRgb(hex);
+                if(document.activeElement !== rInput) rInput.value = rgb.r;
+                if(document.activeElement !== gInput) gInput.value = rgb.g;
+                if(document.activeElement !== bInput) bInput.value = rgb.b;
+                
+                rVal.textContent = rgb.r;
+                gVal.textContent = rgb.g;
+                bVal.textContent = rgb.b;
+
+                // Displays
+                rgbVal.textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+                const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+                hslVal.textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+                cssVal.textContent = `background-color: ${hex};`;
+
+                // Palette
+                generatePalette(hex);
+            }
+
+            // Helpers
+            function hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+
+            function rgbToHex(r, g, b) {
+                return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            }
+
+            function rgbToHsl(r, g, b) {
+                r /= 255, g /= 255, b /= 255;
+                const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                let h, s, l = (max + min) / 2;
+
+                if (max === min) {
+                    h = s = 0; // achromatic
+                } else {
+                    const d = max - min;
+                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    switch (max) {
+                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                        case g: h = (b - r) / d + 2; break;
+                        case b: h = (r - g) / d + 4; break;
+                    }
+                    h /= 6;
+                }
+                return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+            }
+
+            // --- Palette Generation ---
+            function generatePalette(hex) {
+                tintsContainer.innerHTML = '';
+                shadesContainer.innerHTML = '';
+                const rgb = hexToRgb(hex);
+
+                // Tints (Mix with White)
+                for(let i=0; i<=100; i+=20) {
+                    if(i===0) continue; // skip solid
+                    const r = Math.round(rgb.r + (255 - rgb.r) * (i/100));
+                    const g = Math.round(rgb.g + (255 - rgb.g) * (i/100));
+                    const b = Math.round(rgb.b + (255 - rgb.b) * (i/100));
+                    const newHex = rgbToHex(r,g,b);
+                    createSwatch(tintsContainer, newHex);
+                }
+
+                // Shades (Mix with Black)
+                for(let i=0; i<=100; i+=20) {
+                    if(i===0) continue; 
+                    const r = Math.round(rgb.r * (1 - i/100));
+                    const g = Math.round(rgb.g * (1 - i/100));
+                    const b = Math.round(rgb.b * (1 - i/100));
+                    const newHex = rgbToHex(r,g,b);
+                    createSwatch(shadesContainer, newHex);
+                }
+            }
+
+            // Fallback function for copying text
+            function copyTextToClipboard(text) {
+                // Create a temporary textarea element
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'absolute';
+                textarea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+                
+                // Select and copy
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                } catch (err) {
+                    console.error('Fallback copy failed', err);
+                }
+                
+                // Cleanup
+                document.body.removeChild(textarea);
+            }
+
+            function createSwatch(container, hex) {
+                const div = document.createElement('div');
+                div.className = "flex-1 cursor-pointer hover:scale-110 transition-transform relative group";
+                div.style.backgroundColor = hex;
+                div.title = hex;
+                div.onclick = () => {
+                    copyTextToClipboard(hex);
+                    // Minimal feedback
+                    div.style.zIndex = 10;
+                };
+                
+                // Tooltip
+                div.innerHTML = `<span class="opacity-0 group-hover:opacity-100 absolute bottom-1 inset-x-0 text-center text-[10px] font-mono invert mix-blend-difference">${hex}</span>`;
+                
+                container.appendChild(div);
+            }
+
+            window.copyToClipboard = (id) => {
+                const text = document.getElementById(id).textContent;
+                copyTextToClipboard(text);
+                
+                // Visual Feedback
+                const btn = document.querySelector(`button[onclick="copyToClipboard('${id}')"]`);
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check text-green-500"></i>';
+                setTimeout(() => btn.innerHTML = originalHtml, 1500);
+            }
+
+        })();
+    </script>
+</body>
+</html>
