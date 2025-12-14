@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Not Found | Free Online Tools</title>
+    <title>404 - Lost in Space | Free Online Tools</title>
     
     <!-- SEO Meta Tags -->
     <meta name="robots" content="noindex, follow">
@@ -15,61 +15,417 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            overflow: hidden; 
+            color: #e2e8f0;
+        }
+        .font-pixel { font-family: 'Press Start 2P', cursive; }
+        
+        /* Stars Animation */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+            opacity: var(--opacity);
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--opacity); transform: scale(1); }
+            50% { opacity: 0.1; transform: scale(0.5); }
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Game Canvas */
+        #gameCanvas {
+            background-color: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+            image-rendering: pixelated;
+        }
+
+        /* Search Input */
+        .search-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #475569;
+            color: white;
+        }
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen items-center justify-center p-4">
+<body class="flex flex-col min-h-screen items-center justify-center p-4 relative">
 
-    <div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border border-gray-100 text-center fade-in">
-        
-        <!-- Icon -->
-        <div class="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <i class="fa-solid fa-link-slash text-4xl text-red-500"></i>
-        </div>
-        
-        <!-- Text -->
-        <h1 class="text-4xl font-extrabold text-gray-900 mb-2">404</h1>
-        <h2 class="text-xl font-bold text-gray-700 mb-4">Page Not Found</h2>
-        
-        <p class="text-gray-500 mb-8 leading-relaxed">
-            Oops! The tool or page you are looking for might have been moved or deleted.
-        </p>
+    <!-- Background Stars -->
+    <div id="starsContainer" class="stars"></div>
 
-        <!-- Action Button -->
-        <a href="/index.html" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-indigo-200 transition transform hover:-translate-y-1">
-            <i class="fa-solid fa-house mr-2"></i> Go Back Home
-        </a>
+    <!-- Main Container -->
+    <div class="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-center z-10">
         
-        <!-- Quick Links -->
-        <div class="mt-8 pt-6 border-t border-gray-100">
-            <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-3">Popular Categories</p>
-            <div class="flex flex-wrap justify-center gap-2">
-                <a href="/index.html" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-full transition">Image Tools</a>
-                <a href="/index.html" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-full transition">PDF Tools</a>
-                <a href="/index.html" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-full transition">Calculators</a>
+        <!-- Left: Game Area -->
+        <div class="glass-card p-6 rounded-2xl text-center relative order-2 lg:order-1">
+            <div class="absolute top-4 left-4 text-xs font-pixel text-blue-400">SCORE: <span id="scoreVal" class="text-white">0</span></div>
+            <div class="absolute top-4 right-4 text-xs font-pixel text-yellow-500">HI: <span id="highScoreVal">0</span></div>
+            
+            <canvas id="gameCanvas" width="400" height="400" class="w-full max-w-[350px] mx-auto"></canvas>
+            
+            <div id="gameOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 rounded-2xl backdrop-blur-sm cursor-pointer z-20">
+                <i class="fa-solid fa-ghost text-4xl text-blue-500 mb-4 animate-bounce"></i>
+                <p class="text-white font-pixel text-xs leading-loose text-center">
+                    GAME OVER<br>404 NOT FOUND<br><br>
+                    <span class="text-blue-300 blink">TAP TO PLAY SNAKE</span>
+                </p>
             </div>
+            
+            <p class="mt-4 text-xs text-slate-400 font-mono">Use Arrow Keys or Swipe</p>
+        </div>
+
+        <!-- Right: Info & Search -->
+        <div class="text-center lg:text-left order-1 lg:order-2">
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold mb-6">
+                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> ERROR 404
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-4 tracking-tight">Lost in Space?</h1>
+            <p class="text-slate-400 text-lg mb-8">The page you are looking for has been moved or deleted. But don't panic, we can help you find it.</p>
+
+            <!-- Search Bar (Live) -->
+            <div class="relative w-full max-w-md mx-auto lg:mx-0 mb-6 group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-search text-slate-500 group-focus-within:text-blue-400 transition"></i>
+                </div>
+                <input type="text" id="toolSearch" class="search-input w-full pl-11 pr-4 py-3 rounded-xl outline-none transition" placeholder="Search for tools (e.g. PDF, Image)..." autocomplete="off">
+                
+                <!-- Search Results Dropdown -->
+                <div id="searchResults" class="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden hidden max-h-60 overflow-y-auto z-50">
+                    <!-- Results injected here -->
+                </div>
+            </div>
+
+            <!-- Auto Redirect Status -->
+            <div id="redirectBox" class="hidden mb-6 p-3 bg-green-500/10 border border-green-500/30 text-green-400 text-sm rounded-lg flex items-center gap-3">
+                <i class="fa-solid fa-spinner fa-spin"></i> Found it! Redirecting...
+            </div>
+
+            <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+                <a href="/index.html" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/50 transition transform hover:-translate-y-1">
+                    <i class="fa-solid fa-house mr-2"></i> Go Home
+                </a>
+                <a href="/tools/typing-speed-test.html" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700 transition">
+                    <i class="fa-solid fa-keyboard mr-2"></i> Typing Test
+                </a>
+            </div>
+
         </div>
 
     </div>
 
     <script>
-        // Optional: Redirect logic if needed (e.g. if URL contains old path)
-        // Checks if user is accessing an old root file and redirects to tools/
-        // Example: /ageCalculator.html -> /tools/age-calculator.html
-        
-        /*
         (function() {
-            const path = window.location.pathname;
-            // List of known old files to map to new structure if you want auto-redirect
-            // This is advanced, usually the simple 404 page above is enough.
-        })();
-        */
-    </script>
+            // --- 0. STARS BACKGROUND ---
+            const starsContainer = document.getElementById('starsContainer');
+            const starCount = 100;
+            for(let i=0; i<starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const size = Math.random() * 2 + 1;
+                const duration = Math.random() * 3 + 2;
+                const opacity = Math.random();
+                
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.setProperty('--duration', `${duration}s`);
+                star.style.setProperty('--opacity', opacity);
+                
+                starsContainer.appendChild(star);
+            }
 
+            // --- 1. TOOL DATA FOR SEARCH ---
+            // Hardcoded list of popular tools for instant search on 404 page
+            const toolsList = [
+                { name: "Image Compressor", url: "/tools/image-compressor.html", icon: "fa-image" },
+                { name: "PDF Compressor", url: "/tools/pdf-compressor.html", icon: "fa-file-pdf" },
+                { name: "Age Calculator", url: "/tools/age-calculator.html", icon: "fa-cake-candles" },
+                { name: "Resume Builder", url: "/tools/resume-builder.html", icon: "fa-user-tie" },
+                { name: "Typing Speed Test", url: "/tools/typing-speed-test.html", icon: "fa-keyboard" },
+                { name: "Screen Recorder", url: "/tools/screen-recorder.html", icon: "fa-video" },
+                { name: "BMI Calculator", url: "/tools/bmi-calculator.html", icon: "fa-weight-scale" },
+                { name: "QR Code Generator", url: "/tools/qr-code-generator.html", icon: "fa-qrcode" },
+                { name: "Password Generator", url: "/tools/password-generator.html", icon: "fa-key" },
+                { name: "Text to Speech", url: "/tools/text-to-speech.html", icon: "fa-volume-high" },
+                { name: "Merge PDF", url: "/tools/merge-pdf.html", icon: "fa-file-circle-plus" }
+            ];
+
+            const searchInput = document.getElementById('toolSearch');
+            const searchResults = document.getElementById('searchResults');
+
+            searchInput.addEventListener('input', (e) => {
+                const val = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+                
+                if(val.length < 1) {
+                    searchResults.classList.add('hidden');
+                    return;
+                }
+
+                const matches = toolsList.filter(t => t.name.toLowerCase().includes(val));
+                
+                if(matches.length > 0) {
+                    searchResults.classList.remove('hidden');
+                    matches.forEach(tool => {
+                        const div = document.createElement('a');
+                        div.href = tool.url;
+                        div.className = "flex items-center gap-3 p-3 hover:bg-slate-700/50 transition cursor-pointer border-b border-slate-700/50 last:border-0";
+                        div.innerHTML = `
+                            <div class="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-blue-400"><i class="fa-solid ${tool.icon}"></i></div>
+                            <span class="text-sm font-medium text-slate-200">${tool.name}</span>
+                        `;
+                        searchResults.appendChild(div);
+                    });
+                } else {
+                    searchResults.classList.add('hidden');
+                }
+            });
+
+            // Click outside to close search
+            document.addEventListener('click', (e) => {
+                if(!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.add('hidden');
+                }
+            });
+
+            // --- 2. SMART REDIRECT & AUTO-CHECKER ---
+            const currentPath = window.location.pathname;
+            const filename = currentPath.split('/').pop();
+            let targetUrl = null;
+
+            const toKebabCase = (str) => {
+                const name = str.split('.')[0];
+                const ext = str.split('.')[1] || 'html';
+                let s1 = name.replace(/_/g, '-');
+                let s2 = s1.replace(/([a-z0-9])([A-Z])/g, '$1-$2');
+                return s2.toLowerCase() + '.' + ext;
+            };
+
+            if (filename.endsWith('.html') && filename !== '404.html') {
+                const newFilename = toKebabCase(filename);
+                if (['contact.html', 'privacy.html', 'about.html', 'terms.html'].includes(filename.toLowerCase())) {
+                    if (!currentPath.includes('/pages/')) targetUrl = '/pages/' + filename;
+                } else if (!currentPath.includes('/tools/')) {
+                    targetUrl = '/tools/' + newFilename;
+                }
+            }
+
+            const redirectBox = document.getElementById('redirectBox');
+            function checkUrlAvailability(url) {
+                fetch(url, { method: 'HEAD' })
+                    .then(response => {
+                        if (response.ok) {
+                            redirectBox.classList.remove('hidden');
+                            setTimeout(() => { window.location.href = url; }, 1000);
+                        }
+                    }).catch(() => {});
+            }
+
+            if (targetUrl) {
+                checkUrlAvailability(targetUrl);
+                setInterval(() => { checkUrlAvailability(targetUrl); }, 3000);
+            }
+
+            // --- 3. NEON SNAKE GAME ---
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            const overlay = document.getElementById('gameOverlay');
+            const scoreEl = document.getElementById('scoreVal');
+            const highScoreEl = document.getElementById('highScoreVal');
+
+            // Responsive
+            function resizeGame() {
+                // Keep it square but responsive
+                let size = Math.min(350, window.innerWidth - 64);
+                // Ensure size is multiple of grid size (20)
+                size = Math.floor(size / 20) * 20; 
+                canvas.width = size;
+                canvas.height = size;
+                tileCount = size / gridSize;
+            }
+            
+            let gridSize = 20;
+            let tileCount = 20; // Will update on resize
+            
+            // Game Vars
+            let xv = 0, yv = 0;
+            let px = 10, py = 10;
+            let ax = 15, ay = 15;
+            let trail = [];
+            let tail = 5;
+            let score = 0;
+            let highScore = localStorage.getItem('snake_highscore') || 0;
+            let gameRunning = false;
+            let gameInterval;
+            
+            highScoreEl.innerText = highScore;
+
+            // Resize Event
+            window.addEventListener('resize', () => {
+                resizeGame();
+                if(!gameRunning) drawStatic();
+            });
+            resizeGame();
+
+            function startGame() {
+                if (gameRunning) return;
+                gameRunning = true;
+                overlay.classList.add('hidden');
+                
+                px = Math.floor(tileCount/2); py = Math.floor(tileCount/2);
+                tail = 5;
+                score = 0;
+                scoreEl.innerText = 0;
+                xv = 0; yv = 0; 
+                trail = [];
+                
+                // Random Start
+                if(Math.random() > 0.5) { xv = 1; yv = 0; } else { xv = 0; yv = 1; }
+
+                clearInterval(gameInterval);
+                gameInterval = setInterval(gameLoop, 1000/12); // 12 FPS
+            }
+
+            function gameLoop() {
+                px += xv;
+                py += yv;
+
+                if (px < 0) px = tileCount - 1;
+                if (px > tileCount - 1) px = 0;
+                if (py < 0) py = tileCount - 1;
+                if (py > tileCount - 1) py = 0;
+
+                // BG
+                ctx.fillStyle = "#0f172a";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Grid Lines (Optional - faint)
+                ctx.strokeStyle = "#1e293b";
+                ctx.lineWidth = 0.5;
+                for(let i=0; i<tileCount; i++) {
+                    ctx.beginPath(); ctx.moveTo(i*gridSize,0); ctx.lineTo(i*gridSize, canvas.height); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(0, i*gridSize); ctx.lineTo(canvas.width, i*gridSize); ctx.stroke();
+                }
+
+                // Snake (Neon Green)
+                ctx.fillStyle = "#4ade80"; 
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = "#4ade80";
+                
+                for (let i = 0; i < trail.length; i++) {
+                    ctx.fillRect(trail[i].x * gridSize + 1, trail[i].y * gridSize + 1, gridSize - 2, gridSize - 2);
+                    if (trail[i].x == px && trail[i].y == py) {
+                        gameOver();
+                    }
+                }
+                ctx.shadowBlur = 0; // Reset shadow for background
+
+                trail.push({ x: px, y: py });
+                while (trail.length > tail) {
+                    trail.shift();
+                }
+
+                // Apple (Neon Red)
+                ctx.fillStyle = "#ef4444";
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = "#ef4444";
+                ctx.fillRect(ax * gridSize + 1, ay * gridSize + 1, gridSize - 2, gridSize - 2);
+                ctx.shadowBlur = 0;
+                
+                if (ax == px && ay == py) {
+                    tail++;
+                    score += 10;
+                    scoreEl.innerText = score;
+                    ax = Math.floor(Math.random() * tileCount);
+                    ay = Math.floor(Math.random() * tileCount);
+                }
+            }
+            
+            function drawStatic() {
+                ctx.fillStyle = "#0f172a";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            function gameOver() {
+                clearInterval(gameInterval);
+                gameRunning = false;
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('snake_highscore', highScore);
+                    highScoreEl.innerText = highScore;
+                }
+                overlay.classList.remove('hidden');
+            }
+
+            // Controls
+            document.addEventListener('keydown', (e) => {
+                if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) e.preventDefault();
+                if (!gameRunning && (e.code === 'Space' || e.key.startsWith('Arrow'))) { startGame(); return; }
+                switch (e.key) {
+                    case 'ArrowLeft': if (xv !== 1) { xv = -1; yv = 0; } break;
+                    case 'ArrowUp': if (yv !== 1) { xv = 0; yv = -1; } break;
+                    case 'ArrowRight': if (xv !== -1) { xv = 1; yv = 0; } break;
+                    case 'ArrowDown': if (yv !== -1) { xv = 0; yv = 1; } break;
+                }
+            });
+
+            // Touch
+            let tsX = 0, tsY = 0;
+            canvas.addEventListener('touchstart', e => { tsX = e.touches[0].clientX; tsY = e.touches[0].clientY; if(!gameRunning) startGame(); }, {passive: false});
+            canvas.addEventListener('touchmove', e => e.preventDefault(), {passive: false});
+            canvas.addEventListener('touchend', e => {
+                if(!gameRunning) return;
+                let teX = e.changedTouches[0].clientX, teY = e.changedTouches[0].clientY;
+                let dx = teX - tsX, dy = teY - tsY;
+                if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 20) {
+                    if(dx > 0 && xv !== -1) { xv = 1; yv = 0; } else if(dx < 0 && xv !== 1) { xv = -1; yv = 0; }
+                } else if(Math.abs(dy) > 20) {
+                    if(dy > 0 && yv !== -1) { xv = 0; yv = 1; } else if(dy < 0 && yv !== 1) { xv = 0; yv = -1; }
+                }
+            });
+            overlay.addEventListener('click', startGame);
+
+            drawStatic();
+        })();
+    </script>
 </body>
 </html>
