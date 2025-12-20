@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recorder Pro | Online Audio Recorder</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Free online voice recorder with waveform visualization. Record high-quality audio, pause/resume, and download as MP3/WAV. Privacy-focused & secure.">
+    <meta name="keywords" content="voice recorder, online audio recorder, mic recorder, sound recorder, waveform visualizer, mp3 recorder">
+    <meta name="author" content="Free Online Tools">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; overflow-x: hidden; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Custom Audio Player */
+        audio::-webkit-media-controls-panel {
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+        }
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            color: #94a3b8;
+        }
+        
+        /* Background Canvas */
+        #bgCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Content z-index fix */
+        nav, main, footer { position: relative; z-index: 10; }
+        
+        /* Pulse for Rec Button */
+        @keyframes shadow-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .recording-active {
+            animation: shadow-pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-cyan-500 selection:text-white">
+
+    <!-- Particle Visualizer Canvas -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="bg-transparent pt-6 px-6 flex justify-between items-center z-50">
+        <div class="flex items-center gap-3">
+            <div class="bg-cyan-500/20 text-cyan-400 p-2 rounded-lg backdrop-blur-sm border border-cyan-500/30">
+                <i class="fa-solid fa-microphone-lines"></i>
+            </div>
+            <span class="font-bold text-xl tracking-tight text-white/90">VoiceRec</span>
+        </div>
+        <a href="../../index.html" class="text-sm font-medium text-slate-400 hover:text-cyan-400 transition bg-slate-900/50 px-4 py-2 rounded-full backdrop-blur-sm border border-slate-700/50">
+            <i class="fa-solid fa-arrow-left mr-2"></i> Home
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center justify-center w-full px-4 relative z-10">
+        
+        <!-- Recorder UI (Clean: No Card Background) -->
+        <div class="flex flex-col items-center gap-10 w-full max-w-xl p-4">
+            
+            <!-- Header Text -->
+            <div class="text-center space-y-2">
+                <h1 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 to-blue-400 drop-shadow-sm">
+                    Voice Recorder
+                </h1>
+                <p class="text-slate-400 text-sm tracking-wide uppercase" id="statusText">Ready to Capture</p>
+            </div>
+
+            <!-- Timer (Huge & Clean) -->
+            <div class="text-7xl md:text-8xl font-mono font-bold text-white/90 tabular-nums tracking-tighter" style="text-shadow: 0 0 30px rgba(6,182,212,0.3);" id="timer">
+                00:00
+            </div>
+
+            <!-- Main Controls -->
+            <div class="flex items-center justify-center gap-8 mt-4">
+                
+                <!-- Stop Button (Hidden initially) -->
+                <button id="stopBtn" class="hidden w-16 h-16 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-600 backdrop-blur-md transition-all transform hover:scale-105 flex items-center justify-center group" title="Stop">
+                    <i class="fa-solid fa-stop text-xl group-hover:text-white"></i>
+                </button>
+
+                <!-- Record / Pause Button -->
+                <button id="recordBtn" class="w-24 h-24 rounded-full bg-gradient-to-br from-red-500 to-pink-600 hover:from-red-400 hover:to-pink-500 text-white shadow-2xl transition-all transform hover:scale-105 flex items-center justify-center z-20 group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-white/20 group-hover:opacity-0 transition-opacity"></div>
+                    <i class="fa-solid fa-microphone text-4xl drop-shadow-md" id="recordIcon"></i>
+                </button>
+                
+                 <!-- Reset Button (Hidden initially) -->
+                 <button id="resetBtn" class="hidden w-16 h-16 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-600 backdrop-blur-md transition-all transform hover:scale-105 flex items-center justify-center group" title="Discard">
+                    <i class="fa-solid fa-rotate-left text-xl group-hover:text-white"></i>
+                </button>
+
+            </div>
+
+            <!-- Playback Area (Hidden initially) -->
+            <div id="playbackArea" class="w-full max-w-md bg-slate-900/60 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/50 hidden flex-col gap-4 animate-in fade-in slide-in-from-bottom-8 duration-500 shadow-2xl">
+                <div class="flex justify-between items-center pb-2 border-b border-slate-700/50">
+                    <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Preview</span>
+                    <span class="text-xs text-slate-500" id="fileDate">Just now</span>
+                </div>
+                
+                <audio id="audioPlayer" controls class="w-full h-12"></audio>
+                
+                <div class="flex gap-3 pt-2">
+                    <input type="text" id="filenameInput" value="my-recording" class="bg-slate-900/50 border border-slate-700 text-slate-200 text-sm rounded-xl block w-full p-3 focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition" placeholder="Filename">
+                    <button id="saveBtn" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-6 rounded-xl shadow-lg shadow-cyan-900/20 flex items-center gap-2 transition transform hover:-translate-y-0.5">
+                        <i class="fa-solid fa-download"></i> Save
+                    </button>
+                </div>
+                
+                 <button id="discardBtn" class="text-xs text-red-400/70 hover:text-red-400 font-bold hover:underline text-center w-full py-2">Delete & New</button>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="mt-auto py-6 text-center z-10">
+        <p class="text-xs text-slate-600">
+            Secure • Private • Local Processing
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elements
+            const recordBtn = document.getElementById('recordBtn');
+            const recordIcon = document.getElementById('recordIcon');
+            const stopBtn = document.getElementById('stopBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const timerEl = document.getElementById('timer');
+            const statusText = document.getElementById('statusText');
+            const playbackArea = document.getElementById('playbackArea');
+            const audioPlayer = document.getElementById('audioPlayer');
+            const filenameInput = document.getElementById('filenameInput');
+            const fileDate = document.getElementById('fileDate');
+            const saveBtn = document.getElementById('saveBtn');
+            const discardBtn = document.getElementById('discardBtn');
+            
+            // Canvas Setup
+            const canvas = document.getElementById('bgCanvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+
+            // Audio State
+            let mediaRecorder;
+            let audioChunks = [];
+            let audioContext, analyser, source;
+            let dataArray;
+            let isRecording = false;
+            let isPaused = false;
+            
+            // Timer State
+            let startTime, timerInterval, pausedTime = 0;
+            let totalPausedTime = 0;
+
+            // Particles
+            let particles = [];
+            const particleCount = 300; // Increased for full screen density
+            
+            // --- Canvas Resizing ---
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                initParticles(); // Re-distribute on resize
+            }
+            window.addEventListener('resize', resize);
+            
+            // --- Particle Class ---
+            class Particle {
+                constructor() {
+                    this.init();
+                }
+                
+                init() {
+                    // Spread across entire screen but keep circular motion logic
+                    // Random distance from center, up to full corner distance
+                    const maxDist = Math.sqrt(Math.pow(width/2, 2) + Math.pow(height/2, 2));
+                    this.radius = Math.random() * maxDist; 
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.size = Math.random() * 2 + 0.5;
+                    // Slower speed for calm effect
+                    this.speed = (Math.random() * 0.002 + 0.0005) * (Math.random() > 0.5 ? 1 : -1); 
+                    this.color = Math.random() > 0.6 ? '#22d3ee' : (Math.random() > 0.5 ? '#3b82f6' : '#94a3b8');
+                    this.baseSize = this.size;
+                    this.baseRadius = this.radius;
+                }
+
+                update(audioVal) {
+                    // Rotate
+                    const speedMult = (isRecording && !isPaused) ? 3 : 1;
+                    this.angle += this.speed * speedMult;
+                    
+                    // Audio Reaction
+                    let boost = 0;
+                    if (isRecording && !isPaused && audioVal) {
+                        // Normalize audio val (0-255)
+                        const factor = audioVal / 255;
+                        // Push outward based on volume
+                        boost = factor * 50; 
+                        this.size = this.baseSize + (factor * 3); // Grow
+                    } else {
+                        // Breathing effect when idle
+                        boost = Math.sin(Date.now() / 2000) * 5;
+                        this.size = this.baseSize;
+                    }
+
+                    // Calculate position
+                    const r = this.baseRadius + boost;
+                    this.x = width/2 + Math.cos(this.angle) * r;
+                    this.y = height/2 + Math.sin(this.angle) * r;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color;
+                    ctx.globalAlpha = (isRecording && !isPaused) ? 0.8 : 0.4; // Brighter when recording
+                    ctx.fill();
+                    ctx.globalAlpha = 1.0;
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                for(let i=0; i<particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            
+            // Initial call
+            resize(); // This calls initParticles
+
+            // --- Animation Loop ---
+            function animate() {
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, width, height);
+
+                let audioVal = 0;
+                if(isRecording && !isPaused && analyser) {
+                    analyser.getByteFrequencyData(dataArray);
+                    let sum = 0;
+                    for(let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+                    audioVal = sum / dataArray.length;
+                    audioVal = audioVal * 3; // Boost sensitivity
+                }
+
+                particles.forEach(p => {
+                    p.update(audioVal);
+                    p.draw();
+                });
+                
+                // Draw connecting lines if loud enough (Perplexity neural effect)
+                // Only connect nearby particles for performance
+                if(audioVal > 30) {
+                     ctx.lineWidth = 0.2;
+                     ctx.beginPath();
+                     // Connect random subset to avoid O(N^2) lag
+                     for(let i=0; i<particles.length; i++) {
+                         if (Math.random() > 0.9) { // Only check 10% of particles per frame as hubs
+                             const p1 = particles[i];
+                             // Connect to neighbors in array
+                             for (let j=1; j<5; j++) {
+                                 const p2 = particles[(i+j) % particles.length];
+                                 const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                                 if (dist < 100) {
+                                     ctx.strokeStyle = `rgba(34, 211, 238, ${1 - dist/100})`;
+                                     ctx.moveTo(p1.x, p1.y);
+                                     ctx.lineTo(p2.x, p2.y);
+                                 }
+                             }
+                         }
+                     }
+                     ctx.stroke();
+                }
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            // --- Functions ---
+            
+            async function startRecording() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const sourceNode = audioContext.createMediaStreamSource(stream);
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 512;
+                    sourceNode.connect(analyser);
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                    
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        audioPlayer.src = URL.createObjectURL(blob);
+                        
+                        stream.getTracks().forEach(track => track.stop());
+                        if(audioContext) audioContext.close();
+                        
+                        recordBtn.classList.add('hidden');
+                        stopBtn.classList.add('hidden');
+                        resetBtn.classList.remove('hidden');
+                        playbackArea.classList.remove('hidden');
+                        
+                        statusText.innerText = "Recording Complete";
+                        statusText.className = "text-green-400 font-bold uppercase tracking-widest text-sm";
+                        timerEl.classList.add('text-green-400');
+                        fileDate.innerText = new Date().toLocaleString();
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    isPaused = false;
+                    
+                    recordIcon.className = "fa-solid fa-pause";
+                    recordBtn.classList.add('recording-active');
+                    stopBtn.classList.remove('hidden');
+                    resetBtn.classList.add('hidden');
+                    playbackArea.classList.add('hidden');
+                    timerEl.classList.remove('text-green-400');
+                    
+                    statusText.innerText = "Recording...";
+                    statusText.className = "text-red-400 font-bold uppercase tracking-widest text-sm animate-pulse";
+
+                    startTimer();
+
+                } catch (err) {
+                    alert("Mic access denied!");
+                    console.error(err);
+                }
+            }
+
+            function pauseRecording() {
+                mediaRecorder.pause();
+                isPaused = true;
+                clearInterval(timerInterval);
+                pausedTime = Date.now();
+                
+                recordIcon.className = "fa-solid fa-microphone";
+                recordBtn.classList.remove('recording-active');
+                recordBtn.classList.replace('bg-gradient-to-br', 'bg-slate-700'); 
+                
+                statusText.innerText = "Paused";
+                statusText.className = "text-yellow-400 font-bold uppercase tracking-widest text-sm";
+            }
+
+            function resumeRecording() {
+                mediaRecorder.resume();
+                isPaused = false;
+                startTimer(true);
+                
+                recordIcon.className = "fa-solid fa-pause";
+                recordBtn.classList.add('recording-active');
+                
+                statusText.innerText = "Recording...";
+                statusText.className = "text-red-400 font-bold uppercase tracking-widest text-sm animate-pulse";
+            }
+
+            function stopRecording() {
+                mediaRecorder.stop();
+                isRecording = false;
+                isPaused = false;
+                clearInterval(timerInterval);
+            }
+            
+            function discardRecording() {
+                if(confirm("Discard this recording?")) {
+                    playbackArea.classList.add('hidden');
+                    recordBtn.classList.remove('hidden');
+                    stopBtn.classList.add('hidden');
+                    resetBtn.classList.add('hidden');
+                    recordBtn.classList.remove('recording-active');
+                    recordIcon.className = "fa-solid fa-microphone";
+                    
+                    timerEl.innerText = "00:00";
+                    timerEl.classList.remove('text-green-400');
+                    statusText.innerText = "Ready to Capture";
+                    statusText.className = "text-slate-400 text-sm tracking-wide uppercase";
+                    audioPlayer.src = "";
+                }
+            }
+            
+            function downloadAudio() {
+                const name = filenameInput.value || "recording";
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = audioPlayer.src;
+                a.download = `${name}.webm`;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => document.body.removeChild(a), 100);
+            }
+
+            function startTimer(resume = false) {
+                if(!resume) {
+                    startTime = Date.now();
+                    totalPausedTime = 0;
+                } else {
+                    totalPausedTime += (Date.now() - pausedTime);
+                }
+
+                timerInterval = setInterval(() => {
+                    const elapsed = Date.now() - startTime - totalPausedTime;
+                    const secs = Math.floor((elapsed / 1000) % 60);
+                    const mins = Math.floor((elapsed / (1000 * 60)) % 60);
+                    timerEl.innerText = `${pad(mins)}:${pad(secs)}`;
+                }, 1000);
+            }
+
+            function pad(n) { return n < 10 ? '0' + n : n; }
+
+            // --- Handlers ---
+            recordBtn.addEventListener('click', () => {
+                if (!isRecording) startRecording();
+                else if (isPaused) resumeRecording();
+                else pauseRecording();
+            });
+
+            stopBtn.addEventListener('click', stopRecording);
+            resetBtn.addEventListener('click', discardRecording);
+            saveBtn.addEventListener('click', downloadAudio);
+            discardBtn.addEventListener('click', discardRecording);
+
+        });
+    </script>
+</body>
+</html>
