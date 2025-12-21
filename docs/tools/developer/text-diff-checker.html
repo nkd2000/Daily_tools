@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Diff Checker | Compare Text Online</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Advanced Text Diff Checker with Syntax Highlighting. Compare code snippets or text files. Features Auto-format, Export Report, and Inline/Split views.">
+    <meta name="keywords" content="text diff checker, code compare, syntax highlighting, diff viewer, difference finder, online diff tool, file compare">
+    <meta name="author" content="Free Online Tools">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- JSDiff Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+    
+    <!-- Prettier (For Auto-Format) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/standalone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/parser-html.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/parser-babel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/parser-postcss.js"></script>
+
+    <!-- Prism.js (Syntax Highlighting) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* Diff Styling */
+        .diff-container {
+            display: flex;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1e293b; /* Matches Prism Tomorrow bg */
+        }
+        
+        .diff-pane {
+            flex: 1;
+            overflow-x: auto;
+            padding: 0;
+            position: relative;
+        }
+        
+        .diff-pane.original { border-right: 1px solid #334155; }
+        
+        .diff-line {
+            display: flex;
+            width: 100%;
+        }
+        
+        .line-num {
+            width: 40px;
+            text-align: right;
+            padding-right: 10px;
+            color: #64748b;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        
+        .line-content {
+            padding-left: 10px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            flex-grow: 1;
+        }
+
+        /* Diff Colors (Overlay on top of Syntax Highlight) */
+        .diff-added { background-color: rgba(34, 197, 94, 0.2) !important; }
+        .diff-removed { background-color: rgba(239, 68, 68, 0.2) !important; }
+        
+        /* Highlight specific changes within line */
+        .char-added { background-color: rgba(34, 197, 94, 0.4); border-radius: 2px; color: #fff;}
+        .char-removed { background-color: rgba(239, 68, 68, 0.4); border-radius: 2px; text-decoration: line-through; color: #fff;}
+        
+        .empty-row { height: 20px; background: repeating-linear-gradient(45deg, #1e293b, #1e293b 10px, #252f45 10px, #252f45 20px); opacity: 0.5; }
+
+        /* Prism Override to fit flex */
+        code[class*="language-"], pre[class*="language-"] {
+            font-family: 'JetBrains Mono', monospace !important;
+            text-shadow: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* Smooth transitions */
+        #inputSection, #resultSection {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-code-compare"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-white">DiffChecker <span class="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded ml-1">PRO</span></span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-slate-400">
+                    <a href="../../index.html" class="hover:text-indigo-400 transition">Home</a>
+                    <a href="../../pages/contact.html" class="hover:text-indigo-400 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full max-w-[1600px] mx-auto px-4 py-8 sm:px-6">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2">Advanced Code & Text Diff</h1>
+            <p class="text-slate-400 text-sm">Compare files, prettify code, and see differences in real-time.</p>
+        </div>
+
+        <!-- Controls Toolbar -->
+        <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 mb-6 flex flex-wrap gap-4 justify-between items-center shadow-lg sticky top-20 z-40">
+            
+            <!-- Left Controls -->
+            <div class="flex flex-wrap items-center gap-4">
+                
+                <!-- Language Select (For Syntax Highlighting) -->
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Language</label>
+                    <select id="langSelect" class="bg-slate-900 text-white text-xs rounded-lg border border-slate-600 p-2 focus:ring-indigo-500" onchange="runCompare()">
+                        <option value="text">Plain Text</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="css">CSS</option>
+                        <option value="html">HTML</option>
+                        <option value="python">Python</option>
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
+                
+                <!-- Diff Mode -->
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1">Granularity</label>
+                    <select id="diffMode" class="bg-slate-900 text-white text-xs rounded-lg border border-slate-600 p-2" onchange="runCompare()">
+                        <option value="lines">Lines</option>
+                        <option value="words">Words</option>
+                        <option value="chars">Chars</option>
+                    </select>
+                </div>
+
+                <label class="flex items-center gap-2 cursor-pointer mt-4 text-xs font-medium text-slate-300">
+                    <input type="checkbox" id="ignoreWhitespace" class="rounded text-indigo-600 bg-slate-700 border-slate-600" onchange="runCompare()">
+                    Ignore Whitespace
+                </label>
+            </div>
+
+            <!-- Middle View Toggles -->
+            <div class="flex bg-slate-900 p-1 rounded-lg border border-slate-700">
+                <button onclick="setMode('split')" id="btnSplit" class="bg-indigo-600 text-white px-4 py-1.5 rounded-md text-xs font-bold transition">
+                    <i class="fa-solid fa-columns mr-1"></i> Split
+                </button>
+                <button onclick="setMode('inline')" id="btnInline" class="text-slate-400 hover:text-white px-4 py-1.5 rounded-md text-xs font-bold transition">
+                    <i class="fa-solid fa-align-left mr-1"></i> Inline
+                </button>
+            </div>
+            
+            <!-- Right Actions -->
+            <div class="flex gap-2">
+                 <button onclick="prettifyCode()" class="text-xs bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-lg font-bold transition flex items-center gap-1" title="Auto Format Code">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Prettify
+                 </button>
+                 <button onclick="swapInputs()" class="text-xs bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg font-bold transition" title="Swap Inputs">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                 </button>
+                 <button onclick="clearAll()" class="text-xs text-red-400 hover:text-red-300 font-bold border border-red-900/30 px-3 py-2 rounded-lg hover:bg-red-900/20">Clear</button>
+            </div>
+        </div>
+
+        <!-- Input Area (Always Visible for Live Editing) -->
+        <div id="inputSection" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 transition-all duration-300">
+            <!-- Left Input -->
+            <div class="flex flex-col h-64 relative group">
+                <div class="flex justify-between mb-2 items-center">
+                    <label class="text-xs font-bold text-slate-500 uppercase bg-slate-900 px-2 py-1 rounded">Original</label>
+                    <label class="cursor-pointer text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 bg-slate-800 px-2 py-1 rounded border border-slate-700">
+                        <i class="fa-solid fa-upload"></i> Upload
+                        <input type="file" class="hidden" onchange="handleFileUpload(this, 'originalText')">
+                    </label>
+                </div>
+                <textarea id="originalText" class="flex-grow bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm font-mono text-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none resize-none transition custom-scrollbar" placeholder="// Paste original code here..."></textarea>
+            </div>
+            
+            <!-- Right Input -->
+            <div class="flex flex-col h-64 relative group">
+                <div class="flex justify-between mb-2 items-center">
+                    <label class="text-xs font-bold text-slate-500 uppercase bg-slate-900 px-2 py-1 rounded">Modified</label>
+                    <label class="cursor-pointer text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 bg-slate-800 px-2 py-1 rounded border border-slate-700">
+                        <i class="fa-solid fa-upload"></i> Upload
+                        <input type="file" class="hidden" onchange="handleFileUpload(this, 'modifiedText')">
+                    </label>
+                </div>
+                <textarea id="modifiedText" class="flex-grow bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm font-mono text-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none resize-none transition custom-scrollbar" placeholder="// Paste new code here..."></textarea>
+            </div>
+        </div>
+
+        <!-- Result Area -->
+        <div id="resultSection" class="animate-in fade-in slide-in-from-bottom-4 duration-500 hidden">
+            <div class="bg-slate-800 rounded-t-xl border border-slate-700 border-b-0 p-3 flex flex-wrap justify-between items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <h3 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+                        <i class="fa-solid fa-file-invoice text-indigo-500"></i> Live Result
+                    </h3>
+                    <span id="diffStats" class="text-xs text-white bg-slate-700 px-2 py-1 rounded font-mono border border-slate-600">0 Changes</span>
+                </div>
+                
+                <div class="flex gap-2">
+                    <!-- Toggle Inputs Button -->
+                    <button onclick="toggleInputs()" id="toggleInputBtn" class="text-xs bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded transition" title="Hide/Show Inputs">
+                        <i class="fa-solid fa-expand mr-1"></i> Expand View
+                    </button>
+                    <button onclick="exportDiff()" class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded transition font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-download"></i> Report
+                    </button>
+                </div>
+            </div>
+            
+            <div id="diffOutput" class="diff-container h-[500px] overflow-y-auto custom-scroll shadow-2xl transition-all duration-300">
+                <!-- Diff content injected here -->
+            </div>
+            
+            <!-- Legend -->
+            <div class="mt-4 flex gap-6 justify-center text-xs text-slate-500 font-bold uppercase tracking-wider">
+                <span class="flex items-center gap-2"><span class="w-3 h-3 bg-red-500/20 border border-red-500 rounded"></span> Deleted</span>
+                <span class="flex items-center gap-2"><span class="w-3 h-3 bg-green-500/20 border border-green-500 rounded"></span> Added</span>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-xs text-slate-500">
+                &copy; 2023 Free Online Tools. Local Processing.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const originalInput = document.getElementById('originalText');
+        const modifiedInput = document.getElementById('modifiedText');
+        const inputSection = document.getElementById('inputSection');
+        const resultSection = document.getElementById('resultSection');
+        const diffOutput = document.getElementById('diffOutput');
+        const diffStats = document.getElementById('diffStats');
+        const btnSplit = document.getElementById('btnSplit');
+        const btnInline = document.getElementById('btnInline');
+        const diffModeSelect = document.getElementById('diffMode');
+        const langSelect = document.getElementById('langSelect');
+        const ignoreWhitespaceCheck = document.getElementById('ignoreWhitespace');
+        const toggleInputBtn = document.getElementById('toggleInputBtn');
+
+        let currentMode = 'split'; 
+        let inputsVisible = true;
+        let debounceTimer;
+
+        // Auto-load sample
+        window.addEventListener('load', () => {
+             loadSample();
+        });
+        
+        // Auto Compare Event Listeners (Debounced)
+        originalInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(runCompare, 300);
+        });
+        
+        modifiedInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(runCompare, 300);
+        });
+
+        function setMode(mode) {
+            currentMode = mode;
+            if(mode === 'split') {
+                btnSplit.classList.add('bg-indigo-600', 'text-white');
+                btnSplit.classList.remove('text-slate-400', 'hover:text-white');
+                btnInline.classList.remove('bg-indigo-600', 'text-white');
+                btnInline.classList.add('text-slate-400', 'hover:text-white');
+            } else {
+                btnInline.classList.add('bg-indigo-600', 'text-white');
+                btnInline.classList.remove('text-slate-400', 'hover:text-white');
+                btnSplit.classList.remove('bg-indigo-600', 'text-white');
+                btnSplit.classList.add('text-slate-400', 'hover:text-white');
+            }
+            runCompare();
+        }
+        
+        function toggleInputs() {
+            inputsVisible = !inputsVisible;
+            if(inputsVisible) {
+                inputSection.classList.remove('hidden');
+                toggleInputBtn.innerHTML = '<i class="fa-solid fa-expand mr-1"></i> Expand View';
+                diffOutput.classList.remove('h-[700px]');
+                diffOutput.classList.add('h-[500px]');
+            } else {
+                inputSection.classList.add('hidden');
+                toggleInputBtn.innerHTML = '<i class="fa-solid fa-compress mr-1"></i> Show Inputs';
+                diffOutput.classList.remove('h-[500px]');
+                diffOutput.classList.add('h-[700px]');
+            }
+        }
+
+        function handleFileUpload(input, targetId) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(targetId).value = e.target.result;
+                runCompare();
+            };
+            reader.readAsText(file);
+            input.value = ''; // Reset
+        }
+        
+        function swapInputs() {
+            const temp = originalInput.value;
+            originalInput.value = modifiedInput.value;
+            modifiedInput.value = temp;
+            runCompare();
+        }
+
+        // --- PRETTIFY LOGIC ---
+        function prettifyCode() {
+            const lang = langSelect.value;
+            let parser = 'babel'; // Default JS
+            
+            if (lang === 'html') parser = 'html';
+            else if (lang === 'css') parser = 'css';
+            else if (lang === 'json') parser = 'json';
+            else if (lang === 'text' || lang === 'python') {
+                alert("Auto-format not available for this language yet.");
+                return;
+            }
+
+            try {
+                // Use Prettier global object
+                const plugins = window.prettierPlugins;
+                if(originalInput.value) {
+                    originalInput.value = prettier.format(originalInput.value, { 
+                        parser: parser, 
+                        plugins: plugins,
+                        semi: true,
+                        singleQuote: true
+                    });
+                }
+                if(modifiedInput.value) {
+                    modifiedInput.value = prettier.format(modifiedInput.value, { 
+                        parser: parser, 
+                        plugins: plugins,
+                        semi: true,
+                        singleQuote: true
+                    });
+                }
+                runCompare();
+            } catch(e) {
+                alert("Auto-format failed! Please check your code for syntax errors.\n\nError: " + e.message);
+                console.error(e);
+            }
+        }
+
+        function loadSample() {
+            langSelect.value = 'javascript';
+            originalInput.value = `// Function to calculate total\nfunction calculate(a, b) {\n  return a + b;\n}\n\nconsole.log(calculate(5, 10));`;
+            modifiedInput.value = `// Function to calculate total\nfunction calculate(a, b) {\n  // Changed to multiply\n  return a * b;\n}\n\nconsole.log(calculate(5, 10));\nconsole.log('Done');`;
+            runCompare();
+        }
+
+        function clearAll() {
+            if(confirm("Clear all text?")) {
+                originalInput.value = '';
+                modifiedInput.value = '';
+                // Show inputs and hide results to reset state
+                inputSection.classList.remove('hidden');
+                resultSection.classList.add('hidden');
+                diffStats.innerText = "0 Changes";
+                inputsVisible = true; // Reset toggle state
+                toggleInputBtn.innerHTML = '<i class="fa-solid fa-expand mr-1"></i> Expand View';
+            }
+        }
+
+        function showInputs() {
+            inputSection.classList.remove('hidden');
+            resultSection.classList.add('hidden');
+        }
+
+        function runCompare() {
+            const text1 = originalInput.value;
+            const text2 = modifiedInput.value;
+
+            if(!text1 && !text2) {
+                resultSection.classList.add('hidden');
+                return;
+            }
+            
+            resultSection.classList.remove('hidden');
+            diffOutput.innerHTML = '';
+
+            const mode = diffModeSelect.value;
+            const ignoreSpace = ignoreWhitespaceCheck.checked;
+            
+            const options = { ignoreWhitespace: ignoreSpace };
+            let diff;
+            
+            if (mode === 'chars') diff = Diff.diffChars(text1, text2, options);
+            else if (mode === 'words') diff = Diff.diffWords(text1, text2, options);
+            else diff = Diff.diffLines(text1, text2, options);
+            
+            const changes = diff.filter(part => part.added || part.removed).length;
+            diffStats.innerText = `${changes} Changes`;
+
+            if (currentMode === 'inline' || mode !== 'lines') {
+                renderInline(diff, mode);
+            } else {
+                renderSplit(diff);
+            }
+        }
+
+        // --- SYNTAX HIGHLIGHTING HELPER ---
+        function highlightCode(code) {
+            const lang = langSelect.value;
+            if (lang === 'text') return escapeHtml(code);
+            
+            try {
+                // Use Prism to highlight
+                return Prism.highlight(code, Prism.languages[lang] || Prism.languages.javascript, lang);
+            } catch (e) {
+                return escapeHtml(code);
+            }
+        }
+
+        function renderInline(diff, mode) {
+            let html = '<div class="w-full p-4 font-mono text-sm leading-relaxed">';
+            
+            if (mode === 'lines') {
+                let lineNum = 1;
+                diff.forEach((part) => {
+                    const colorClass = part.added ? 'diff-added' : part.removed ? 'diff-removed' : '';
+                    const symbol = part.added ? '+' : part.removed ? '-' : ' ';
+                    
+                    const lines = part.value.replace(/\n$/, '').split('\n');
+                    lines.forEach(line => {
+                        const highlightedContent = highlightCode(line);
+                        
+                        html += `<div class="${colorClass} px-2 whitespace-pre-wrap flex"><span class="select-none opacity-40 mr-3 w-6 text-right text-xs pt-0.5">${part.removed ? '' : lineNum}</span><span class="select-none font-bold mr-2 opacity-60">${symbol}</span><span class="code-line">${highlightedContent || '&nbsp;'}</span></div>`;
+                        if (!part.removed) lineNum++;
+                    });
+                });
+            } else {
+                // Word/Char diff
+                diff.forEach(part => {
+                     const colorClass = part.added ? 'bg-green-600/40 text-white rounded px-1' : part.removed ? 'bg-red-600/40 text-white rounded px-1 line-through opacity-70' : 'text-slate-400';
+                     html += `<span class="${colorClass}">${escapeHtml(part.value)}</span>`;
+                });
+            }
+            html += '</div>';
+            diffOutput.innerHTML = html;
+        }
+
+        function renderSplit(diff) {
+            let leftHTML = '';
+            let rightHTML = '';
+            let leftLine = 1;
+            let rightLine = 1;
+
+            diff.forEach((part) => {
+                const lines = part.value.replace(/\n$/, '').split('\n');
+                
+                if (part.removed) {
+                    lines.forEach(line => {
+                         leftHTML += createRow(leftLine++, line, 'diff-removed');
+                         rightHTML += createEmptyRow();
+                    });
+                } else if (part.added) {
+                    lines.forEach(line => {
+                        leftHTML += createEmptyRow();
+                        rightHTML += createRow(rightLine++, line, 'diff-added');
+                    });
+                } else {
+                    lines.forEach(line => {
+                        leftHTML += createRow(leftLine++, line, '');
+                        rightHTML += createRow(rightLine++, line, '');
+                    });
+                }
+            });
+
+            diffOutput.innerHTML = `
+                <div class="diff-pane original" id="leftPane">${leftHTML}</div>
+                <div class="diff-pane modified" id="rightPane">${rightHTML}</div>
+            `;
+            
+            setTimeout(() => {
+                const l = document.getElementById('leftPane');
+                const r = document.getElementById('rightPane');
+                if(l && r) {
+                    l.addEventListener('scroll', () => { r.scrollTop = l.scrollTop; });
+                    r.addEventListener('scroll', () => { l.scrollTop = r.scrollTop; });
+                }
+            }, 100);
+        }
+
+        function createRow(num, content, classes) {
+            const highlighted = highlightCode(content);
+            return `
+                <div class="diff-line ${classes} hover:bg-white/5">
+                    <div class="line-num">${num}</div>
+                    <div class="line-content code-line">${highlighted || '&nbsp;'}</div>
+                </div>
+            `;
+        }
+
+        function createEmptyRow() {
+             return `<div class="diff-line empty-row"><div class="line-num"></div><div class="line-content"></div></div>`;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+        
+        // --- Export Feature ---
+        window.exportDiff = function() {
+             const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head><title>Diff Report</title>
+                <style>
+                    body { font-family: monospace; background: #fff; color: #333; padding: 20px; }
+                    .added { background: #e6ffec; color: #155724; }
+                    .removed { background: #ffebe9; color: #721c24; text-decoration: line-through; }
+                    .diff-block { white-space: pre-wrap; margin-bottom: 5px; border-left: 3px solid #ccc; padding-left: 10px; }
+                </style>
+                </head>
+                <body>
+                    <h2>Comparison Report</h2>
+                    <p>Generated by Free Online Tools</p>
+                    <hr>
+                    ${diffOutput.innerHTML.replace(/class="diff-added"/g, 'class="diff-block added"').replace(/class="diff-removed"/g, 'class="diff-block removed"')}
+                </body>
+                </html>
+             `;
+             const blob = new Blob([htmlContent], {type: 'text/html'});
+             const url = URL.createObjectURL(blob);
+             const a = document.createElement('a');
+             a.href = url;
+             a.download = 'diff_report.html';
+             a.click();
+        }
+
+    </script>
+</body>
+</html>
