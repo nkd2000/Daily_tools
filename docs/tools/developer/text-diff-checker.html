@@ -209,10 +209,14 @@
             <div class="flex flex-col h-64 relative group">
                 <div class="flex justify-between mb-2 items-center">
                     <label class="text-xs font-bold text-slate-500 uppercase bg-slate-900 px-2 py-1 rounded">Original</label>
-                    <label class="cursor-pointer text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 bg-slate-800 px-2 py-1 rounded border border-slate-700">
-                        <i class="fa-solid fa-upload"></i> Upload
+                    <label class="cursor-pointer text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 bg-slate-800 px-2 py-1 rounded border border-slate-700 hover:border-indigo-500 transition">
+                        <i class="fa-solid fa-upload"></i> Upload File
                         <input type="file" class="hidden" onchange="handleFileUpload(this, 'originalText')">
                     </label>
+                </div>
+                <!-- Progress Bar -->
+                <div class="h-1 w-full bg-slate-700 rounded-full overflow-hidden mb-1 hidden" id="progress-originalText">
+                    <div class="h-full bg-indigo-500 transition-all duration-300" style="width: 0%" id="fill-originalText"></div>
                 </div>
                 <textarea id="originalText" class="flex-grow bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm font-mono text-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none resize-none transition custom-scrollbar" placeholder="// Paste original code here..."></textarea>
             </div>
@@ -221,10 +225,14 @@
             <div class="flex flex-col h-64 relative group">
                 <div class="flex justify-between mb-2 items-center">
                     <label class="text-xs font-bold text-slate-500 uppercase bg-slate-900 px-2 py-1 rounded">Modified</label>
-                    <label class="cursor-pointer text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 bg-slate-800 px-2 py-1 rounded border border-slate-700">
-                        <i class="fa-solid fa-upload"></i> Upload
+                    <label class="cursor-pointer text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 bg-slate-800 px-2 py-1 rounded border border-slate-700 hover:border-indigo-500 transition">
+                        <i class="fa-solid fa-upload"></i> Upload File
                         <input type="file" class="hidden" onchange="handleFileUpload(this, 'modifiedText')">
                     </label>
+                </div>
+                <!-- Progress Bar -->
+                <div class="h-1 w-full bg-slate-700 rounded-full overflow-hidden mb-1 hidden" id="progress-modifiedText">
+                    <div class="h-full bg-indigo-500 transition-all duration-300" style="width: 0%" id="fill-modifiedText"></div>
                 </div>
                 <textarea id="modifiedText" class="flex-grow bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm font-mono text-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none resize-none transition custom-scrollbar" placeholder="// Paste new code here..."></textarea>
             </div>
@@ -340,13 +348,67 @@
         function handleFileUpload(input, targetId) {
             const file = input.files[0];
             if (!file) return;
+
+            // --- Binary File Check ---
+            const binaryTypes = [
+                'application/pdf', 
+                'application/msword', 
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 
+                'image/',
+                'audio/',
+                'video/',
+                'application/zip',
+                'application/x-rar-compressed'
+            ];
+            
+            if (binaryTypes.some(type => file.type.startsWith(type) || file.type.includes(type))) {
+                alert("Binary files (PDF, Word, Images, etc.) are NOT supported for text comparison.\n\nPlease upload plain text, code, or config files (.txt, .js, .json, .py, etc.).");
+                input.value = ''; // Reset
+                return;
+            }
+            // --- End Check ---
+
+            // UI Refs
+            const progressBar = document.getElementById('progress-' + targetId);
+            const progressFill = document.getElementById('fill-' + targetId);
+            const textArea = document.getElementById(targetId);
+
+            // Show Progress
+            if(progressBar) progressBar.classList.remove('hidden');
+            if(progressFill) progressFill.style.width = '0%';
+            
+            textArea.value = "Reading file...";
+            textArea.disabled = true;
+
             const reader = new FileReader();
+            
+            // Progress Event
+            reader.onprogress = function(e) {
+                if (e.lengthComputable && progressFill) {
+                    const percent = (e.loaded / e.total) * 100;
+                    progressFill.style.width = percent + '%';
+                }
+            };
+
             reader.onload = function(e) {
-                document.getElementById(targetId).value = e.target.result;
+                textArea.value = e.target.result;
+                textArea.disabled = false;
+                if(progressBar) progressBar.classList.add('hidden');
                 runCompare();
             };
+
+            reader.onerror = function() {
+                textArea.value = "Error reading file.";
+                textArea.disabled = false;
+                if(progressBar) progressBar.classList.add('hidden');
+                alert("Failed to read file.");
+            };
+
+            // Read as text
             reader.readAsText(file);
-            input.value = ''; // Reset
+            input.value = ''; 
         }
         
         function swapInputs() {
@@ -404,14 +466,18 @@
 
         function clearAll() {
             if(confirm("Clear all text?")) {
-                originalInput.value = '';
-                modifiedInput.value = '';
-                // Show inputs and hide results to reset state
-                inputSection.classList.remove('hidden');
-                resultSection.classList.add('hidden');
-                diffStats.innerText = "0 Changes";
-                inputsVisible = true; // Reset toggle state
-                toggleInputBtn.innerHTML = '<i class="fa-solid fa-expand mr-1"></i> Expand View';
+                if(originalInput) originalInput.value = '';
+                if(modifiedInput) modifiedInput.value = '';
+                
+                // Reset UI State
+                if(inputSection) inputSection.classList.remove('hidden');
+                if(resultSection) resultSection.classList.add('hidden');
+                if(diffStats) diffStats.innerText = "0 Changes";
+                if(diffOutput) diffOutput.innerHTML = '';
+                
+                // Reset Toggle Button
+                inputsVisible = true;
+                if(toggleInputBtn) toggleInputBtn.innerHTML = '<i class="fa-solid fa-expand mr-1"></i> Expand View';
             }
         }
 
@@ -431,6 +497,16 @@
             
             resultSection.classList.remove('hidden');
             diffOutput.innerHTML = '';
+            
+            // Fix: Keep state synced
+            if(inputsVisible) {
+                // If visible, keep it visible or hide? 
+                // Let's keep inputs visible by default for live edit
+                // Only hide if user clicked expand before. 
+                // Actually user requested live edit so inputs should stay.
+            } else {
+                 // If hidden (expanded mode), keep hidden
+            }
 
             const mode = diffModeSelect.value;
             const ignoreSpace = ignoreWhitespaceCheck.checked;
@@ -438,17 +514,21 @@
             const options = { ignoreWhitespace: ignoreSpace };
             let diff;
             
-            if (mode === 'chars') diff = Diff.diffChars(text1, text2, options);
-            else if (mode === 'words') diff = Diff.diffWords(text1, text2, options);
-            else diff = Diff.diffLines(text1, text2, options);
-            
-            const changes = diff.filter(part => part.added || part.removed).length;
-            diffStats.innerText = `${changes} Changes`;
+            try {
+                if (mode === 'chars') diff = Diff.diffChars(text1, text2, options);
+                else if (mode === 'words') diff = Diff.diffWords(text1, text2, options);
+                else diff = Diff.diffLines(text1, text2, options);
+                
+                const changes = diff.filter(part => part.added || part.removed).length;
+                diffStats.innerText = `${changes} Changes`;
 
-            if (currentMode === 'inline' || mode !== 'lines') {
-                renderInline(diff, mode);
-            } else {
-                renderSplit(diff);
+                if (currentMode === 'inline' || mode !== 'lines') {
+                    renderInline(diff, mode);
+                } else {
+                    renderSplit(diff);
+                }
+            } catch(e) {
+                console.error(e);
             }
         }
 
