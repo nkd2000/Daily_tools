@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Converter (WebP, AVIF, JPG) | Free Online Tools</title>
+    <title>Advanced Image Converter & Resizer | Free Online Tools</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Free online Batch Image Converter. Convert JPG, PNG to WebP, AVIF, or JPEG formats instantly. Bulk processing, quality control, and fast download.">
-    <meta name="keywords" content="image converter, jpg to webp, png to avif, bulk image converter, online photo converter, webp generator, free tool">
+    <meta name="description" content="Free online Batch Image Converter. Convert, Resize, and Watermark images instantly. Supports WebP, AVIF, JPG, PNG. Processing happens locally in browser using Web Workers.">
+    <meta name="keywords" content="bulk image converter, image resizer, add watermark online, jpg to webp, png to avif, batch photo editor">
     <meta name="author" content="Free Online Tools">
 
     <!-- Tailwind CSS -->
@@ -32,12 +32,17 @@
         .drag-active {
             border-color: #3b82f6 !important;
             background-color: #eff6ff !important;
+            transform: scale(1.02);
         }
         
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
+
+        /* Accordion Transition */
+        .accordion-content { transition: max-height 0.3s ease-out; overflow: hidden; max-height: 0; }
+        .accordion-content.open { max-height: 500px; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen text-slate-800">
@@ -48,9 +53,9 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center gap-3">
                     <div class="bg-indigo-600 text-white p-2 rounded-lg">
-                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        <i class="fa-solid fa-layer-group"></i>
                     </div>
-                    <span class="font-bold text-xl tracking-tight text-slate-900">ImgConvert</span>
+                    <span class="font-bold text-xl tracking-tight text-slate-900">ImgConvert <span class="text-indigo-600 text-xs align-top">PRO</span></span>
                 </div>
                 <div class="flex items-center gap-6 text-sm font-medium text-slate-500">
                     <a href="../../index.html" class="hover:text-indigo-600 transition">Home</a>
@@ -61,15 +66,15 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-6xl mx-auto px-4 py-10 sm:px-6 w-full">
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-10 sm:px-6 w-full">
         
         <!-- Header -->
         <div class="text-center mb-10">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-3">
-                Bulk Image Converter
+                Batch Image Processor
             </h1>
             <p class="text-slate-500 text-lg max-w-2xl mx-auto">
-                Convert JPG & PNG images to modern <span class="text-indigo-600 font-bold">WebP</span> or <span class="text-purple-600 font-bold">AVIF</span> formats for faster websites.
+                Convert, Resize, and Watermark multiple images. <span class="text-indigo-600 font-bold">Web Worker Powered</span> for max speed.
             </p>
         </div>
 
@@ -78,54 +83,122 @@
             <!-- Left: Settings & Upload -->
             <div class="lg:col-span-4 space-y-6">
                 
-                <!-- Settings Card -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-indigo-500"></i> Settings
-                    </h3>
-                    
-                    <div class="space-y-5">
-                        <!-- Format Selection -->
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Output Format</label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <button onclick="setFormat('image/webp', this)" class="format-btn active bg-indigo-600 text-white py-2 rounded-lg text-sm font-bold border border-indigo-600 transition">WebP</button>
-                                <button onclick="setFormat('image/jpeg', this)" class="format-btn bg-white text-slate-600 py-2 rounded-lg text-sm font-bold border border-gray-200 hover:border-gray-300 transition">JPG</button>
-                                <button onclick="setFormat('image/png', this)" class="format-btn bg-white text-slate-600 py-2 rounded-lg text-sm font-bold border border-gray-200 hover:border-gray-300 transition">PNG</button>
-                                <button onclick="setFormat('image/avif', this)" class="format-btn bg-white text-slate-600 py-2 rounded-lg text-sm font-bold border border-gray-200 hover:border-gray-300 transition relative">
-                                    AVIF <span class="absolute -top-1 -right-1 flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
-                                </button>
+                <!-- 1. Conversion Settings -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button class="w-full px-6 py-4 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition" onclick="toggleAccordion('settings-format')" aria-expanded="true">
+                        <span class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-file-export text-indigo-500"></i> Format & Quality</span>
+                        <i class="fa-solid fa-chevron-down text-gray-400"></i>
+                    </button>
+                    <div id="settings-format" class="accordion-content open p-6 border-t border-gray-100">
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Output Format</label>
+                                <div class="grid grid-cols-2 gap-2" role="group" aria-label="Output Format Selection">
+                                    <button onclick="setFormat('image/webp', this)" class="format-btn active bg-indigo-600 text-white py-2 rounded-lg text-sm font-bold border border-indigo-600 transition">WebP</button>
+                                    <button onclick="setFormat('image/jpeg', this)" class="format-btn bg-white text-slate-600 py-2 rounded-lg text-sm font-bold border border-gray-200 hover:border-gray-300 transition">JPG</button>
+                                    <button onclick="setFormat('image/png', this)" class="format-btn bg-white text-slate-600 py-2 rounded-lg text-sm font-bold border border-gray-200 hover:border-gray-300 transition">PNG</button>
+                                    <button onclick="setFormat('image/avif', this)" class="format-btn bg-white text-slate-600 py-2 rounded-lg text-sm font-bold border border-gray-200 hover:border-gray-300 transition relative">
+                                        AVIF <span class="absolute -top-1 -right-1 flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="qualityControl">
+                                <div class="flex justify-between mb-2">
+                                    <label class="text-xs font-bold text-slate-500 uppercase">Quality</label>
+                                    <span class="text-xs font-bold text-indigo-600" id="qualityVal">80%</span>
+                                </div>
+                                <input type="range" id="quality" min="10" max="100" value="80" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600" aria-label="Image Quality">
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Quality Slider -->
-                        <div id="qualityControl">
-                            <div class="flex justify-between mb-2">
-                                <label class="text-xs font-bold text-slate-500 uppercase">Quality</label>
-                                <span class="text-xs font-bold text-indigo-600" id="qualityVal">80%</span>
+                <!-- 2. Resize Settings -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button class="w-full px-6 py-4 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition" onclick="toggleAccordion('settings-resize')" aria-expanded="false">
+                        <span class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-ruler-combined text-blue-500"></i> Resize (Optional)</span>
+                        <i class="fa-solid fa-chevron-down text-gray-400"></i>
+                    </button>
+                    <div id="settings-resize" class="accordion-content p-6 border-t border-gray-100">
+                        <div class="space-y-4">
+                            <!-- Presets -->
+                            <div class="flex flex-wrap gap-2 mb-2">
+                                <button onclick="setPresetResize(1280, 720)" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded">HD (720p)</button>
+                                <button onclick="setPresetResize(1920, 1080)" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded">FHD (1080p)</button>
+                                <button onclick="setPresetScale(0.5)" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded">50% Scale</button>
                             </div>
-                            <input type="range" id="quality" min="10" max="100" value="80" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Width (px)</label>
+                                    <input type="number" id="resizeWidth" placeholder="Auto" class="w-full border-gray-300 rounded-lg text-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Height (px)</label>
+                                    <input type="number" id="resizeHeight" placeholder="Auto" class="w-full border-gray-300 rounded-lg text-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Info -->
-                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 text-xs text-blue-700 leading-relaxed">
-                            <i class="fa-solid fa-circle-info mr-1"></i>
-                            <strong>WebP/AVIF</strong> reduce file size by 30-70% compared to JPG while keeping high quality.
+                <!-- 3. Watermark Settings -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <button class="w-full px-6 py-4 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition" onclick="toggleAccordion('settings-watermark')" aria-expanded="false">
+                        <span class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-stamp text-purple-500"></i> Watermark</span>
+                        <i class="fa-solid fa-chevron-down text-gray-400"></i>
+                    </button>
+                    <div id="settings-watermark" class="accordion-content p-6 border-t border-gray-100">
+                         <div class="space-y-4">
+                             <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Text</label>
+                                <input type="text" id="watermarkText" placeholder="e.g. © MyWebsite" class="w-full border-gray-300 rounded-lg text-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Position</label>
+                                    <select id="watermarkPos" class="w-full border-gray-300 rounded-lg text-sm p-2">
+                                        <option value="bottom-right">Bottom Right</option>
+                                        <option value="bottom-left">Bottom Left</option>
+                                        <option value="top-right">Top Right</option>
+                                        <option value="top-left">Top Left</option>
+                                        <option value="center">Center</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Opacity</label>
+                                    <input type="number" id="watermarkOpacity" value="0.5" step="0.1" min="0.1" max="1" class="w-full border-gray-300 rounded-lg text-sm p-2">
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+                
+                <!-- 4. Renaming -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                     <button class="w-full px-6 py-4 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition" onclick="toggleAccordion('settings-rename')" aria-expanded="false">
+                        <span class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-i-cursor text-teal-500"></i> Rename Files</span>
+                        <i class="fa-solid fa-chevron-down text-gray-400"></i>
+                    </button>
+                    <div id="settings-rename" class="accordion-content p-6 border-t border-gray-100">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Filename Prefix</label>
+                        <div class="flex items-center gap-2">
+                             <input type="text" id="renamePrefix" placeholder="image" class="flex-grow border-gray-300 rounded-lg text-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                             <span class="text-gray-400 text-sm">-01.ext</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Upload Area -->
-                <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-2xl p-8 bg-slate-50 hover:bg-white hover:border-indigo-400 transition cursor-pointer text-center group">
+                <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-2xl p-8 bg-slate-50 hover:bg-white hover:border-indigo-400 transition cursor-pointer text-center group relative focus-within:ring-2 focus-within:ring-indigo-500" tabindex="0">
                     <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
                     <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
                         <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
                     </div>
-                    <h3 class="text-slate-700 font-bold mb-1">Click or Drop Images</h3>
+                    <h3 class="text-slate-700 font-bold mb-1">Click, Paste or Drop Images</h3>
                     <p class="text-slate-400 text-xs">Supports JPG, PNG, WEBP, BMP</p>
                 </div>
                 
-                <!-- Download All (Hidden Initially) -->
+                <!-- Download All -->
                 <button id="downloadAllBtn" onclick="downloadAll()" class="hidden w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center gap-2">
                     <i class="fa-solid fa-file-zipper"></i> Download All as ZIP
                 </button>
@@ -134,20 +207,33 @@
 
             <!-- Right: Results -->
             <div class="lg:col-span-8">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden min-h-[400px] flex flex-col">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden min-h-[600px] flex flex-col">
                     <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                         <h3 class="font-bold text-slate-800">Conversion Queue</h3>
-                        <span class="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md" id="fileCount">0 Files</span>
+                        <div class="flex items-center gap-3">
+                             <!-- Global Progress -->
+                             <div id="globalProgress" class="hidden flex items-center gap-2 mr-2">
+                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                    <div id="globalProgressBar" class="bg-indigo-600 h-2 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <span id="globalProgressText" class="text-xs text-slate-500 font-mono">0/0</span>
+                             </div>
+
+                             <button onclick="clearAll()" class="text-xs text-red-500 hover:text-red-700 font-medium hidden" id="clearAllBtn">Clear All</button>
+                             <span class="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md" id="fileCount">0 Files</span>
+                        </div>
                     </div>
                     
-                    <div id="resultsList" class="flex-grow p-6 space-y-4 overflow-y-auto max-h-[600px]">
+                    <div id="resultsList" class="flex-grow p-6 space-y-4 overflow-y-auto max-h-[800px]">
                         <!-- Empty State -->
-                        <div id="emptyState" class="text-center py-20 text-gray-400">
-                            <i class="fa-regular fa-images text-5xl mb-4 opacity-50"></i>
-                            <p>No images uploaded yet.</p>
+                        <div id="emptyState" class="text-center py-32 text-gray-400">
+                            <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-regular fa-images text-4xl opacity-50"></i>
+                            </div>
+                            <p>Upload or Paste (Ctrl+V) images to start processing.</p>
                         </div>
                         
-                        <!-- List Items will go here -->
+                        <!-- List Items -->
                     </div>
                 </div>
             </div>
@@ -166,11 +252,76 @@
 
     <script>
         (function() {
+            // Worker Script as Blob (To avoid external file dependency)
+            const workerCode = `
+                self.onmessage = async function(e) {
+                    const { bitmap, format, quality, targetW, targetH, wmText, wmPos, wmOpacity, id } = e.data;
+                    
+                    try {
+                        let width = bitmap.width;
+                        let height = bitmap.height;
+                        
+                        // Resize Logic
+                        if (targetW && targetH) { width = targetW; height = targetH; }
+                        else if (targetW) { const ratio = targetW / width; width = targetW; height = height * ratio; }
+                        else if (targetH) { const ratio = targetH / height; height = targetH; width = width * ratio; }
+                        
+                        // Use OffscreenCanvas if supported
+                        let canvas;
+                        if (typeof OffscreenCanvas !== 'undefined') {
+                            canvas = new OffscreenCanvas(width, height);
+                        } else {
+                            // Fallback logic handled in main thread, but here we can't create DOM element.
+                            // If OffscreenCanvas not supported, we must fail and let main thread handle.
+                            throw new Error("OffscreenCanvas not supported");
+                        }
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(bitmap, 0, 0, width, height);
+
+                        // Watermark Logic
+                        if (wmText) {
+                            const fontSize = Math.max(12, width * 0.05);
+                            ctx.font = \`bold \${fontSize}px sans-serif\`;
+                            ctx.globalAlpha = wmOpacity;
+                            ctx.fillStyle = "white";
+                            ctx.shadowColor="rgba(0,0,0,0.5)"; 
+                            ctx.shadowBlur=4;
+                            
+                            const metrics = ctx.measureText(wmText);
+                            const txtW = metrics.width;
+                            const txtH = fontSize;
+                            const pad = 20;
+                            
+                            let x, y;
+                            if(wmPos === 'bottom-right') { x = width - txtW - pad; y = height - pad; }
+                            else if(wmPos === 'bottom-left') { x = pad; y = height - pad; }
+                            else if(wmPos === 'top-right') { x = width - txtW - pad; y = txtH + pad; }
+                            else if(wmPos === 'top-left') { x = pad; y = txtH + pad; }
+                            else { x = (width - txtW)/2; y = (height + txtH)/2; }
+                            
+                            ctx.fillText(wmText, x, y);
+                        }
+
+                        const blob = await canvas.convertToBlob({ type: format, quality: quality });
+                        self.postMessage({ id, blob, success: true });
+
+                    } catch (err) {
+                        self.postMessage({ id, error: err.message, success: false });
+                    }
+                };
+            `;
+            
+            const workerBlob = new Blob([workerCode], { type: "application/javascript" });
+            const workerUrl = URL.createObjectURL(workerBlob);
+            
             // State
             let targetFormat = 'image/webp';
             let quality = 0.8;
             let filesQueue = [];
-            let convertedFiles = []; // Store blobs for ZIP
+            let convertedFiles = []; 
+            let workerPool = [];
+            const MAX_WORKERS = navigator.hardwareConcurrency || 4;
 
             // Elements
             const fileInput = document.getElementById('fileInput');
@@ -181,10 +332,31 @@
             const emptyState = document.getElementById('emptyState');
             const fileCount = document.getElementById('fileCount');
             const downloadAllBtn = document.getElementById('downloadAllBtn');
+            const clearAllBtn = document.getElementById('clearAllBtn');
             const formatBtns = document.querySelectorAll('.format-btn');
             const qualityControl = document.getElementById('qualityControl');
+            
+            // Progress Bar
+            const globalProgress = document.getElementById('globalProgress');
+            const globalProgressBar = document.getElementById('globalProgressBar');
+            const globalProgressText = document.getElementById('globalProgressText');
+            
+            // Inputs
+            const resizeWidth = document.getElementById('resizeWidth');
+            const resizeHeight = document.getElementById('resizeHeight');
+            const watermarkText = document.getElementById('watermarkText');
+            const watermarkPos = document.getElementById('watermarkPos');
+            const watermarkOpacity = document.getElementById('watermarkOpacity');
+            const renamePrefix = document.getElementById('renamePrefix');
 
-            // Format Selection
+            // --- UI Helper Functions ---
+            window.toggleAccordion = (id) => {
+                const el = document.getElementById(id);
+                el.classList.toggle('open');
+                const btn = el.previousElementSibling;
+                btn.setAttribute('aria-expanded', el.classList.contains('open'));
+            };
+            
             window.setFormat = (fmt, btn) => {
                 targetFormat = fmt;
                 formatBtns.forEach(b => {
@@ -194,58 +366,94 @@
                 btn.classList.remove('bg-white', 'text-slate-600', 'border-gray-200');
                 btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
                 
-                // Hide quality for PNG (lossless)
-                if(fmt === 'image/png') {
-                    qualityControl.classList.add('opacity-50', 'pointer-events-none');
-                } else {
-                    qualityControl.classList.remove('opacity-50', 'pointer-events-none');
-                }
+                if(fmt === 'image/png') qualityControl.classList.add('opacity-50', 'pointer-events-none');
+                else qualityControl.classList.remove('opacity-50', 'pointer-events-none');
             };
 
-            // Quality Slider
+            window.setPresetResize = (w, h) => {
+                resizeWidth.value = w;
+                resizeHeight.value = h;
+            };
+            
+            window.setPresetScale = (scale) => {
+                // This would need image dimension knowledge, 
+                // for bulk we can just pass a flag or handle in worker if we sent scale factor
+                // For simplicity, let's clear explicit px values and rely on logic
+                resizeWidth.value = '';
+                resizeHeight.value = '';
+                alert("Scale preset requires specific image context. Please enter pixel values for bulk resize.");
+            };
+
             qualityInput.addEventListener('input', (e) => {
                 quality = e.target.value / 100;
                 qualityVal.innerText = e.target.value + '%';
             });
 
-            // File Handling
+            // --- File Handling ---
             fileInput.addEventListener('change', handleFiles);
 
             // Drag & Drop
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('drag-active');
-            });
-            dropZone.addEventListener('dragleave', () => {
-                dropZone.classList.remove('drag-active');
-            });
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-active'); });
+            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('drag-active'); });
             dropZone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 dropZone.classList.remove('drag-active');
-                if(e.dataTransfer.files.length > 0) {
-                    processFiles(e.dataTransfer.files);
+                if(e.dataTransfer.files.length > 0) processFiles(e.dataTransfer.files);
+            });
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            // Key Navigation for DropZone
+            dropZone.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    fileInput.click();
                 }
             });
-            
-            // Trigger Input click on Dropzone click
-            dropZone.addEventListener('click', () => fileInput.click());
+
+            // Paste Support
+            document.addEventListener('paste', (e) => {
+                const items = e.clipboardData.items;
+                const files = [];
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        files.push(items[i].getAsFile());
+                    }
+                }
+                if (files.length > 0) processFiles(files);
+            });
 
             function handleFiles(e) {
-                if(e.target.files.length > 0) {
-                    processFiles(e.target.files);
-                }
+                if(e.target.files.length > 0) processFiles(e.target.files);
             }
 
             async function processFiles(files) {
                 emptyState.classList.add('hidden');
+                clearAllBtn.classList.remove('hidden');
+                globalProgress.classList.remove('hidden');
                 
+                let processedCount = 0;
+                const totalFiles = files.length;
+                globalProgressBar.style.width = '0%';
+                globalProgressText.innerText = `0/${totalFiles}`;
+
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
                     if(!file.type.startsWith('image/')) continue;
                     
                     const id = Date.now() + i;
                     createListItem(id, file);
-                    await convertImage(id, file);
+                    
+                    // Create Bitmap (Main Thread) -> Worker
+                    try {
+                        const bitmap = await createImageBitmap(file);
+                        await convertImageInWorker(id, file, bitmap, i);
+                    } catch (e) {
+                        markError(id, "Invalid Image");
+                    }
+                    
+                    processedCount++;
+                    const pct = (processedCount / totalFiles) * 100;
+                    globalProgressBar.style.width = `${pct}%`;
+                    globalProgressText.innerText = `${processedCount}/${totalFiles}`;
                 }
                 
                 updateCount();
@@ -256,96 +464,100 @@
                 div.id = `item-${id}`;
                 div.className = "flex flex-col sm:flex-row items-center gap-4 bg-white border border-gray-100 p-4 rounded-xl shadow-sm fade-in relative overflow-hidden";
                 div.innerHTML = `
-                    <!-- Thumbnail -->
                     <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
                         <img id="thumb-${id}" class="w-full h-full object-cover opacity-50">
-                        <div id="spinner-${id}" class="absolute inset-0 flex items-center justify-center">
-                            <i class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i>
-                        </div>
+                        <div id="spinner-${id}" class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i></div>
                     </div>
-                    
-                    <!-- Info -->
                     <div class="flex-grow min-w-0 w-full text-center sm:text-left">
-                        <h4 class="text-sm font-bold text-slate-700 truncate">${file.name}</h4>
+                        <h4 class="text-sm font-bold text-slate-700 truncate" id="name-${id}">${file.name}</h4>
                         <div class="flex items-center justify-center sm:justify-start gap-3 mt-1 text-xs text-slate-500 font-mono">
-                            <span>${formatBytes(file.size)}</span>
-                            <i class="fa-solid fa-arrow-right text-gray-300"></i>
-                            <span id="newSize-${id}" class="text-gray-400">Processing...</span>
-                            <span id="badge-${id}" class="hidden px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-bold ml-2">SAVED 0%</span>
+                            <span>${formatBytes(file.size)}</span> <i class="fa-solid fa-arrow-right text-gray-300"></i>
+                            <span id="newSize-${id}" class="text-gray-400">Waiting...</span>
+                            <span id="badge-${id}" class="hidden px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-bold ml-2">SAVED</span>
                         </div>
                     </div>
-                    
-                    <!-- Actions -->
                     <div class="flex-shrink-0">
-                        <a id="dlBtn-${id}" class="hidden bg-indigo-50 hover:bg-indigo-100 text-indigo-600 p-2 rounded-lg transition" title="Download">
-                            <i class="fa-solid fa-download"></i>
-                        </a>
+                        <a id="dlBtn-${id}" class="hidden bg-indigo-50 hover:bg-indigo-100 text-indigo-600 p-2 rounded-lg transition" title="Download"><i class="fa-solid fa-download"></i></a>
                     </div>
                 `;
                 resultsList.prepend(div);
-                
-                // Set thumb
                 const reader = new FileReader();
                 reader.onload = e => document.getElementById(`thumb-${id}`).src = e.target.result;
                 reader.readAsDataURL(file);
             }
 
-            async function convertImage(id, file) {
-                try {
-                    const bitmap = await createImageBitmap(file);
-                    const canvas = document.createElement('canvas');
-                    canvas.width = bitmap.width;
-                    canvas.height = bitmap.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(bitmap, 0, 0);
+            function convertImageInWorker(id, file, bitmap, index) {
+                return new Promise((resolve) => {
+                    const worker = new Worker(workerUrl);
                     
-                    const ext = targetFormat.split('/')[1].replace('jpeg', 'jpg');
+                    // Prepare settings
+                    const settings = {
+                        id: id,
+                        bitmap: bitmap,
+                        format: targetFormat,
+                        quality: quality,
+                        targetW: parseInt(resizeWidth.value) || 0,
+                        targetH: parseInt(resizeHeight.value) || 0,
+                        wmText: watermarkText.value.trim(),
+                        wmPos: watermarkPos.value,
+                        wmOpacity: parseFloat(watermarkOpacity.value) || 0.5
+                    };
                     
-                    canvas.toBlob((blob) => {
-                        if(!blob) {
-                            markError(id, "Format not supported");
-                            return;
-                        }
+                    worker.postMessage(settings, [bitmap]); // Transfer bitmap
+
+                    worker.onmessage = function(e) {
+                        const { blob, success, error } = e.data;
                         
-                        const newSize = blob.size;
-                        const savings = ((file.size - newSize) / file.size * 100).toFixed(0);
-                        const isSaved = newSize < file.size;
-                        
-                        // Update UI
-                        document.getElementById(`spinner-${id}`).classList.add('hidden');
-                        document.getElementById(`thumb-${id}`).classList.remove('opacity-50');
-                        document.getElementById(`newSize-${id}`).innerText = formatBytes(newSize);
-                        document.getElementById(`newSize-${id}`).classList.add(isSaved ? 'text-green-600' : 'text-slate-600');
-                        
-                        const badge = document.getElementById(`badge-${id}`);
-                        badge.classList.remove('hidden');
-                        if(isSaved) {
-                            badge.innerText = `-${savings}%`;
-                            badge.className = "px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-bold ml-2 text-xs";
+                        if (success) {
+                            handleSuccess(id, file, blob, index);
                         } else {
-                            badge.innerText = `+${Math.abs(savings)}%`;
-                            badge.className = "px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 font-bold ml-2 text-xs";
+                            // Fallback to main thread if OffscreenCanvas fails? 
+                            // For simplicity, we just show error here. 
+                            console.error(error);
+                            markError(id, "Worker Error");
                         }
-
-                        // Setup Download
-                        const url = URL.createObjectURL(blob);
-                        const dlBtn = document.getElementById(`dlBtn-${id}`);
-                        const newName = file.name.replace(/\.[^/.]+$/, "") + "." + ext;
-                        
-                        dlBtn.href = url;
-                        dlBtn.download = newName;
-                        dlBtn.classList.remove('hidden');
-                        
-                        // Add to ZIP queue
-                        convertedFiles.push({ name: newName, blob: blob });
-                        if(convertedFiles.length > 1) downloadAllBtn.classList.remove('hidden');
-
-                    }, targetFormat, quality);
+                        worker.terminate();
+                        resolve();
+                    };
                     
-                } catch(e) {
-                    console.error(e);
-                    markError(id, "Error");
-                }
+                    worker.onerror = function(err) {
+                        markError(id, "Failed");
+                        worker.terminate();
+                        resolve();
+                    };
+                });
+            }
+            
+            function handleSuccess(id, file, blob, index) {
+                const ext = targetFormat.split('/')[1].replace('jpeg', 'jpg');
+                let finalName = file.name.replace(/\.[^/.]+$/, "") + "." + ext;
+                
+                const prefix = renamePrefix.value.trim();
+                if(prefix) finalName = `${prefix}-${String(index + 1).padStart(2, '0')}.${ext}`;
+
+                const newSize = blob.size;
+                const savings = ((file.size - newSize) / file.size * 100).toFixed(0);
+                const isSaved = newSize < file.size;
+                
+                document.getElementById(`spinner-${id}`).classList.add('hidden');
+                document.getElementById(`thumb-${id}`).classList.remove('opacity-50');
+                document.getElementById(`name-${id}`).innerText = finalName;
+                document.getElementById(`newSize-${id}`).innerText = formatBytes(newSize);
+                document.getElementById(`newSize-${id}`).classList.add(isSaved ? 'text-green-600' : 'text-slate-600');
+                
+                const badge = document.getElementById(`badge-${id}`);
+                badge.classList.remove('hidden');
+                badge.innerText = isSaved ? `-${savings}%` : `+${Math.abs(savings)}%`;
+                badge.className = isSaved ? "px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-bold ml-2 text-xs" : "px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 font-bold ml-2 text-xs";
+
+                const url = URL.createObjectURL(blob);
+                const dlBtn = document.getElementById(`dlBtn-${id}`);
+                dlBtn.href = url;
+                dlBtn.download = finalName;
+                dlBtn.classList.remove('hidden');
+                
+                convertedFiles.push({ name: finalName, blob: blob });
+                if(convertedFiles.length > 1) downloadAllBtn.classList.remove('hidden');
             }
             
             function markError(id, msg) {
@@ -355,7 +567,7 @@
             }
 
             function updateCount() {
-                const count = resultsList.children.length - (emptyState.classList.contains('hidden') ? 0 : 1);
+                const count = resultsList.children.length - 1; 
                 fileCount.innerText = `${count} Files`;
             }
 
@@ -367,11 +579,21 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
             }
             
+            window.clearAll = () => {
+                resultsList.innerHTML = '';
+                resultsList.appendChild(emptyState);
+                emptyState.classList.remove('hidden');
+                convertedFiles = [];
+                downloadAllBtn.classList.add('hidden');
+                clearAllBtn.classList.add('hidden');
+                fileCount.innerText = '0 Files';
+                fileInput.value = '';
+                globalProgress.classList.add('hidden');
+            };
+            
             window.downloadAll = function() {
                 const zip = new JSZip();
-                convertedFiles.forEach(file => {
-                    zip.file(file.name, file.blob);
-                });
+                convertedFiles.forEach(file => zip.file(file.name, file.blob));
                 zip.generateAsync({type:"blob"}).then(function(content) {
                     const a = document.createElement('a');
                     a.href = URL.createObjectURL(content);
