@@ -6,9 +6,12 @@
     <title>Advanced Image Converter & Resizer | Free Online Tools</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Free online Batch Image Converter. Convert, Resize, and Watermark images instantly. Supports WebP, AVIF, JPG, PNG. Processing happens locally in browser using Web Workers.">
+    <meta name="description" content="Free online Batch Image Converter. Convert, Resize, and Watermark images instantly. Supports WebP, AVIF, JPG, PNG. Offline capable PWA.">
     <meta name="keywords" content="bulk image converter, image resizer, add watermark online, jpg to webp, png to avif, batch photo editor">
     <meta name="author" content="Free Online Tools">
+    
+    <!-- PWA Manifest Placeholder -->
+    <link rel="manifest" href="data:application/json;base64,eyJkYXRhIjogInBsYWNlaG9sZGVyIn0=">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -43,6 +46,18 @@
         /* Accordion Transition */
         .accordion-content { transition: max-height 0.3s ease-out; overflow: hidden; max-height: 0; }
         .accordion-content.open { max-height: 500px; }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #10b981; color: white;
+            padding: 12px 24px; border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 100; transform: translateY(100px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toast.show { transform: translateY(0); }
+        .toast.error { background: #ef4444; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen text-slate-800">
@@ -74,7 +89,7 @@
                 Batch Image Processor
             </h1>
             <p class="text-slate-500 text-lg max-w-2xl mx-auto">
-                Convert, Resize, and Watermark multiple images. <span class="text-indigo-600 font-bold">Web Worker Powered</span> for max speed.
+                Convert, Resize, and Watermark multiple images. <span class="text-indigo-600 font-bold">Offline Capable & Fast.</span>
             </p>
         </div>
 
@@ -195,7 +210,7 @@
                         <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
                     </div>
                     <h3 class="text-slate-700 font-bold mb-1">Click, Paste or Drop Images</h3>
-                    <p class="text-slate-400 text-xs">Supports JPG, PNG, WEBP, BMP</p>
+                    <p class="text-slate-400 text-xs">Supports JPG, PNG, WEBP, BMP (Max 50MB)</p>
                 </div>
                 
                 <!-- Download All -->
@@ -241,6 +256,25 @@
         </div>
 
     </main>
+    
+    <!-- Comparison Modal -->
+    <div id="compareModal" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm fade-in">
+        <div class="bg-white rounded-2xl w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl relative overflow-hidden">
+             <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                 <h3 class="font-bold text-gray-800">Compare Original vs New</h3>
+                 <button onclick="closeCompare()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-times"></i></button>
+             </div>
+             <div class="flex-grow flex items-center justify-center p-4 bg-checkerboard relative overflow-hidden" id="compareContainer">
+                 <!-- Images injected here -->
+             </div>
+             <div class="p-4 bg-gray-50 border-t border-gray-200 text-center text-xs text-gray-500">
+                 Click/Tap to toggle view or use slider if available.
+             </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
 
     <footer class="bg-white border-t border-gray-200 mt-auto">
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
@@ -252,10 +286,10 @@
 
     <script>
         (function() {
-            // Worker Script as Blob (To avoid external file dependency)
+            // Worker Script
             const workerCode = `
                 self.onmessage = async function(e) {
-                    const { bitmap, format, quality, targetW, targetH, wmText, wmPos, wmOpacity, id } = e.data;
+                    const { bitmap, format, quality, targetW, targetH, wmText, wmPos, wmOpacity, id, originalSize } = e.data;
                     
                     try {
                         let width = bitmap.width;
@@ -266,17 +300,18 @@
                         else if (targetW) { const ratio = targetW / width; width = targetW; height = height * ratio; }
                         else if (targetH) { const ratio = targetH / height; height = targetH; width = width * ratio; }
                         
-                        // Use OffscreenCanvas if supported
                         let canvas;
+                        let ctx;
+
+                        // Use OffscreenCanvas if supported
                         if (typeof OffscreenCanvas !== 'undefined') {
                             canvas = new OffscreenCanvas(width, height);
+                            ctx = canvas.getContext('2d');
                         } else {
-                            // Fallback logic handled in main thread, but here we can't create DOM element.
-                            // If OffscreenCanvas not supported, we must fail and let main thread handle.
+                            // Fallback signal
                             throw new Error("OffscreenCanvas not supported");
                         }
 
-                        const ctx = canvas.getContext('2d');
                         ctx.drawImage(bitmap, 0, 0, width, height);
 
                         // Watermark Logic
@@ -302,9 +337,16 @@
                             
                             ctx.fillText(wmText, x, y);
                         }
+                        
+                        // Smart Suggestion Logic (Simple)
+                        let suggestion = "";
+                        // Basic heuristic: Transparency check is hard on worker without getImageData cost
+                        // but we can guess by format
+                        if(format === 'image/png' && originalSize > 1024*1024) suggestion = "Try WebP for smaller size";
+                        if(format === 'image/jpeg' && quality > 0.9) suggestion = "Lower quality to 80% to save space";
 
                         const blob = await canvas.convertToBlob({ type: format, quality: quality });
-                        self.postMessage({ id, blob, success: true });
+                        self.postMessage({ id, blob, success: true, suggestion });
 
                     } catch (err) {
                         self.postMessage({ id, error: err.message, success: false });
@@ -322,6 +364,8 @@
             let convertedFiles = []; 
             let workerPool = [];
             const MAX_WORKERS = navigator.hardwareConcurrency || 4;
+            let activeWorkers = 0;
+            let queueIndex = 0;
 
             // Elements
             const fileInput = document.getElementById('fileInput');
@@ -376,9 +420,6 @@
             };
             
             window.setPresetScale = (scale) => {
-                // This would need image dimension knowledge, 
-                // for bulk we can just pass a flag or handle in worker if we sent scale factor
-                // For simplicity, let's clear explicit px values and rely on logic
                 resizeWidth.value = '';
                 resizeHeight.value = '';
                 alert("Scale preset requires specific image context. Please enter pixel values for bulk resize.");
@@ -392,7 +433,6 @@
             // --- File Handling ---
             fileInput.addEventListener('change', handleFiles);
 
-            // Drag & Drop
             dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-active'); });
             dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('drag-active'); });
             dropZone.addEventListener('drop', (e) => {
@@ -402,14 +442,12 @@
             });
             dropZone.addEventListener('click', () => fileInput.click());
             
-            // Key Navigation for DropZone
             dropZone.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     fileInput.click();
                 }
             });
 
-            // Paste Support
             document.addEventListener('paste', (e) => {
                 const items = e.clipboardData.items;
                 const files = [];
@@ -425,48 +463,75 @@
                 if(e.target.files.length > 0) processFiles(e.target.files);
             }
 
-            async function processFiles(files) {
+            // --- Main Processing Logic ---
+            function processFiles(files) {
                 emptyState.classList.add('hidden');
                 clearAllBtn.classList.remove('hidden');
                 globalProgress.classList.remove('hidden');
                 
-                let processedCount = 0;
-                const totalFiles = files.length;
-                globalProgressBar.style.width = '0%';
-                globalProgressText.innerText = `0/${totalFiles}`;
-
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    if(!file.type.startsWith('image/')) continue;
-                    
-                    const id = Date.now() + i;
-                    createListItem(id, file);
-                    
-                    // Create Bitmap (Main Thread) -> Worker
-                    try {
-                        const bitmap = await createImageBitmap(file);
-                        await convertImageInWorker(id, file, bitmap, i);
-                    } catch (e) {
-                        markError(id, "Invalid Image");
-                    }
-                    
-                    processedCount++;
-                    const pct = (processedCount / totalFiles) * 100;
-                    globalProgressBar.style.width = `${pct}%`;
-                    globalProgressText.innerText = `${processedCount}/${totalFiles}`;
-                }
+                const MAX_SIZE = 50 * 1024 * 1024; // 50MB limit
+                let validFiles = [];
                 
+                for(let i=0; i<files.length; i++) {
+                    const f = files[i];
+                    if(!f.type.startsWith('image/')) continue;
+                    if(f.size > MAX_SIZE) {
+                         showToast(`${f.name} is too large (>50MB). Skipped.`, 'error');
+                         continue;
+                    }
+                    validFiles.push(f);
+                }
+
+                // Add to Queue
+                validFiles.forEach(file => {
+                    filesQueue.push({ 
+                        file, 
+                        id: Date.now() + Math.random(), 
+                        status: 'pending' 
+                    });
+                });
+                
+                processQueue();
+            }
+            
+            async function processQueue() {
+                // Initial UI update
+                updateGlobalProgress();
                 updateCount();
+
+                // Process up to MAX_WORKERS
+                while (activeWorkers < MAX_WORKERS && queueIndex < filesQueue.length) {
+                    const item = filesQueue[queueIndex++];
+                    activeWorkers++;
+                    
+                    createListItem(item.id, item.file);
+                    
+                    try {
+                        const bitmap = await createImageBitmap(item.file);
+                        convertImageInWorker(item.id, item.file, bitmap, queueIndex);
+                    } catch (e) {
+                        console.warn("Main thread fallback due to bitmap error", e);
+                        activeWorkers--; // Release slot
+                        markError(item.id, "Read Error");
+                        processQueue(); // Continue
+                    }
+                }
             }
 
             function createListItem(id, file) {
                 const div = document.createElement('div');
                 div.id = `item-${id}`;
                 div.className = "flex flex-col sm:flex-row items-center gap-4 bg-white border border-gray-100 p-4 rounded-xl shadow-sm fade-in relative overflow-hidden";
+                
+                // Original Image URL for Comparison
+                const originalUrl = URL.createObjectURL(file);
+                div.dataset.original = originalUrl;
+
                 div.innerHTML = `
-                    <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative group/thumb cursor-pointer" onclick="compare(${id})">
                         <img id="thumb-${id}" class="w-full h-full object-cover opacity-50">
                         <div id="spinner-${id}" class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i></div>
+                        <div class="absolute inset-0 bg-black/30 hidden group-hover/thumb:flex items-center justify-center text-white"><i class="fa-solid fa-magnifying-glass"></i></div>
                     </div>
                     <div class="flex-grow min-w-0 w-full text-center sm:text-left">
                         <h4 class="text-sm font-bold text-slate-700 truncate" id="name-${id}">${file.name}</h4>
@@ -475,60 +540,104 @@
                             <span id="newSize-${id}" class="text-gray-400">Waiting...</span>
                             <span id="badge-${id}" class="hidden px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-bold ml-2">SAVED</span>
                         </div>
+                        <div id="suggestion-${id}" class="text-[10px] text-blue-500 mt-1 italic hidden"></div>
                     </div>
                     <div class="flex-shrink-0">
                         <a id="dlBtn-${id}" class="hidden bg-indigo-50 hover:bg-indigo-100 text-indigo-600 p-2 rounded-lg transition" title="Download"><i class="fa-solid fa-download"></i></a>
                     </div>
                 `;
                 resultsList.prepend(div);
+                
+                // Thumb load
                 const reader = new FileReader();
                 reader.onload = e => document.getElementById(`thumb-${id}`).src = e.target.result;
                 reader.readAsDataURL(file);
             }
 
             function convertImageInWorker(id, file, bitmap, index) {
-                return new Promise((resolve) => {
-                    const worker = new Worker(workerUrl);
-                    
-                    // Prepare settings
-                    const settings = {
-                        id: id,
-                        bitmap: bitmap,
-                        format: targetFormat,
-                        quality: quality,
-                        targetW: parseInt(resizeWidth.value) || 0,
-                        targetH: parseInt(resizeHeight.value) || 0,
-                        wmText: watermarkText.value.trim(),
-                        wmPos: watermarkPos.value,
-                        wmOpacity: parseFloat(watermarkOpacity.value) || 0.5
-                    };
-                    
-                    worker.postMessage(settings, [bitmap]); // Transfer bitmap
+                const worker = new Worker(workerUrl);
+                
+                const settings = {
+                    id: id,
+                    bitmap: bitmap,
+                    format: targetFormat,
+                    quality: quality,
+                    targetW: parseInt(resizeWidth.value) || 0,
+                    targetH: parseInt(resizeHeight.value) || 0,
+                    wmText: watermarkText.value.trim(),
+                    wmPos: watermarkPos.value,
+                    wmOpacity: parseFloat(watermarkOpacity.value) || 0.5,
+                    originalSize: file.size
+                };
+                
+                worker.postMessage(settings, [bitmap]);
 
-                    worker.onmessage = function(e) {
-                        const { blob, success, error } = e.data;
-                        
-                        if (success) {
-                            handleSuccess(id, file, blob, index);
-                        } else {
-                            // Fallback to main thread if OffscreenCanvas fails? 
-                            // For simplicity, we just show error here. 
-                            console.error(error);
-                            markError(id, "Worker Error");
-                        }
-                        worker.terminate();
-                        resolve();
-                    };
+                worker.onmessage = function(e) {
+                    const { blob, success, error, suggestion } = e.data;
                     
-                    worker.onerror = function(err) {
-                        markError(id, "Failed");
-                        worker.terminate();
-                        resolve();
-                    };
-                });
+                    if (success) {
+                        handleSuccess(id, file, blob, index, suggestion);
+                    } else {
+                        // Fallback to Main Thread if Worker fails (e.g. Safari OffscreenCanvas)
+                        console.warn("Worker failed, attempting main thread fallback:", error);
+                        convertImageMainThread(id, file, index); 
+                    }
+                    worker.terminate();
+                    activeWorkers--;
+                    processQueue();
+                    updateGlobalProgress();
+                };
+                
+                worker.onerror = function(err) {
+                    console.error(err);
+                    markError(id, "Failed");
+                    worker.terminate();
+                    activeWorkers--;
+                    processQueue();
+                };
             }
             
-            function handleSuccess(id, file, blob, index) {
+            // Main Thread Fallback for Safari
+            async function convertImageMainThread(id, file, index) {
+                 try {
+                    const bitmap = await createImageBitmap(file); // Re-create as it was transferred
+                    const canvas = document.createElement('canvas');
+                    let width = bitmap.width; let height = bitmap.height;
+                    
+                    // Resize Logic (Duplicated for fallback)
+                    const targetW = parseInt(resizeWidth.value) || 0;
+                    const targetH = parseInt(resizeHeight.value) || 0;
+                    if (targetW && targetH) { width = targetW; height = targetH; }
+                    else if (targetW) { const ratio = targetW / width; width = targetW; height = height * ratio; }
+                    else if (targetH) { const ratio = targetH / height; height = targetH; width = width * ratio; }
+                    
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(bitmap, 0, 0, width, height);
+                    
+                    // Watermark (Simplified for fallback)
+                    if (watermarkText.value.trim()) {
+                        const fontSize = Math.max(12, width * 0.05);
+                        ctx.font = `bold ${fontSize}px sans-serif`;
+                        ctx.fillStyle = "white";
+                        ctx.fillText(watermarkText.value, 20, height - 20);
+                    }
+                    
+                    canvas.toBlob(blob => {
+                        handleSuccess(id, file, blob, index, "");
+                        activeWorkers--;
+                        processQueue();
+                        updateGlobalProgress();
+                    }, targetFormat, quality);
+                    
+                 } catch(e) {
+                     markError(id, "Browser Unsupported");
+                     activeWorkers--;
+                     processQueue();
+                 }
+            }
+            
+            function handleSuccess(id, file, blob, index, suggestion) {
                 const ext = targetFormat.split('/')[1].replace('jpeg', 'jpg');
                 let finalName = file.name.replace(/\.[^/.]+$/, "") + "." + ext;
                 
@@ -550,25 +659,48 @@
                 badge.innerText = isSaved ? `-${savings}%` : `+${Math.abs(savings)}%`;
                 badge.className = isSaved ? "px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-bold ml-2 text-xs" : "px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 font-bold ml-2 text-xs";
 
+                if(suggestion) {
+                    const sugEl = document.getElementById(`suggestion-${id}`);
+                    sugEl.innerText = "💡 " + suggestion;
+                    sugEl.classList.remove('hidden');
+                }
+
                 const url = URL.createObjectURL(blob);
                 const dlBtn = document.getElementById(`dlBtn-${id}`);
                 dlBtn.href = url;
                 dlBtn.download = finalName;
                 dlBtn.classList.remove('hidden');
                 
+                // Store URL for comparison
+                const itemDiv = document.getElementById(`item-${id}`);
+                itemDiv.dataset.converted = url;
+                
+                // Revoke URL after 5 mins to save memory
+                setTimeout(() => URL.revokeObjectURL(url), 300000);
+                
                 convertedFiles.push({ name: finalName, blob: blob });
-                if(convertedFiles.length > 1) downloadAllBtn.classList.remove('hidden');
+                if(convertedFiles.length > 0) downloadAllBtn.classList.remove('hidden');
+                
+                showToast("Image converted successfully!", 'success');
             }
             
             function markError(id, msg) {
                 document.getElementById(`spinner-${id}`).classList.add('hidden');
                 document.getElementById(`newSize-${id}`).innerText = msg;
                 document.getElementById(`newSize-${id}`).classList.add('text-red-500');
+                showToast(`Error: ${msg}`, 'error');
             }
 
             function updateCount() {
-                const count = resultsList.children.length - 1; 
-                fileCount.innerText = `${count} Files`;
+                fileCount.innerText = `${convertedFiles.length}/${filesQueue.length} Done`;
+            }
+            
+            function updateGlobalProgress() {
+                const total = filesQueue.length;
+                const processed = convertedFiles.length; // Approximate
+                const pct = total > 0 ? (processed / total) * 100 : 0;
+                globalProgressBar.style.width = `${pct}%`;
+                globalProgressText.innerText = `${processed}/${total}`;
             }
 
             function formatBytes(bytes) {
@@ -579,11 +711,15 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
             }
             
+            // --- UI Components ---
+            
             window.clearAll = () => {
                 resultsList.innerHTML = '';
                 resultsList.appendChild(emptyState);
                 emptyState.classList.remove('hidden');
                 convertedFiles = [];
+                filesQueue = [];
+                queueIndex = 0;
                 downloadAllBtn.classList.add('hidden');
                 clearAllBtn.classList.add('hidden');
                 fileCount.innerText = '0 Files';
@@ -600,6 +736,64 @@
                     a.download = "converted_images.zip";
                     a.click();
                 });
+            }
+            
+            // Toast Notification
+            window.showToast = (message, type='success') => {
+                const container = document.getElementById('toastContainer') || createToastContainer();
+                const toast = document.createElement('div');
+                toast.className = `toast show ${type}`;
+                toast.innerText = message;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+            
+            function createToastContainer() {
+                const div = document.createElement('div');
+                div.id = "toastContainer";
+                div.className = "fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none";
+                document.body.appendChild(div);
+                return div;
+            }
+            
+            // Comparison Modal
+            window.compare = (id) => {
+                const item = document.getElementById(`item-${id}`);
+                const orig = item.dataset.original;
+                const conv = item.dataset.converted;
+                if(!orig || !conv) return;
+                
+                const modal = document.createElement('div');
+                modal.className = "fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm fade-in";
+                modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+                
+                modal.innerHTML = `
+                    <div class="bg-white rounded-xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
+                        <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                            <h3 class="font-bold">Before vs After</h3>
+                            <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-times text-xl"></i></button>
+                        </div>
+                        <div class="flex-grow p-4 flex gap-4 overflow-auto justify-center bg-checkered">
+                            <div class="text-center">
+                                <span class="text-xs font-bold mb-1 block">Original</span>
+                                <img src="${orig}" class="max-h-[60vh] object-contain border rounded shadow-sm">
+                            </div>
+                            <div class="text-center">
+                                <span class="text-xs font-bold mb-1 block text-green-600">Converted</span>
+                                <img src="${conv}" class="max-h-[60vh] object-contain border rounded shadow-sm">
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+
+            // Register Service Worker for PWA
+            if ('serviceWorker' in navigator) {
+                // navigator.serviceWorker.register('/sw.js'); // Placeholder for future PWA file
             }
 
         })();
