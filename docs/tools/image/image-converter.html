@@ -6,12 +6,9 @@
     <title>Advanced Image Converter & Resizer | Free Online Tools</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Free online Batch Image Converter. Convert, Resize, and Watermark images instantly. Supports WebP, AVIF, JPG, PNG. Offline capable PWA.">
+    <meta name="description" content="Free online Batch Image Converter. Convert, Resize, and Watermark images instantly. Supports WebP, AVIF, JPG, PNG. Fast local processing.">
     <meta name="keywords" content="bulk image converter, image resizer, add watermark online, jpg to webp, png to avif, batch photo editor">
     <meta name="author" content="Free Online Tools">
-    
-    <!-- PWA Manifest Placeholder -->
-    <link rel="manifest" href="data:application/json;base64,eyJkYXRhIjogInBsYWNlaG9sZGVyIn0=">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -90,7 +87,7 @@
                 Batch Image Processor
             </h1>
             <p class="text-slate-500 text-lg max-w-2xl mx-auto">
-                Convert, Resize, and Watermark multiple images. <span class="text-indigo-600 font-bold">Offline Capable & Fast.</span>
+                Convert, Resize, and Watermark multiple images. <span class="text-indigo-600 font-bold">Fast & Secure.</span>
             </p>
             <!-- Preset Buttons -->
             <div class="flex justify-center gap-4 mt-6">
@@ -282,7 +279,28 @@
 
     </main>
     
-    <!-- Comparison Modal (Dynamic) -->
+    <!-- Comparison Modal -->
+    <div id="compareModal" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm fade-in">
+        <div class="bg-white rounded-2xl w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl relative overflow-hidden">
+             <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                 <h3 class="font-bold">Before vs After</h3>
+                 <button onclick="document.getElementById('compareModal').classList.add('hidden')" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-times text-xl"></i></button>
+             </div>
+             <div class="flex-grow p-4 flex gap-4 overflow-auto justify-center bg-checkered">
+                 <div class="text-center w-1/2">
+                     <span class="text-xs font-bold mb-1 block">Original</span>
+                     <img id="compOriginal" class="max-h-[60vh] object-contain border rounded shadow-sm mx-auto">
+                 </div>
+                 <div class="text-center w-1/2">
+                     <span class="text-xs font-bold mb-1 block text-green-600">Converted</span>
+                     <img id="compConverted" class="max-h-[60vh] object-contain border rounded shadow-sm mx-auto">
+                 </div>
+             </div>
+             <div class="p-4 bg-gray-50 border-t border-gray-200 text-center text-xs text-gray-500">
+                 Press Esc to close
+             </div>
+        </div>
+    </div>
 
     <!-- Toast Container -->
     <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
@@ -808,7 +826,8 @@
             }
             
             function markError(id, msg) {
-                // Ensure updates happen even if element missing (rare race)
+                completedCount++;
+                updateGlobalProgress();
                 const spinner = document.getElementById(`spinner-${id}`);
                 if(spinner) spinner.classList.add('hidden');
                 
@@ -883,7 +902,6 @@
                     a.href = URL.createObjectURL(content);
                     a.download = "converted_images.zip";
                     a.click();
-                    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
                 });
             }
             
@@ -992,10 +1010,7 @@ ${convertedFiles.map(f => `- ${f.name}: ${formatBytes(f.blob.size)}`).join('\n')
                 setTimeout(() => URL.revokeObjectURL(url), 100);
             }
 
-            // Register Service Worker for PWA
-            if ('serviceWorker' in navigator) {
-                // navigator.serviceWorker.register('/sw.js'); // Placeholder for future PWA file
-            }
+          
 
         })();
     </script>
