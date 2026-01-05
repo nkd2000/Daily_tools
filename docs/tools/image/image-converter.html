@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Converter (WebP, AVIF, JPG) | Free Online Tools</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Free online Batch Image Converter. Convert JPG, PNG to WebP, AVIF, or JPEG formats instantly. Bulk processing, quality control, and fast download.">
+    <meta name="keywords" content="image converter, jpg to webp, png to avif, bulk image converter, online photo converter, webp generator, free tool">
+    <meta name="author" content="Free Online Tools">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- JSZip for Bulk Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Drag Zone Active State */
+        .drag-active {
+            border-color: #3b82f6 !important;
+            background-color: #eff6ff !important;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-slate-900">ImgConvert</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-slate-500">
+                    <a href="../../index.html" class="hover:text-indigo-600 transition">Home</a>
+                    <a href="../../pages/contact.html" class="hover:text-indigo-600 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-10 sm:px-6 w-full">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-3">
+                Bulk Image Converter
+            </h1>
+            <p class="text-slate-500 text-lg max-w-2xl mx-auto">
+                Convert JPG & PNG images to modern <span class="text-indigo-600 font-bold">WebP</span> or <span class="text-purple-600 font-bold">AVIF</span> formats for faster websites.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left: Settings & Upload -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <!-- Settings Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-indigo-500"></i> Settings
+                    </h3>
+                    
+                    <div class="space-y-5">
+                        <!-- Format Selection -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Output Format</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="setFormat('image/webp', this)" class="format-btn active bg-indigo-600 text-white py-2 rounded-lg text-sm font-bold border border-indigo-600 transition">WebP</button>
+                                <button onclick="setFormat('image/jpeg', this)" class="format-btn bg-white text-slate-600 py-2 rounded-lg text-sm font-bold border border-gray-200 hover:border-gray-300 transition">JPG</button>
+                                <button onclick="setFormat('image/png', this)" class="format-btn bg-white text-slate-600 py-2 rounded-lg text-sm font-bold border border-gray-200 hover:border-gray-300 transition">PNG</button>
+                                <button onclick="setFormat('image/avif', this)" class="format-btn bg-white text-slate-600 py-2 rounded-lg text-sm font-bold border border-gray-200 hover:border-gray-300 transition relative">
+                                    AVIF <span class="absolute -top-1 -right-1 flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quality Slider -->
+                        <div id="qualityControl">
+                            <div class="flex justify-between mb-2">
+                                <label class="text-xs font-bold text-slate-500 uppercase">Quality</label>
+                                <span class="text-xs font-bold text-indigo-600" id="qualityVal">80%</span>
+                            </div>
+                            <input type="range" id="quality" min="10" max="100" value="80" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                        </div>
+
+                        <!-- Info -->
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 text-xs text-blue-700 leading-relaxed">
+                            <i class="fa-solid fa-circle-info mr-1"></i>
+                            <strong>WebP/AVIF</strong> reduce file size by 30-70% compared to JPG while keeping high quality.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Area -->
+                <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-2xl p-8 bg-slate-50 hover:bg-white hover:border-indigo-400 transition cursor-pointer text-center group">
+                    <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+                    <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
+                    </div>
+                    <h3 class="text-slate-700 font-bold mb-1">Click or Drop Images</h3>
+                    <p class="text-slate-400 text-xs">Supports JPG, PNG, WEBP, BMP</p>
+                </div>
+                
+                <!-- Download All (Hidden Initially) -->
+                <button id="downloadAllBtn" onclick="downloadAll()" class="hidden w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-zipper"></i> Download All as ZIP
+                </button>
+
+            </div>
+
+            <!-- Right: Results -->
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden min-h-[400px] flex flex-col">
+                    <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800">Conversion Queue</h3>
+                        <span class="text-xs font-bold bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md" id="fileCount">0 Files</span>
+                    </div>
+                    
+                    <div id="resultsList" class="flex-grow p-6 space-y-4 overflow-y-auto max-h-[600px]">
+                        <!-- Empty State -->
+                        <div id="emptyState" class="text-center py-20 text-gray-400">
+                            <i class="fa-regular fa-images text-5xl mb-4 opacity-50"></i>
+                            <p>No images uploaded yet.</p>
+                        </div>
+                        
+                        <!-- List Items will go here -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-slate-500">
+                &copy; 2023 Free Online Tools. <a href="../../pages/privacy.html" class="text-indigo-600 hover:text-indigo-500">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        (function() {
+            // State
+            let targetFormat = 'image/webp';
+            let quality = 0.8;
+            let filesQueue = [];
+            let convertedFiles = []; // Store blobs for ZIP
+
+            // Elements
+            const fileInput = document.getElementById('fileInput');
+            const dropZone = document.getElementById('dropZone');
+            const qualityInput = document.getElementById('quality');
+            const qualityVal = document.getElementById('qualityVal');
+            const resultsList = document.getElementById('resultsList');
+            const emptyState = document.getElementById('emptyState');
+            const fileCount = document.getElementById('fileCount');
+            const downloadAllBtn = document.getElementById('downloadAllBtn');
+            const formatBtns = document.querySelectorAll('.format-btn');
+            const qualityControl = document.getElementById('qualityControl');
+
+            // Format Selection
+            window.setFormat = (fmt, btn) => {
+                targetFormat = fmt;
+                formatBtns.forEach(b => {
+                    b.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
+                    b.classList.add('bg-white', 'text-slate-600', 'border-gray-200');
+                });
+                btn.classList.remove('bg-white', 'text-slate-600', 'border-gray-200');
+                btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
+                
+                // Hide quality for PNG (lossless)
+                if(fmt === 'image/png') {
+                    qualityControl.classList.add('opacity-50', 'pointer-events-none');
+                } else {
+                    qualityControl.classList.remove('opacity-50', 'pointer-events-none');
+                }
+            };
+
+            // Quality Slider
+            qualityInput.addEventListener('input', (e) => {
+                quality = e.target.value / 100;
+                qualityVal.innerText = e.target.value + '%';
+            });
+
+            // File Handling
+            fileInput.addEventListener('change', handleFiles);
+
+            // Drag & Drop
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-active');
+            });
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drag-active');
+            });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-active');
+                if(e.dataTransfer.files.length > 0) {
+                    processFiles(e.dataTransfer.files);
+                }
+            });
+            
+            // Trigger Input click on Dropzone click
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            function handleFiles(e) {
+                if(e.target.files.length > 0) {
+                    processFiles(e.target.files);
+                }
+            }
+
+            async function processFiles(files) {
+                emptyState.classList.add('hidden');
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if(!file.type.startsWith('image/')) continue;
+                    
+                    const id = Date.now() + i;
+                    createListItem(id, file);
+                    await convertImage(id, file);
+                }
+                
+                updateCount();
+            }
+
+            function createListItem(id, file) {
+                const div = document.createElement('div');
+                div.id = `item-${id}`;
+                div.className = "flex flex-col sm:flex-row items-center gap-4 bg-white border border-gray-100 p-4 rounded-xl shadow-sm fade-in relative overflow-hidden";
+                div.innerHTML = `
+                    <!-- Thumbnail -->
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 relative">
+                        <img id="thumb-${id}" class="w-full h-full object-cover opacity-50">
+                        <div id="spinner-${id}" class="absolute inset-0 flex items-center justify-center">
+                            <i class="fa-solid fa-circle-notch fa-spin text-indigo-500"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Info -->
+                    <div class="flex-grow min-w-0 w-full text-center sm:text-left">
+                        <h4 class="text-sm font-bold text-slate-700 truncate">${file.name}</h4>
+                        <div class="flex items-center justify-center sm:justify-start gap-3 mt-1 text-xs text-slate-500 font-mono">
+                            <span>${formatBytes(file.size)}</span>
+                            <i class="fa-solid fa-arrow-right text-gray-300"></i>
+                            <span id="newSize-${id}" class="text-gray-400">Processing...</span>
+                            <span id="badge-${id}" class="hidden px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-bold ml-2">SAVED 0%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="flex-shrink-0">
+                        <a id="dlBtn-${id}" class="hidden bg-indigo-50 hover:bg-indigo-100 text-indigo-600 p-2 rounded-lg transition" title="Download">
+                            <i class="fa-solid fa-download"></i>
+                        </a>
+                    </div>
+                `;
+                resultsList.prepend(div);
+                
+                // Set thumb
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById(`thumb-${id}`).src = e.target.result;
+                reader.readAsDataURL(file);
+            }
+
+            async function convertImage(id, file) {
+                try {
+                    const bitmap = await createImageBitmap(file);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = bitmap.width;
+                    canvas.height = bitmap.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(bitmap, 0, 0);
+                    
+                    const ext = targetFormat.split('/')[1].replace('jpeg', 'jpg');
+                    
+                    canvas.toBlob((blob) => {
+                        if(!blob) {
+                            markError(id, "Format not supported");
+                            return;
+                        }
+                        
+                        const newSize = blob.size;
+                        const savings = ((file.size - newSize) / file.size * 100).toFixed(0);
+                        const isSaved = newSize < file.size;
+                        
+                        // Update UI
+                        document.getElementById(`spinner-${id}`).classList.add('hidden');
+                        document.getElementById(`thumb-${id}`).classList.remove('opacity-50');
+                        document.getElementById(`newSize-${id}`).innerText = formatBytes(newSize);
+                        document.getElementById(`newSize-${id}`).classList.add(isSaved ? 'text-green-600' : 'text-slate-600');
+                        
+                        const badge = document.getElementById(`badge-${id}`);
+                        badge.classList.remove('hidden');
+                        if(isSaved) {
+                            badge.innerText = `-${savings}%`;
+                            badge.className = "px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-bold ml-2 text-xs";
+                        } else {
+                            badge.innerText = `+${Math.abs(savings)}%`;
+                            badge.className = "px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 font-bold ml-2 text-xs";
+                        }
+
+                        // Setup Download
+                        const url = URL.createObjectURL(blob);
+                        const dlBtn = document.getElementById(`dlBtn-${id}`);
+                        const newName = file.name.replace(/\.[^/.]+$/, "") + "." + ext;
+                        
+                        dlBtn.href = url;
+                        dlBtn.download = newName;
+                        dlBtn.classList.remove('hidden');
+                        
+                        // Add to ZIP queue
+                        convertedFiles.push({ name: newName, blob: blob });
+                        if(convertedFiles.length > 1) downloadAllBtn.classList.remove('hidden');
+
+                    }, targetFormat, quality);
+                    
+                } catch(e) {
+                    console.error(e);
+                    markError(id, "Error");
+                }
+            }
+            
+            function markError(id, msg) {
+                document.getElementById(`spinner-${id}`).classList.add('hidden');
+                document.getElementById(`newSize-${id}`).innerText = msg;
+                document.getElementById(`newSize-${id}`).classList.add('text-red-500');
+            }
+
+            function updateCount() {
+                const count = resultsList.children.length - (emptyState.classList.contains('hidden') ? 0 : 1);
+                fileCount.innerText = `${count} Files`;
+            }
+
+            function formatBytes(bytes) {
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+            }
+            
+            window.downloadAll = function() {
+                const zip = new JSZip();
+                convertedFiles.forEach(file => {
+                    zip.file(file.name, file.blob);
+                });
+                zip.generateAsync({type:"blob"}).then(function(content) {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(content);
+                    a.download = "converted_images.zip";
+                    a.click();
+                });
+            }
+
+        })();
+    </script>
+</body>
+</html>
