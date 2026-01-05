@@ -282,28 +282,7 @@
 
     </main>
     
-    <!-- Comparison Modal -->
-    <div id="compareModal" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm fade-in">
-        <div class="bg-white rounded-2xl w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl relative overflow-hidden">
-             <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-                 <h3 class="font-bold">Before vs After</h3>
-                 <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-times text-xl"></i></button>
-             </div>
-             <div class="flex-grow p-4 flex gap-4 overflow-auto justify-center bg-checkered">
-                 <div class="text-center">
-                     <span class="text-xs font-bold mb-1 block">Original</span>
-                     <img id="compOriginal" class="max-h-[60vh] object-contain border rounded shadow-sm">
-                 </div>
-                 <div class="text-center">
-                     <span class="text-xs font-bold mb-1 block text-green-600">Converted</span>
-                     <img id="compConverted" class="max-h-[60vh] object-contain border rounded shadow-sm">
-                 </div>
-             </div>
-             <div class="p-4 bg-gray-50 border-t border-gray-200 text-center text-xs text-gray-500">
-                 Press Esc to close
-             </div>
-        </div>
-    </div>
+    <!-- Comparison Modal (Dynamic) -->
 
     <!-- Toast Container -->
     <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
@@ -449,16 +428,25 @@
 
             async function saveToDB(id, blob, filename) {
                 if(!db) return;
-                const tx = db.transaction(['pending'], 'readwrite');
-                // Blob needs to be valid. 
-                await tx.objectStore('pending').put({ id, blob, filename, timestamp: Date.now() });
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(['pending'], 'readwrite');
+                    tx.objectStore('pending').put({ id, blob, filename, timestamp: Date.now() });
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                });
             }
 
             window.clearDB = async function() {
                 if(!db) return;
-                const tx = db.transaction(['pending'], 'readwrite');
-                await tx.objectStore('pending').clear();
-                restoreBanner.classList.add('hidden');
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(['pending'], 'readwrite');
+                    tx.objectStore('pending').clear();
+                    tx.oncomplete = () => {
+                        restoreBanner.classList.add('hidden');
+                        resolve();
+                    };
+                    tx.onerror = () => reject(tx.error);
+                });
             }
 
             window.restoreSession = async function() {
@@ -474,12 +462,9 @@
                     clearAllBtn.classList.remove('hidden');
                     
                     all.forEach(item => {
-                         // Mock File object for UI consistency (name/size)
                          const mockFile = { name: item.filename, size: item.blob.size };
-                         createListItem(item.id, mockFile); // This creates UI
-                         
-                         // Manually trigger success UI state without reprocessing
-                         handleSuccess(item.id, mockFile, item.blob, 0, "Restored from session");
+                         createListItem(item.id, mockFile); 
+                         handleSuccess(item.id, mockFile, item.blob, 0, "Restored");
                     });
                     restoreBanner.classList.add('hidden');
                 }
@@ -535,14 +520,13 @@
                     watermark: watermarkText.value
                 };
                 localStorage.setItem('imgConvertPreset', JSON.stringify(preset));
-                showToast('Preset saved!', 'success');
+                window.showToast('Preset saved!', 'success');
             };
             
             window.loadPreset = () => {
                 const preset = JSON.parse(localStorage.getItem('imgConvertPreset'));
                 if(preset) {
                     if(preset.format) {
-                        // Find button
                         const btn = Array.from(formatBtns).find(b => b.innerText.includes(preset.format.split('/')[1].toUpperCase()));
                         if(btn) setFormat(preset.format, btn);
                     }
@@ -552,7 +536,7 @@
                         qualityVal.innerText = (quality*100) + '%';
                     }
                     if(preset.watermark) watermarkText.value = preset.watermark;
-                    showToast('Preset loaded!', 'info');
+                    window.showToast('Preset loaded!', 'info');
                 }
             };
 
@@ -581,7 +565,9 @@
                 const items = e.clipboardData.items;
                 const files = [];
                 for (let i = 0; i < items.length; i++) {
-                    if (items[i].type.indexOf('image') !== -1) files.push(items[i].getAsFile());
+                    if (items[i].type.indexOf('image') !== -1) {
+                        files.push(items[i].getAsFile());
+                    }
                 }
                 if (files.length > 0) processFiles(files);
             });
@@ -593,8 +579,8 @@
                     if(convertedFiles.length > 0) downloadAll();
                 }
                 if(e.key === 'Escape') {
-                    const modal = document.querySelector('#compareModal');
-                    if(!modal.classList.contains('hidden')) modal.classList.add('hidden');
+                    const modal = document.getElementById('compareModal');
+                    if(modal) modal.remove();
                 }
                 if((e.ctrlKey || e.metaKey) && e.key === 'z') {
                     clearAll();
@@ -611,14 +597,15 @@
                 clearAllBtn.classList.remove('hidden');
                 globalProgress.classList.remove('hidden');
                 
-                const MAX_SIZE = 10 * 1024 * 1024; // 10MB limit per file suggestion
+                const MAX_SIZE = 50 * 1024 * 1024; 
                 let validFiles = [];
                 
                 for(let i=0; i<files.length; i++) {
                     const f = files[i];
                     if(!f.type.startsWith('image/')) continue;
                     if(f.size > MAX_SIZE) {
-                         showToast(`${f.name} is large (>10MB). Processing might be slow.`, 'info');
+                         window.showToast(`${f.name} is large (>50MB). Skipped.`, 'error');
+                         continue;
                     }
                     validFiles.push(f);
                 }
@@ -644,9 +631,12 @@
                         const bitmap = await createImageBitmap(item.file);
                         convertImageInWorker(item.id, item.file, bitmap, queueIndex);
                     } catch (e) {
-                        console.warn("Main thread fallback", e);
-                        // Fallback call
-                        convertImageMainThread(item.id, item.file, queueIndex);
+                        console.warn("Bitmap creation failed", e);
+                        markError(item.id, "Invalid Image");
+                        activeWorkers--;
+                        completedCount++;
+                        updateGlobalProgress();
+                        processQueue();
                     }
                 }
             }
@@ -710,8 +700,8 @@
                     if (success) {
                         handleSuccess(id, file, blob, index, suggestion);
                     } else {
-                        console.warn("Worker failed, attempting main thread fallback:", error);
-                        convertImageMainThread(id, file, index); 
+                        console.error('Worker error:', error);
+                        convertImageMainThread(id, file, index);
                     }
                     worker.terminate();
                     activeWorkers--;
@@ -719,10 +709,9 @@
                 };
                 
                 worker.onerror = function(err) {
-                    convertImageMainThread(id, file, index); // Try fallback
+                    console.error('Worker error:', err);
+                    convertImageMainThread(id, file, index);
                     worker.terminate();
-                    activeWorkers--;
-                    processQueue();
                 };
             }
             
@@ -758,6 +747,8 @@
                  } catch(e) {
                      markError(id, "Browser Unsupported");
                      activeWorkers--;
+                     completedCount++;
+                     updateGlobalProgress();
                      processQueue();
                  }
             }
@@ -789,8 +780,10 @@
 
                 if(suggestion) {
                     const sugEl = document.getElementById(`suggestion-${id}`);
-                    sugEl.innerText = "💡 " + suggestion;
-                    sugEl.classList.remove('hidden');
+                    if(sugEl) {
+                        sugEl.innerText = "💡 " + suggestion;
+                        sugEl.classList.remove('hidden');
+                    }
                 }
 
                 const url = URL.createObjectURL(blob);
@@ -811,20 +804,34 @@
                 convertedFiles.push({ name: finalName, blob: blob });
                 if(convertedFiles.length > 0) downloadAllBtn.classList.remove('hidden');
                 
-                showToast("Image converted successfully!", 'success');
+                window.showToast("Image converted successfully!", 'success');
             }
             
             function markError(id, msg) {
-                completedCount++;
-                updateGlobalProgress();
-                document.getElementById(`spinner-${id}`).classList.add('hidden');
-                document.getElementById(`newSize-${id}`).innerText = msg;
-                document.getElementById(`newSize-${id}`).classList.add('text-red-500');
-                showToast(`Error: ${msg}`, 'error');
+                // Ensure updates happen even if element missing (rare race)
+                const spinner = document.getElementById(`spinner-${id}`);
+                if(spinner) spinner.classList.add('hidden');
+                
+                const sizeEl = document.getElementById(`newSize-${id}`);
+                if(sizeEl) {
+                    sizeEl.innerText = msg;
+                    sizeEl.classList.add('text-red-500');
+                }
+                window.showToast(`Error: ${msg}`, 'error');
             }
 
             function updateCount() {
-                fileCount.innerText = `${convertedFiles.length}/${filesQueue.length} Done`;
+                const total = filesQueue.length;
+                const completed = completedCount;
+                const successful = convertedFiles.length;
+                const failed = completed - successful;
+                
+                let text = `${total} Files`;
+                if(total > 0) {
+                    text = `${completed}/${total}`;
+                    if(failed > 0) text += ` (${failed} failed)`;
+                }
+                fileCount.innerText = text;
             }
             
             function updateGlobalProgress() {
@@ -846,6 +853,12 @@
             // --- UI Components ---
             
             window.clearAll = () => {
+                // Cleanup URLs first
+                document.querySelectorAll('[data-original]').forEach(el => {
+                     URL.revokeObjectURL(el.dataset.original);
+                     if(el.dataset.converted) URL.revokeObjectURL(el.dataset.converted);
+                });
+                
                 resultsList.innerHTML = '';
                 resultsList.appendChild(emptyState);
                 emptyState.classList.remove('hidden');
@@ -853,6 +866,7 @@
                 filesQueue = [];
                 queueIndex = 0;
                 completedCount = 0;
+                activeWorkers = 0; 
                 downloadAllBtn.classList.add('hidden');
                 clearAllBtn.classList.add('hidden');
                 fileCount.innerText = '0 Files';
@@ -869,12 +883,15 @@
                     a.href = URL.createObjectURL(content);
                     a.download = "converted_images.zip";
                     a.click();
+                    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
                 });
             }
             
             // Toast Notification
             window.showToast = (message, type='success') => {
-                const container = document.getElementById('toastContainer') || createToastContainer();
+                let container = document.getElementById('toastContainer');
+                if(!container) container = createToastContainer();
+                
                 const toast = document.createElement('div');
                 toast.className = `toast show ${type}`;
                 toast.innerText = message;
@@ -896,9 +913,16 @@
             // Comparison Modal
             window.compare = (id) => {
                 const item = document.getElementById(`item-${id}`);
-                const orig = item.dataset.original;
-                const conv = item.dataset.converted;
-                if(!orig || !conv) return;
+                const orig = item?.dataset.original;
+                const conv = item?.dataset.converted;
+                if(!orig || !conv) {
+                    window.showToast('Image not converted yet', 'error');
+                    return;
+                }
+                
+                // Remove existing modal first
+                const existingModal = document.getElementById('compareModal');
+                if(existingModal) existingModal.remove();
                 
                 const modal = document.createElement('div');
                 modal.id = 'compareModal';
@@ -928,10 +952,18 @@
             
             // Generate Text Report
             window.generateReport = () => {
-                if(convertedFiles.length === 0) return showToast("No files converted yet!", "error");
+                if(convertedFiles.length === 0) {
+                    window.showToast('No files converted yet!', 'error');
+                    return;
+                }
                 
                 const originalTotal = filesQueue.reduce((sum, f) => sum + (f.file ? f.file.size : 0), 0);
                 const newTotal = convertedFiles.reduce((sum, f) => sum + f.blob.size, 0);
+                
+                const spaceSaved = originalTotal - newTotal;
+                const percentSaved = originalTotal > 0 
+                     ? ((spaceSaved / originalTotal) * 100).toFixed(1) 
+                     : 0;
                 
                 const report = `Image Conversion Report
 Generated by Free Online Tools
@@ -939,15 +971,16 @@ Date: ${new Date().toLocaleString()}
 -----------------------------------
 Total Files: ${filesQueue.length}
 Successfully Converted: ${convertedFiles.length}
+Failed: ${filesQueue.length - convertedFiles.length}
 Format: ${targetFormat}
 Quality: ${quality * 100}%
 
 Total Original Size: ${formatBytes(originalTotal)}
 Total New Size: ${formatBytes(newTotal)}
-Space Saved: ${formatBytes(originalTotal - newTotal)} (${((originalTotal - newTotal)/originalTotal*100).toFixed(1)}%)
+Space Saved: ${formatBytes(spaceSaved)} (${percentSaved}%)
 -----------------------------------
 File Details:
-${convertedFiles.map(f => `- ${f.name} (${formatBytes(f.blob.size)})`).join('\n')}
+${convertedFiles.map(f => `- ${f.name}: ${formatBytes(f.blob.size)}`).join('\n')}
                 `;
                 
                 const blob = new Blob([report], {type: 'text/plain'});
@@ -956,6 +989,12 @@ ${convertedFiles.map(f => `- ${f.name} (${formatBytes(f.blob.size)})`).join('\n'
                 a.href = url;
                 a.download = `conversion-report-${Date.now()}.txt`;
                 a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+            }
+
+            // Register Service Worker for PWA
+            if ('serviceWorker' in navigator) {
+                // navigator.serviceWorker.register('/sw.js'); // Placeholder for future PWA file
             }
 
         })();
