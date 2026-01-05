@@ -58,6 +58,7 @@
         }
         .toast.show { transform: translateY(0); }
         .toast.error { background: #ef4444; }
+        .toast.info { background: #3b82f6; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen text-slate-800">
@@ -91,6 +92,15 @@
             <p class="text-slate-500 text-lg max-w-2xl mx-auto">
                 Convert, Resize, and Watermark multiple images. <span class="text-indigo-600 font-bold">Offline Capable & Fast.</span>
             </p>
+            <!-- Preset Buttons -->
+            <div class="flex justify-center gap-4 mt-6">
+                <button onclick="savePreset()" class="text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded transition border border-indigo-200">
+                    <i class="fa-solid fa-save mr-1"></i> Save Preset
+                </button>
+                <button onclick="loadPreset()" class="text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded transition border border-indigo-200">
+                    <i class="fa-solid fa-upload mr-1"></i> Load Preset
+                </button>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -204,7 +214,7 @@
                 </div>
 
                 <!-- Upload Area -->
-                <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-2xl p-8 bg-slate-50 hover:bg-white hover:border-indigo-400 transition cursor-pointer text-center group relative focus-within:ring-2 focus-within:ring-indigo-500" tabindex="0">
+                <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-2xl p-8 bg-slate-50 hover:bg-white hover:border-indigo-400 transition cursor-pointer text-center group relative focus-within:ring-2 focus-within:ring-indigo-500" role="button" aria-label="Upload images by clicking or dropping files" tabindex="0">
                     <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
                     <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition">
                         <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
@@ -213,10 +223,16 @@
                     <p class="text-slate-400 text-xs">Supports JPG, PNG, WEBP, BMP (Max 50MB)</p>
                 </div>
                 
-                <!-- Download All -->
-                <button id="downloadAllBtn" onclick="downloadAll()" class="hidden w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-file-zipper"></i> Download All as ZIP
-                </button>
+                <div class="flex gap-2">
+                    <!-- Generate Report -->
+                    <button onclick="generateReport()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-csv"></i> Report
+                    </button>
+                    <!-- Download All -->
+                    <button id="downloadAllBtn" onclick="downloadAll()" class="flex-[2] hidden bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-zipper"></i> Download All as ZIP
+                    </button>
+                </div>
 
             </div>
 
@@ -227,7 +243,7 @@
                         <h3 class="font-bold text-slate-800">Conversion Queue</h3>
                         <div class="flex items-center gap-3">
                              <!-- Global Progress -->
-                             <div id="globalProgress" class="hidden flex items-center gap-2 mr-2">
+                             <div id="globalProgress" class="hidden flex items-center gap-2 mr-2" role="progressbar" aria-label="Conversion progress" aria-valuemin="0" aria-valuemax="100">
                                 <div class="w-24 bg-gray-200 rounded-full h-2">
                                     <div id="globalProgressBar" class="bg-indigo-600 h-2 rounded-full" style="width: 0%"></div>
                                 </div>
@@ -239,6 +255,15 @@
                         </div>
                     </div>
                     
+                    <!-- Restore Banner (Hidden) -->
+                    <div id="restoreBanner" class="hidden bg-blue-50 p-3 border-b border-blue-100 flex justify-between items-center px-6">
+                        <span class="text-xs text-blue-700 font-bold"><i class="fa-solid fa-clock-rotate-left mr-2"></i> Unsaved files found from last session.</span>
+                        <div class="flex gap-2">
+                            <button onclick="restoreSession()" class="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition">Restore</button>
+                            <button onclick="clearDB()" class="text-xs text-blue-500 hover:text-blue-700 px-2">Discard</button>
+                        </div>
+                    </div>
+
                     <div id="resultsList" class="flex-grow p-6 space-y-4 overflow-y-auto max-h-[800px]">
                         <!-- Empty State -->
                         <div id="emptyState" class="text-center py-32 text-gray-400">
@@ -261,14 +286,21 @@
     <div id="compareModal" class="fixed inset-0 bg-slate-900/90 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm fade-in">
         <div class="bg-white rounded-2xl w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl relative overflow-hidden">
              <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-                 <h3 class="font-bold text-gray-800">Compare Original vs New</h3>
-                 <button onclick="closeCompare()" class="text-gray-400 hover:text-red-500 text-xl"><i class="fa-solid fa-times"></i></button>
+                 <h3 class="font-bold">Before vs After</h3>
+                 <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-times text-xl"></i></button>
              </div>
-             <div class="flex-grow flex items-center justify-center p-4 bg-checkerboard relative overflow-hidden" id="compareContainer">
-                 <!-- Images injected here -->
+             <div class="flex-grow p-4 flex gap-4 overflow-auto justify-center bg-checkered">
+                 <div class="text-center">
+                     <span class="text-xs font-bold mb-1 block">Original</span>
+                     <img id="compOriginal" class="max-h-[60vh] object-contain border rounded shadow-sm">
+                 </div>
+                 <div class="text-center">
+                     <span class="text-xs font-bold mb-1 block text-green-600">Converted</span>
+                     <img id="compConverted" class="max-h-[60vh] object-contain border rounded shadow-sm">
+                 </div>
              </div>
              <div class="p-4 bg-gray-50 border-t border-gray-200 text-center text-xs text-gray-500">
-                 Click/Tap to toggle view or use slider if available.
+                 Press Esc to close
              </div>
         </div>
     </div>
@@ -300,21 +332,33 @@
                         else if (targetW) { const ratio = targetW / width; width = targetW; height = height * ratio; }
                         else if (targetH) { const ratio = targetH / height; height = targetH; width = width * ratio; }
                         
-                        let canvas;
-                        let ctx;
-
-                        // Use OffscreenCanvas if supported
-                        if (typeof OffscreenCanvas !== 'undefined') {
-                            canvas = new OffscreenCanvas(width, height);
-                            ctx = canvas.getContext('2d');
-                        } else {
-                            // Fallback signal
-                            throw new Error("OffscreenCanvas not supported");
+                        // Smart Suggestion Logic using Sample Data
+                        let suggestion = "";
+                        
+                        // Create 100x100 canvas for fast pixel analysis
+                        const sampleCanvas = new OffscreenCanvas(100, 100);
+                        const sampleCtx = sampleCanvas.getContext('2d');
+                        sampleCtx.drawImage(bitmap, 0, 0, 100, 100);
+                        const imgData = sampleCtx.getImageData(0, 0, 100, 100);
+                        const pixels = imgData.data;
+                        
+                        let hasAlpha = false;
+                        // Check alpha channel
+                        for(let i = 3; i < pixels.length; i += 4) {
+                            if(pixels[i] < 255) { hasAlpha = true; break; }
+                        }
+                        
+                        if(hasAlpha && format === 'image/jpeg') {
+                            suggestion = "⚠️ Transparency detected. Background will be black. Use PNG/WebP.";
+                        } else if(!hasAlpha && format === 'image/png' && originalSize > 500*1024) {
+                            suggestion = "💡 No transparency. Try WebP/JPEG for smaller size.";
                         }
 
+                        // Main Processing Canvas
+                        const canvas = new OffscreenCanvas(width, height);
+                        const ctx = canvas.getContext('2d');
                         ctx.drawImage(bitmap, 0, 0, width, height);
 
-                        // Watermark Logic
                         if (wmText) {
                             const fontSize = Math.max(12, width * 0.05);
                             ctx.font = \`bold \${fontSize}px sans-serif\`;
@@ -337,13 +381,6 @@
                             
                             ctx.fillText(wmText, x, y);
                         }
-                        
-                        // Smart Suggestion Logic (Simple)
-                        let suggestion = "";
-                        // Basic heuristic: Transparency check is hard on worker without getImageData cost
-                        // but we can guess by format
-                        if(format === 'image/png' && originalSize > 1024*1024) suggestion = "Try WebP for smaller size";
-                        if(format === 'image/jpeg' && quality > 0.9) suggestion = "Lower quality to 80% to save space";
 
                         const blob = await canvas.convertToBlob({ type: format, quality: quality });
                         self.postMessage({ id, blob, success: true, suggestion });
@@ -362,10 +399,13 @@
             let quality = 0.8;
             let filesQueue = [];
             let convertedFiles = []; 
-            let workerPool = [];
-            const MAX_WORKERS = navigator.hardwareConcurrency || 4;
             let activeWorkers = 0;
             let queueIndex = 0;
+            let completedCount = 0;
+            const MAX_WORKERS = navigator.hardwareConcurrency || 4;
+            
+            // IndexedDB
+            let db;
 
             // Elements
             const fileInput = document.getElementById('fileInput');
@@ -380,18 +420,81 @@
             const formatBtns = document.querySelectorAll('.format-btn');
             const qualityControl = document.getElementById('qualityControl');
             
-            // Progress Bar
             const globalProgress = document.getElementById('globalProgress');
             const globalProgressBar = document.getElementById('globalProgressBar');
             const globalProgressText = document.getElementById('globalProgressText');
+            const restoreBanner = document.getElementById('restoreBanner');
             
-            // Inputs
             const resizeWidth = document.getElementById('resizeWidth');
             const resizeHeight = document.getElementById('resizeHeight');
             const watermarkText = document.getElementById('watermarkText');
             const watermarkPos = document.getElementById('watermarkPos');
             const watermarkOpacity = document.getElementById('watermarkOpacity');
             const renamePrefix = document.getElementById('renamePrefix');
+
+            // --- Database ---
+            async function initDB() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open('ImgConverterDB', 1);
+                    req.onupgradeneeded = e => {
+                        db = e.target.result;
+                        if(!db.objectStoreNames.contains('pending')) {
+                            db.createObjectStore('pending', { keyPath: 'id' });
+                        }
+                    };
+                    req.onsuccess = e => { db = e.target.result; resolve(db); };
+                    req.onerror = e => reject(e);
+                });
+            }
+
+            async function saveToDB(id, blob, filename) {
+                if(!db) return;
+                const tx = db.transaction(['pending'], 'readwrite');
+                // Blob needs to be valid. 
+                await tx.objectStore('pending').put({ id, blob, filename, timestamp: Date.now() });
+            }
+
+            window.clearDB = async function() {
+                if(!db) return;
+                const tx = db.transaction(['pending'], 'readwrite');
+                await tx.objectStore('pending').clear();
+                restoreBanner.classList.add('hidden');
+            }
+
+            window.restoreSession = async function() {
+                if(!db) return;
+                const tx = db.transaction(['pending'], 'readonly');
+                const all = await new Promise(resolve => {
+                    const req = tx.objectStore('pending').getAll();
+                    req.onsuccess = () => resolve(req.result);
+                });
+                
+                if(all.length > 0) {
+                    emptyState.classList.add('hidden');
+                    clearAllBtn.classList.remove('hidden');
+                    
+                    all.forEach(item => {
+                         // Mock File object for UI consistency (name/size)
+                         const mockFile = { name: item.filename, size: item.blob.size };
+                         createListItem(item.id, mockFile); // This creates UI
+                         
+                         // Manually trigger success UI state without reprocessing
+                         handleSuccess(item.id, mockFile, item.blob, 0, "Restored from session");
+                    });
+                    restoreBanner.classList.add('hidden');
+                }
+            }
+
+            window.addEventListener('load', async () => {
+                try {
+                    await initDB();
+                    const tx = db.transaction(['pending'], 'readonly');
+                    const req = tx.objectStore('pending').count();
+                    req.onsuccess = () => {
+                        if(req.result > 0) restoreBanner.classList.remove('hidden');
+                    };
+                } catch(e) { console.log("DB Error", e); }
+            });
 
             // --- UI Helper Functions ---
             window.toggleAccordion = (id) => {
@@ -425,6 +528,34 @@
                 alert("Scale preset requires specific image context. Please enter pixel values for bulk resize.");
             };
 
+            window.savePreset = () => {
+                const preset = {
+                    format: targetFormat,
+                    quality: quality,
+                    watermark: watermarkText.value
+                };
+                localStorage.setItem('imgConvertPreset', JSON.stringify(preset));
+                showToast('Preset saved!', 'success');
+            };
+            
+            window.loadPreset = () => {
+                const preset = JSON.parse(localStorage.getItem('imgConvertPreset'));
+                if(preset) {
+                    if(preset.format) {
+                        // Find button
+                        const btn = Array.from(formatBtns).find(b => b.innerText.includes(preset.format.split('/')[1].toUpperCase()));
+                        if(btn) setFormat(preset.format, btn);
+                    }
+                    if(preset.quality) {
+                        quality = preset.quality;
+                        qualityInput.value = quality * 100;
+                        qualityVal.innerText = (quality*100) + '%';
+                    }
+                    if(preset.watermark) watermarkText.value = preset.watermark;
+                    showToast('Preset loaded!', 'info');
+                }
+            };
+
             qualityInput.addEventListener('input', (e) => {
                 quality = e.target.value / 100;
                 qualityVal.innerText = e.target.value + '%';
@@ -443,20 +574,31 @@
             dropZone.addEventListener('click', () => fileInput.click());
             
             dropZone.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    fileInput.click();
-                }
+                if (e.key === 'Enter' || e.key === ' ') fileInput.click();
             });
 
             document.addEventListener('paste', (e) => {
                 const items = e.clipboardData.items;
                 const files = [];
                 for (let i = 0; i < items.length; i++) {
-                    if (items[i].type.indexOf('image') !== -1) {
-                        files.push(items[i].getAsFile());
-                    }
+                    if (items[i].type.indexOf('image') !== -1) files.push(items[i].getAsFile());
                 }
                 if (files.length > 0) processFiles(files);
+            });
+            
+            // Shortcuts
+            document.addEventListener('keydown', (e) => {
+                if((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    if(convertedFiles.length > 0) downloadAll();
+                }
+                if(e.key === 'Escape') {
+                    const modal = document.querySelector('#compareModal');
+                    if(!modal.classList.contains('hidden')) modal.classList.add('hidden');
+                }
+                if((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                    clearAll();
+                }
             });
 
             function handleFiles(e) {
@@ -469,37 +611,29 @@
                 clearAllBtn.classList.remove('hidden');
                 globalProgress.classList.remove('hidden');
                 
-                const MAX_SIZE = 50 * 1024 * 1024; // 50MB limit
+                const MAX_SIZE = 10 * 1024 * 1024; // 10MB limit per file suggestion
                 let validFiles = [];
                 
                 for(let i=0; i<files.length; i++) {
                     const f = files[i];
                     if(!f.type.startsWith('image/')) continue;
                     if(f.size > MAX_SIZE) {
-                         showToast(`${f.name} is too large (>50MB). Skipped.`, 'error');
-                         continue;
+                         showToast(`${f.name} is large (>10MB). Processing might be slow.`, 'info');
                     }
                     validFiles.push(f);
                 }
 
-                // Add to Queue
                 validFiles.forEach(file => {
-                    filesQueue.push({ 
-                        file, 
-                        id: Date.now() + Math.random(), 
-                        status: 'pending' 
-                    });
+                    filesQueue.push({ file, id: Date.now() + Math.random() });
                 });
                 
                 processQueue();
             }
             
             async function processQueue() {
-                // Initial UI update
                 updateGlobalProgress();
                 updateCount();
 
-                // Process up to MAX_WORKERS
                 while (activeWorkers < MAX_WORKERS && queueIndex < filesQueue.length) {
                     const item = filesQueue[queueIndex++];
                     activeWorkers++;
@@ -510,10 +644,9 @@
                         const bitmap = await createImageBitmap(item.file);
                         convertImageInWorker(item.id, item.file, bitmap, queueIndex);
                     } catch (e) {
-                        console.warn("Main thread fallback due to bitmap error", e);
-                        activeWorkers--; // Release slot
-                        markError(item.id, "Read Error");
-                        processQueue(); // Continue
+                        console.warn("Main thread fallback", e);
+                        // Fallback call
+                        convertImageMainThread(item.id, item.file, queueIndex);
                     }
                 }
             }
@@ -523,7 +656,6 @@
                 div.id = `item-${id}`;
                 div.className = "flex flex-col sm:flex-row items-center gap-4 bg-white border border-gray-100 p-4 rounded-xl shadow-sm fade-in relative overflow-hidden";
                 
-                // Original Image URL for Comparison
                 const originalUrl = URL.createObjectURL(file);
                 div.dataset.original = originalUrl;
 
@@ -578,33 +710,28 @@
                     if (success) {
                         handleSuccess(id, file, blob, index, suggestion);
                     } else {
-                        // Fallback to Main Thread if Worker fails (e.g. Safari OffscreenCanvas)
                         console.warn("Worker failed, attempting main thread fallback:", error);
                         convertImageMainThread(id, file, index); 
                     }
                     worker.terminate();
                     activeWorkers--;
                     processQueue();
-                    updateGlobalProgress();
                 };
                 
                 worker.onerror = function(err) {
-                    console.error(err);
-                    markError(id, "Failed");
+                    convertImageMainThread(id, file, index); // Try fallback
                     worker.terminate();
                     activeWorkers--;
                     processQueue();
                 };
             }
             
-            // Main Thread Fallback for Safari
             async function convertImageMainThread(id, file, index) {
                  try {
-                    const bitmap = await createImageBitmap(file); // Re-create as it was transferred
+                    const bitmap = await createImageBitmap(file);
                     const canvas = document.createElement('canvas');
                     let width = bitmap.width; let height = bitmap.height;
                     
-                    // Resize Logic (Duplicated for fallback)
                     const targetW = parseInt(resizeWidth.value) || 0;
                     const targetH = parseInt(resizeHeight.value) || 0;
                     if (targetW && targetH) { width = targetW; height = targetH; }
@@ -615,7 +742,6 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(bitmap, 0, 0, width, height);
                     
-                    // Watermark (Simplified for fallback)
                     if (watermarkText.value.trim()) {
                         const fontSize = Math.max(12, width * 0.05);
                         ctx.font = `bold ${fontSize}px sans-serif`;
@@ -624,10 +750,9 @@
                     }
                     
                     canvas.toBlob(blob => {
-                        handleSuccess(id, file, blob, index, "");
+                        handleSuccess(id, file, blob, index, "Processed in Main Thread");
                         activeWorkers--;
                         processQueue();
-                        updateGlobalProgress();
                     }, targetFormat, quality);
                     
                  } catch(e) {
@@ -638,6 +763,9 @@
             }
             
             function handleSuccess(id, file, blob, index, suggestion) {
+                completedCount++;
+                updateGlobalProgress();
+                
                 const ext = targetFormat.split('/')[1].replace('jpeg', 'jpg');
                 let finalName = file.name.replace(/\.[^/.]+$/, "") + "." + ext;
                 
@@ -671,12 +799,14 @@
                 dlBtn.download = finalName;
                 dlBtn.classList.remove('hidden');
                 
-                // Store URL for comparison
                 const itemDiv = document.getElementById(`item-${id}`);
                 itemDiv.dataset.converted = url;
                 
-                // Revoke URL after 5 mins to save memory
-                setTimeout(() => URL.revokeObjectURL(url), 300000);
+                // Cleanup URL later
+                dlBtn.addEventListener('click', () => setTimeout(() => URL.revokeObjectURL(url), 5000));
+                
+                // Save to DB
+                saveToDB(id, blob, finalName);
                 
                 convertedFiles.push({ name: finalName, blob: blob });
                 if(convertedFiles.length > 0) downloadAllBtn.classList.remove('hidden');
@@ -685,6 +815,8 @@
             }
             
             function markError(id, msg) {
+                completedCount++;
+                updateGlobalProgress();
                 document.getElementById(`spinner-${id}`).classList.add('hidden');
                 document.getElementById(`newSize-${id}`).innerText = msg;
                 document.getElementById(`newSize-${id}`).classList.add('text-red-500');
@@ -697,10 +829,10 @@
             
             function updateGlobalProgress() {
                 const total = filesQueue.length;
-                const processed = convertedFiles.length; // Approximate
-                const pct = total > 0 ? (processed / total) * 100 : 0;
+                const pct = total > 0 ? (completedCount / total) * 100 : 0;
                 globalProgressBar.style.width = `${pct}%`;
-                globalProgressText.innerText = `${processed}/${total}`;
+                globalProgressText.innerText = `${completedCount}/${total}`;
+                globalProgress.setAttribute('aria-valuenow', Math.round(pct));
             }
 
             function formatBytes(bytes) {
@@ -720,11 +852,13 @@
                 convertedFiles = [];
                 filesQueue = [];
                 queueIndex = 0;
+                completedCount = 0;
                 downloadAllBtn.classList.add('hidden');
                 clearAllBtn.classList.add('hidden');
                 fileCount.innerText = '0 Files';
                 fileInput.value = '';
                 globalProgress.classList.add('hidden');
+                clearDB();
             };
             
             window.downloadAll = function() {
@@ -767,6 +901,7 @@
                 if(!orig || !conv) return;
                 
                 const modal = document.createElement('div');
+                modal.id = 'compareModal';
                 modal.className = "fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm fade-in";
                 modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
                 
@@ -774,26 +909,53 @@
                     <div class="bg-white rounded-xl overflow-hidden max-w-4xl w-full max-h-[90vh] flex flex-col">
                         <div class="p-4 border-b flex justify-between items-center bg-gray-50">
                             <h3 class="font-bold">Before vs After</h3>
-                            <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-times text-xl"></i></button>
+                            <button onclick="document.getElementById('compareModal').remove()" class="text-gray-500 hover:text-red-500"><i class="fa-solid fa-times text-xl"></i></button>
                         </div>
                         <div class="flex-grow p-4 flex gap-4 overflow-auto justify-center bg-checkered">
-                            <div class="text-center">
+                            <div class="text-center w-1/2">
                                 <span class="text-xs font-bold mb-1 block">Original</span>
-                                <img src="${orig}" class="max-h-[60vh] object-contain border rounded shadow-sm">
+                                <img src="${orig}" class="max-h-[60vh] object-contain border rounded shadow-sm mx-auto">
                             </div>
-                            <div class="text-center">
+                            <div class="text-center w-1/2">
                                 <span class="text-xs font-bold mb-1 block text-green-600">Converted</span>
-                                <img src="${conv}" class="max-h-[60vh] object-contain border rounded shadow-sm">
+                                <img src="${conv}" class="max-h-[60vh] object-contain border rounded shadow-sm mx-auto">
                             </div>
                         </div>
                     </div>
                 `;
                 document.body.appendChild(modal);
             }
+            
+            // Generate Text Report
+            window.generateReport = () => {
+                if(convertedFiles.length === 0) return showToast("No files converted yet!", "error");
+                
+                const originalTotal = filesQueue.reduce((sum, f) => sum + (f.file ? f.file.size : 0), 0);
+                const newTotal = convertedFiles.reduce((sum, f) => sum + f.blob.size, 0);
+                
+                const report = `Image Conversion Report
+Generated by Free Online Tools
+Date: ${new Date().toLocaleString()}
+-----------------------------------
+Total Files: ${filesQueue.length}
+Successfully Converted: ${convertedFiles.length}
+Format: ${targetFormat}
+Quality: ${quality * 100}%
 
-            // Register Service Worker for PWA
-            if ('serviceWorker' in navigator) {
-                // navigator.serviceWorker.register('/sw.js'); // Placeholder for future PWA file
+Total Original Size: ${formatBytes(originalTotal)}
+Total New Size: ${formatBytes(newTotal)}
+Space Saved: ${formatBytes(originalTotal - newTotal)} (${((originalTotal - newTotal)/originalTotal*100).toFixed(1)}%)
+-----------------------------------
+File Details:
+${convertedFiles.map(f => `- ${f.name} (${formatBytes(f.blob.size)})`).join('\n')}
+                `;
+                
+                const blob = new Blob([report], {type: 'text/plain'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `conversion-report-${Date.now()}.txt`;
+                a.click();
             }
 
         })();
