@@ -54,9 +54,14 @@
         /* Card States */
         .page-card {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            touch-action: pan-y;
+            touch-action: manipulation; /* Allow dragging */
             will-change: transform;
             position: relative;
+            cursor: grab;
+        }
+
+        .page-card:active {
+            cursor: grabbing;
         }
 
         .page-card.selected {
@@ -852,16 +857,10 @@
                     }
                 }
 
-                // Get the current order from DOM
-                const domIds = Array.from(document.getElementById('pages-grid').children)
-                    .map(card => card.getAttribute('data-id'))
-                    .filter(id => id);
-
+                // Use the current state.pages order (already synced with DOM)
                 let processedPages = 0;
 
-                for (const id of domIds) {
-                    const pageData = state.pages.find(p => p.id === id);
-                    if (!pageData) continue;
+                for (const pageData of state.pages) {
 
                     try {
                         if (pageData.isBlank) {
@@ -935,10 +934,43 @@
         new Sortable(document.getElementById('pages-grid'), {
             animation: 200, ghostClass: 'ghost-card', dragClass: 'drag-card',
             delay: 100, delayOnTouchOnly: true, filter: '.card-actions',
+            handle: '.page-card', // Only allow dragging on the card itself
             onStart: () => { if (state.selected.size > 0 && !state.isSelectMode) clearSelection(); },
+            onUpdate: () => { syncPageOrder(); showToast('Pages reordered', 'success'); },
             onEnd: updateUI
         });
         function handleKeyDown(e) { if ((e.key === 'Delete' || e.key === 'Backspace') && state.selected.size) deleteSelected(); }
+
+        // Sync state.pages array with current DOM order
+        function syncPageOrder() {
+            const grid = document.getElementById('pages-grid');
+            if (!grid) return;
+
+            const domOrder = Array.from(grid.children)
+                .map(card => card.getAttribute('data-id'))
+                .filter(id => id); // Filter out any null/undefined IDs
+
+            if (domOrder.length === 0) return;
+
+            const reorderedPages = [];
+
+            // Reorder state.pages based on DOM order
+            domOrder.forEach(id => {
+                const pageData = state.pages.find(p => p.id === id);
+                if (pageData) {
+                    reorderedPages.push(pageData);
+                }
+            });
+
+            // Only update if the order actually changed
+            const currentOrder = state.pages.map(p => p.id);
+            const newOrder = reorderedPages.map(p => p.id);
+
+            if (JSON.stringify(currentOrder) !== JSON.stringify(newOrder)) {
+                // Update state.pages with the new order
+                state.pages = reorderedPages;
+            }
+        }
         function toggleView(show) {
             document.getElementById('welcome-screen').classList.toggle('hidden', show);
             document.getElementById('editor-area').classList.toggle('hidden', !show);
