@@ -192,6 +192,11 @@
                 title="Toggle View">
                 <i class="fa-solid fa-border-all"></i>
             </button>
+            <button onclick="toggleSinglePageView()"
+                class="h-9 w-9 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-600 flex items-center justify-center"
+                title="Single Page View">
+                <i class="fa-solid fa-expand"></i>
+            </button>
         </div>
 
         <!-- Selection Toolbar (Floating) -->
@@ -420,11 +425,70 @@
         </div>
     </div>
 
+    <!-- Single Page View Modal -->
+    <div id="single-page-modal"
+        class="fixed inset-0 z-[70] hidden bg-slate-900 flex flex-col">
+        <!-- Header -->
+        <div class="bg-white border-b border-slate-200 p-4 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-4">
+                <button onclick="closeSinglePageView()"
+                    class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-slate-700">Page</span>
+                    <input type="number" id="single-page-input" min="1"
+                        class="w-16 px-2 py-1 border border-slate-300 rounded text-center text-sm font-mono"
+                        onkeydown="if(event.key==='Enter') jumpToPage()">
+                    <span class="text-sm text-slate-500">of <span id="single-page-total">0</span></span>
+                </div>
+            </div>
+            <button onclick="closeSinglePageView()"
+                class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Page Content -->
+        <div class="flex-1 flex items-center justify-center bg-slate-100 relative overflow-hidden">
+            <!-- Navigation Arrows -->
+            <button onclick="navigatePage(-1)"
+                class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center text-slate-700 hover:text-slate-900 transition-all z-10"
+                id="prev-btn">
+                <i class="fa-solid fa-chevron-left text-xl"></i>
+            </button>
+            <button onclick="navigatePage(1)"
+                class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full shadow-lg flex items-center justify-center text-slate-700 hover:text-slate-900 transition-all z-10"
+                id="next-btn">
+                <i class="fa-solid fa-chevron-right text-xl"></i>
+            </button>
+
+            <!-- Page Canvas -->
+            <div id="single-page-canvas" class="max-w-full max-h-full flex items-center justify-center">
+                <div class="loader"></div>
+            </div>
+        </div>
+
+        <!-- Footer with Reorder Input -->
+        <div class="bg-white border-t border-slate-200 p-4 shrink-0">
+            <div class="flex items-center justify-center gap-3">
+                <span class="text-sm font-medium text-slate-700">Reorder to:</span>
+                <input type="text" id="single-reorder-input" placeholder="3,2,5,4,1 or 5-1"
+                    class="flex-1 max-w-md px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    onkeydown="if(event.key==='Enter') applySingleReorder()">
+                <button onclick="applySingleReorder()"
+                    class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors">
+                    Apply
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container" class="fixed top-20 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <script>
         // --- State ---
-        const state = { docs: {}, buffers: {}, pages: [], selected: new Set(), trash: [], docCount: 0, isSelectMode: false, observer: null, isZoomedOut: false, previousPages: null };
+        const state = { docs: {}, buffers: {}, pages: [], selected: new Set(), trash: [], docCount: 0, isSelectMode: false, observer: null, isZoomedOut: false, previousPages: null, singlePageMode: false, currentPageIndex: 0 };
 
         // --- Lazy Loading ---
         state.observer = new IntersectionObserver((entries) => {
@@ -706,8 +770,23 @@
 
         // --- Interaction ---
         function handleCardClick(e, id) {
-            if (e.ctrlKey || e.metaKey || state.isSelectMode) toggleSelection(id);
-            else if (state.selected.size > 0 && !state.isSelectMode) clearSelection();
+            if (e.ctrlKey || e.metaKey || state.isSelectMode) {
+                toggleSelection(id);
+            } else if (state.selected.size > 0 && !state.isSelectMode) {
+                clearSelection();
+            } else {
+                // Open single page view
+                const pageIndex = state.pages.findIndex(p => p.id === id);
+                if (pageIndex !== -1) {
+                    state.currentPageIndex = pageIndex;
+                    state.singlePageMode = true;
+                    const modal = document.getElementById('single-page-modal');
+                    modal.classList.remove('hidden');
+                    renderSinglePage();
+                    updateSinglePageUI();
+                    document.addEventListener('keydown', handleSinglePageKeydown);
+                }
+            }
         }
         function toggleSelection(id) {
             const card = document.querySelector(`[data-id="${id}"]`);
@@ -1133,6 +1212,214 @@
             const bar = document.getElementById('selection-toolbar');
             if (state.selected.size > 0) { bar.classList.remove('hidden'); bar.classList.add('flex'); document.getElementById('selection-count').innerText = `${state.selected.size} Selected`; }
             else { bar.classList.add('hidden'); bar.classList.remove('flex'); }
+        }
+
+        // --- Single Page View Functions ---
+        window.toggleSinglePageView = () => {
+            if (state.pages.length === 0) {
+                showToast('No pages to view', 'error');
+                return;
+            }
+            state.singlePageMode = !state.singlePageMode;
+            const modal = document.getElementById('single-page-modal');
+            const toggleBtn = document.querySelector('button[onclick="toggleSinglePageView()"]');
+            if (state.singlePageMode) {
+                modal.classList.remove('hidden');
+                state.currentPageIndex = 0;
+                renderSinglePage();
+                updateSinglePageUI();
+                toggleBtn.classList.add('bg-indigo-100', 'text-indigo-700');
+                toggleBtn.querySelector('i').className = 'fa-solid fa-compress';
+                // Add keyboard listeners
+                document.addEventListener('keydown', handleSinglePageKeydown);
+            } else {
+                closeSinglePageView();
+                toggleBtn.classList.remove('bg-indigo-100', 'text-indigo-700');
+                toggleBtn.querySelector('i').className = 'fa-solid fa-expand';
+            }
+        }
+
+        function closeSinglePageView() {
+            state.singlePageMode = false;
+            document.getElementById('single-page-modal').classList.add('hidden');
+            document.removeEventListener('keydown', handleSinglePageKeydown);
+            const toggleBtn = document.querySelector('button[onclick="toggleSinglePageView()"]');
+            toggleBtn.classList.remove('bg-indigo-100', 'text-indigo-700');
+            toggleBtn.querySelector('i').className = 'fa-solid fa-expand';
+        }
+
+        function handleSinglePageKeydown(e) {
+            if (!state.singlePageMode) return;
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                navigatePage(-1);
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                navigatePage(1);
+            } else if (e.key === 'Escape') {
+                closeSinglePageView();
+            }
+        }
+
+        function navigatePage(direction) {
+            const newIndex = state.currentPageIndex + direction;
+            if (newIndex >= 0 && newIndex < state.pages.length) {
+                state.currentPageIndex = newIndex;
+                renderSinglePage();
+                updateSinglePageUI();
+            }
+        }
+
+        function jumpToPage() {
+            const input = document.getElementById('single-page-input');
+            const pageNum = parseInt(input.value);
+            if (pageNum >= 1 && pageNum <= state.pages.length) {
+                state.currentPageIndex = pageNum - 1;
+                renderSinglePage();
+                updateSinglePageUI();
+            } else {
+                showToast(`Page ${pageNum} does not exist`, 'error');
+            }
+        }
+
+        function updateSinglePageUI() {
+            const input = document.getElementById('single-page-input');
+            const totalSpan = document.getElementById('single-page-total');
+            input.value = state.currentPageIndex + 1;
+            totalSpan.textContent = state.pages.length;
+
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            prevBtn.style.opacity = state.currentPageIndex === 0 ? '0.5' : '1';
+            nextBtn.style.opacity = state.currentPageIndex === state.pages.length - 1 ? '0.5' : '1';
+        }
+
+        async function renderSinglePage() {
+            const container = document.getElementById('single-page-canvas');
+            container.innerHTML = '<div class="loader"></div>';
+
+            const pageData = state.pages[state.currentPageIndex];
+            if (!pageData) return;
+
+            try {
+                if (pageData.isBlank) {
+                    container.innerHTML = '<div class="w-full h-full bg-white flex flex-col items-center justify-center border-4 border-slate-100"><i class="fa-regular fa-file-lines text-slate-200 text-6xl mb-4"></i><span class="text-slate-400 text-2xl uppercase font-bold tracking-widest">BLANK</span></div>';
+                    return;
+                }
+
+                // Get the buffer for this document
+                const originalBuffer = state.buffers[pageData.docId];
+                if (!originalBuffer) {
+                    throw new Error('PDF buffer not found');
+                }
+
+                let buffer;
+                try {
+                    buffer = originalBuffer.slice(0);
+                } catch (e) {
+                    throw new Error('Failed to access PDF buffer');
+                }
+
+                // Load PDF with pdf.js for rendering
+                const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+                const page = await pdf.getPage(pageData.originalIndex + 1);
+
+                // Calculate appropriate scale for full view
+                const viewport = page.getViewport({ scale: 1.5 });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                // Render the page
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+
+                await page.render(renderContext).promise;
+
+                // Apply rotation if needed
+                canvas.style.transform = `rotate(${pageData.rotation}deg)`;
+                canvas.style.maxWidth = '90vw';
+                canvas.style.maxHeight = '70vh';
+                canvas.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+
+                container.innerHTML = '';
+                container.appendChild(canvas);
+
+            } catch (e) {
+                console.error('Single page render error:', e);
+                container.innerHTML = '<div class="flex flex-col items-center justify-center h-full text-red-400"><i class="fa-solid fa-triangle-exclamation text-4xl mb-2"></i><span class="text-lg">Error loading page</span></div>';
+            }
+        }
+
+        window.applySingleReorder = () => {
+            const val = document.getElementById('single-reorder-input').value.trim();
+            if (!val) return;
+
+            try {
+                const newOrder = parsePageOrder(val);
+                if (!newOrder || newOrder.length === 0) {
+                    throw new Error('Invalid page order');
+                }
+
+                // Validate that all pages exist
+                const totalPages = state.pages.length;
+                const invalidPages = newOrder.filter(pageNum => pageNum < 1 || pageNum > totalPages);
+                if (invalidPages.length > 0) {
+                    throw new Error(`Page(s) ${invalidPages.join(', ')} do not exist`);
+                }
+
+                // Check for duplicates
+                const uniquePages = [...new Set(newOrder)];
+                if (uniquePages.length !== newOrder.length) {
+                    throw new Error('Duplicate page numbers found');
+                }
+
+                // Save previous state for undo
+                state.previousPages = [...state.pages];
+
+                // Create new page order
+                const reorderedPages = [];
+                newOrder.forEach(pageNum => {
+                    const pageIndex = pageNum - 1;
+                    const pageData = state.pages[pageIndex];
+                    if (pageData) {
+                        reorderedPages.push(pageData);
+                    }
+                });
+
+                // Update state
+                state.pages = reorderedPages;
+
+                // Update grid
+                const grid = document.getElementById('pages-grid');
+                const fragment = document.createDocumentFragment();
+                reorderedPages.forEach((pageData, index) => {
+                    const card = createCard(pageData.id, index + 1);
+                    fragment.appendChild(card);
+                    if (!pageData.isBlank) state.observer.observe(card);
+                });
+                grid.innerHTML = '';
+                grid.appendChild(fragment);
+
+                // Clear input and show success
+                document.getElementById('single-reorder-input').value = '';
+                updateUI();
+                showToast(`Reordered to: ${newOrder.join(', ')}`, 'success');
+
+                // Update current page index if it changed
+                const currentPageData = state.pages[state.currentPageIndex];
+                if (currentPageData) {
+                    renderSinglePage();
+                }
+
+            } catch (e) {
+                showToast(`Reorder failed: ${e.message}`, 'error');
+            }
         }
         window.resetApp = () => {
             if (confirm("Clear all pages and start over?")) {
