@@ -494,10 +494,38 @@
                         throw new Error('File appears to be empty');
                     }
 
-                    // First, try to validate the PDF with pdf.js
+                    // Load with PDF-lib first for manipulation (creates a copy internally)
+                    let pdfLibDoc;
+                    try {
+                        pdfLibDoc = await PDFLib.PDFDocument.load(buffer);
+                    } catch (e) {
+                        console.error('PDF-lib loading error:', e);
+                        if (e.message.includes('detached')) {
+                            throw new Error('PDF file buffer was detached. Try uploading the file again.');
+                        } else if (e.message.includes('password')) {
+                            throw new Error('PDF is password protected and cannot be edited.');
+                        } else {
+                            throw new Error(`Failed to load PDF for editing: ${e.message}`);
+                        }
+                    }
+
+                    // Validate buffer size
+                    if (buffer.byteLength === 0) {
+                        throw new Error('File appears to be empty');
+                    }
+
+                    // Create a fresh copy of the buffer for pdf.js to avoid detachment issues
+                    let bufferCopy;
+                    try {
+                        bufferCopy = buffer.slice(0);
+                    } catch (e) {
+                        throw new Error('Failed to copy file buffer. File may be corrupted.');
+                    }
+
+                    // Now validate with pdf.js using the copy
                     let pdfJsDoc;
                     try {
-                        pdfJsDoc = await pdfjsLib.getDocument({ data: buffer }).promise;
+                        pdfJsDoc = await pdfjsLib.getDocument({ data: bufferCopy }).promise;
                     } catch (e) {
                         if (e.name === 'PasswordException') {
                             showToast(`🔒 Password Protected: ${file.name}`, 'error');
@@ -505,7 +533,7 @@
                         } else if (e.name === 'InvalidPDFException') {
                             throw new Error('Invalid or corrupted PDF file');
                         } else {
-                            throw new Error(`Failed to read PDF: ${e.message}`);
+                            throw new Error(`Failed to validate PDF: ${e.message}`);
                         }
                     }
 
@@ -520,15 +548,8 @@
                         continue;
                     }
 
-                    // Load with PDF-lib for manipulation
-                    let pdfLibDoc;
-                    try {
-                        pdfLibDoc = await PDFLib.PDFDocument.load(buffer);
-                    } catch (e) {
-                        throw new Error(`Failed to load PDF for editing: ${e.message}`);
-                    }
-
                     const docId = `d${++state.docCount}`;
+                    // Store the original buffer for pdf-lib operations
                     state.buffers[docId] = buffer;
                     state.docs[docId] = pdfLibDoc;
 
@@ -591,10 +612,17 @@
             try {
                 if (pData.isBlank) return renderBlankThumbnail(container);
 
-                // Get the buffer for this document
-                const buffer = state.buffers[pData.docId];
-                if (!buffer) {
+                // Get the buffer for this document and create a copy to avoid detachment issues
+                const originalBuffer = state.buffers[pData.docId];
+                if (!originalBuffer) {
                     throw new Error('PDF buffer not found');
+                }
+
+                let buffer;
+                try {
+                    buffer = originalBuffer.slice(0);
+                } catch (e) {
+                    throw new Error('Failed to access PDF buffer. File may have been corrupted.');
                 }
 
                 // Load PDF with pdf.js for rendering
@@ -745,10 +773,17 @@
                 const img = document.getElementById('preview-img');
                 img.src = '';
 
-                // Get the buffer for this document
-                const buffer = state.buffers[p.docId];
-                if (!buffer) {
+                // Get the buffer for this document and create a copy to avoid detachment issues
+                const originalBuffer = state.buffers[p.docId];
+                if (!originalBuffer) {
                     throw new Error('PDF buffer not found');
+                }
+
+                let buffer;
+                try {
+                    buffer = originalBuffer.slice(0);
+                } catch (e) {
+                    throw new Error('Failed to access PDF buffer. File may have been corrupted.');
                 }
 
                 // Load PDF with pdf.js for high-quality preview
