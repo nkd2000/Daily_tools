@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PDF Page Reorder | Organize PDF Pages Online</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Free online tool to reorder, rotate, and delete PDF pages. Drag and drop interface for organizing PDF documents easily. Secure client-side processing.">
+    <meta name="keywords"
+        content="pdf reorder, organize pdf pages, rotate pdf pages, delete pdf pages, rearrange pdf, free pdf tool, client-side pdf">
+    <meta name="author" content="Free Online Tools">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://nkd2000.github.io/Daily_tools/tools/pdf/pdf-page-reorder.html">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="PDF Page Reorder & Organizer">
+    <meta property="og:description" content="Reorder, rotate, and delete PDF pages instantly in your browser.">
+    <meta property="og:url" content="https://nkd2000.github.io/Daily_tools/tools/pdf/pdf-page-reorder.html">
+    <meta property="og:image" content="https://nkd2000.github.io/Daily_tools/assets/og-default.svg">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PDF Page Reorder & Organizer">
+    <meta name="twitter:description" content="Reorder, rotate, and delete PDF pages instantly in your browser.">
+
+    <!-- User's AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
+    <script data-ad-client="ca-pub-3793390054330330" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+
+    <!-- Icons & Fonts -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Card States */
+        .page-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            touch-action: pan-y;
+            will-change: transform;
+            position: relative;
+        }
+
+        .page-card.selected {
+            outline: 2px solid #4f46e5;
+            background-color: #eef2ff;
+            transform: translateY(-2px);
+            z-index: 10;
+        }
+
+        /* Dragging */
+        .ghost-card {
+            opacity: 0.4;
+            background: #e2e8f0;
+            border: 2px dashed #94a3b8;
+        }
+
+        .drag-card {
+            transform: scale(1.05) rotate(1deg);
+            z-index: 100 !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            cursor: grabbing;
+        }
+
+        /* Loader */
+        .loader {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #cbd5e1;
+            border-top-color: #4f46e5;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-up {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .drag-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .drag-active .drag-overlay {
+            opacity: 1;
+        }
+
+        /* Scrollbar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 h-screen flex flex-col overflow-hidden" ondrop="handleDrop(event)"
+    ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+
+    <!-- 1. Global Navigation (Standard) -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-slate-900">PDF Reorder <span
+                            class="text-indigo-600 text-xs align-top">PRO</span></span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-slate-500">
+                    <a href="../../index.html" class="hover:text-indigo-600 transition">Home</a>
+                    <a href="../../pages/contact.html" class="hover:text-indigo-600 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. Tool Toolbar (Controls) -->
+    <div
+        class="bg-white border-b border-slate-200 h-14 shrink-0 z-40 px-3 sm:px-6 flex items-center justify-between shadow-sm relative">
+        <div class="flex items-center gap-4">
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wide hidden sm:block" id="status-text">Ready
+            </p>
+
+            <!-- Add PDF Button -->
+            <label
+                class="cursor-pointer bg-indigo-50 hover:bg-indigo-100 text-indigo-700 h-9 px-4 rounded-lg border border-indigo-200 text-sm font-bold transition-colors flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Add Files</span>
+                <input type="file" accept=".pdf,application/pdf" multiple class="hidden"
+                    onchange="handleFileSelect(event)">
+            </label>
+
+            <!-- Actions (Add Blank, Zoom) -->
+            <div class="h-6 w-px bg-slate-200 mx-1"></div>
+            <button onclick="addBlankPage()"
+                class="h-9 w-9 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-600 flex items-center justify-center"
+                title="Insert Blank Page">
+                <i class="fa-regular fa-file"></i>
+            </button>
+            <button onclick="toggleGridSize()"
+                class="hidden sm:flex items-center justify-center h-9 w-9 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-slate-600"
+                title="Toggle View">
+                <i class="fa-solid fa-border-all"></i>
+            </button>
+        </div>
+
+        <!-- Selection Toolbar (Floating) -->
+        <div id="selection-toolbar"
+            class="hidden absolute left-1/2 -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-full shadow-xl flex items-center gap-3 z-50 animate-fade-up border border-slate-700">
+            <span class="text-xs font-bold text-slate-300 whitespace-nowrap" id="selection-count">0 Selected</span>
+            <div class="h-4 w-px bg-slate-600"></div>
+            <button onclick="selectAll()" class="hover:text-indigo-400 transition" title="Select All"><i
+                    class="fa-solid fa-check-double"></i></button>
+            <button onclick="rotateSelected()" class="hover:text-indigo-400 transition" title="Rotate"><i
+                    class="fa-solid fa-rotate-right"></i></button>
+            <button onclick="deleteSelected()" class="hover:text-red-400 transition" title="Delete"><i
+                    class="fa-solid fa-trash"></i></button>
+            <div class="h-4 w-px bg-slate-600"></div>
+            <button onclick="clearSelection()" class="text-xs text-slate-400 hover:text-white"><i
+                    class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- Right Actions -->
+        <button id="save-btn" onclick="openSaveModal()" disabled
+            class="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold px-5 py-2 h-9 rounded-lg shadow-md flex items-center gap-2 transition-all active:scale-95">
+            <span class="hidden sm:inline">Export PDF</span> <span class="sm:hidden">Save</span>
+            <i class="fa-solid fa-download"></i>
+        </button>
+    </div>
+
+    <!-- Workspace -->
+    <main class="flex-1 flex overflow-hidden relative bg-slate-100/50" id="main-container">
+
+        <!-- Welcome Screen -->
+        <!-- <div id="welcome-screen" class="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 transition-opacity duration-300">
+            <div class="bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-slate-100 text-center max-w-sm w-full">
+                <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-5 animate-bounce">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-800 mb-2">Drop PDFs Here</h2>
+                <p class="text-sm text-slate-500 mb-6">Secure, Client-side Processing</p>
+                <div class="text-xs text-slate-400 font-mono bg-slate-50 py-1.5 px-3 rounded inline-block border border-slate-200">
+                    Pro Tip: Use Shift+Click to select range
+                </div>
+            </div>
+        </div> -->
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen"
+            class="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 transition-opacity duration-300">
+            <input type="file" accept=".pdf,application/pdf" multiple class="hidden" id="file-input"
+                onchange="handleFileSelect(event)">
+
+            <div class="bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-slate-100 text-center max-w-sm w-full"
+                ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div
+                    class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-5 animate-bounce">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-800 mb-2">Drop PDFs Here</h2>
+                <p class="text-sm text-slate-500 mb-4">or</p>
+
+                <label for="file-input"
+                    class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-6 rounded-lg cursor-pointer transition-colors duration-200 mb-4">
+                    <i class="fa-solid fa-folder-open mr-2"></i>
+                    Browse Files
+                </label>
+
+                <p class="text-sm text-slate-500 mb-6">Secure, Client-side Processing</p>
+                <div
+                    class="text-xs text-slate-400 font-mono bg-slate-50 py-1.5 px-3 rounded inline-block border border-slate-200">
+                    Pro Tip: Use Shift+Click to select range
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Drag Feedback -->
+        <div
+            class="drag-overlay absolute inset-0 z-20 bg-indigo-500/10 backdrop-blur-sm border-4 border-indigo-500 border-dashed m-4 rounded-xl flex items-center justify-center">
+            <div class="bg-white px-6 py-3 rounded-full shadow-xl font-bold text-indigo-600">
+                Release to Add Files
+            </div>
+        </div>
+
+        <!-- Scrollable Grid -->
+        <div id="editor-area" class="flex-1 overflow-y-auto p-4 sm:p-6 hidden custom-scroll w-full scroll-smooth"
+            tabindex="0" onkeydown="handleKeyDown(event)">
+            <div id="pages-grid"
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 max-w-7xl mx-auto pb-32 transition-all">
+                <!-- Pages injected here -->
+            </div>
+        </div>
+
+        <!-- Mobile Floating Menu -->
+        <div id="fab-menu"
+            class="absolute bottom-6 right-6 flex flex-col gap-3 z-30 transition-transform translate-y-64 md:translate-y-0">
+            <button onclick="addBlankPage()"
+                class="w-11 h-11 bg-white text-slate-700 rounded-full shadow-lg flex items-center justify-center border border-slate-200 hover:bg-slate-50 md:hidden"
+                title="Add Blank Page">
+                <i class="fa-regular fa-file"></i>
+            </button>
+            <button onclick="toggleSelectMode()" id="select-mode-btn"
+                class="w-11 h-11 bg-white text-slate-700 rounded-full shadow-lg flex items-center justify-center border border-slate-200 hover:bg-slate-50"
+                title="Select Mode">
+                <i class="fa-solid fa-check-double"></i>
+            </button>
+            <button onclick="rotateAll()"
+                class="w-11 h-11 bg-white text-slate-700 rounded-full shadow-lg flex items-center justify-center border border-slate-200 hover:bg-slate-50"
+                title="Rotate All">
+                <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
+
+        <!-- Filter Bar (Restored) -->
+        <div id="filter-bar"
+            class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur shadow-2xl border border-slate-200 rounded-full px-2 py-1.5 flex items-center gap-2 z-30 transition-transform translate-y-32">
+            <div class="flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-full border border-slate-100">
+                <span class="text-[10px] font-bold text-slate-400 tracking-wider">FILTER:</span>
+                <input type="text" id="range-input" placeholder="1-5, 8"
+                    class="bg-transparent border-none text-sm w-20 focus:outline-none text-slate-700 font-mono"
+                    onkeydown="if(event.key==='Enter') applyRange()">
+            </div>
+            <button onclick="applyRange()"
+                class="w-8 h-8 flex items-center justify-center bg-slate-900 hover:bg-slate-800 text-white rounded-full transition-colors shadow-sm"
+                title="Apply">
+                <i class="fa-solid fa-check text-xs"></i>
+            </button>
+            <div class="w-px h-4 bg-slate-200 mx-1"></div>
+            <button onclick="resetApp()"
+                class="w-8 h-8 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                title="Reset">
+                <i class="fa-solid fa-trash text-xs"></i>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">
+                &copy; 2023 Free Online Tools. <a href="../../pages/privacy.html" class="text-indigo-600 hover:text-indigo-500">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Undo Toast -->
+    <div id="undo-toast"
+        class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-4 hidden animate-fade-up">
+        <span class="text-sm font-medium"><span id="undo-count">1</span> deleted</span>
+        <button onclick="undoAction()"
+            class="text-yellow-400 text-xs font-bold border border-yellow-400/30 px-2 py-1 rounded hover:bg-yellow-400/10 tracking-wider">UNDO</button>
+        <button onclick="hideUndo()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Save Modal -->
+    <div id="save-modal"
+        class="fixed inset-0 z-[70] hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-up">
+            <div class="p-5 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800">Export Options</h3>
+                <p class="text-xs text-slate-500 mt-1">Ready to download your new PDF</p>
+            </div>
+            <div class="p-6">
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Filename</label>
+                <div
+                    class="flex items-center border border-slate-300 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-500 transition-all">
+                    <input type="text" id="final-filename" value="document"
+                        class="flex-1 bg-transparent border-none text-slate-700 focus:outline-none font-medium"
+                        placeholder="Filename">
+                    <span class="text-slate-400 text-sm">.pdf</span>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex gap-3">
+                <button onclick="closeSaveModal()"
+                    class="flex-1 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors">Cancel</button>
+                <button onclick="executeSave()" id="final-save-btn"
+                    class="flex-1 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                    Download <i class="fa-solid fa-arrow-down"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal"
+        class="fixed inset-0 z-[60] hidden bg-slate-900/90 backdrop-blur-sm flex items-center justify-center p-4"
+        onclick="closePreview()">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-fade-up"
+            onclick="event.stopPropagation()">
+            <div class="p-3 border-b flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-slate-700 text-sm ml-2">Preview</h3>
+                <button onclick="closePreview()"
+                    class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex-1 overflow-auto p-4 flex justify-center bg-slate-200/50">
+                <img id="preview-img" class="shadow-lg max-w-full object-contain" src="">
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed top-20 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // --- State ---
+        const state = { docs: {}, buffers: {}, pages: [], selected: new Set(), trash: [], docCount: 0, isSelectMode: false, observer: null, isZoomedOut: false };
+
+        // --- Lazy Loading ---
+        state.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('data-id');
+                    const imgContainer = entry.target.querySelector('.canvas-container');
+                    const p = state.pages.find(x => x.id === id);
+                    if (p && !imgContainer.querySelector('canvas') && !imgContainer.querySelector('.blank-page-thumb')) {
+                        renderThumbnail(p, imgContainer).catch(e => {
+                            console.error('Thumbnail render error:', e);
+                            imgContainer.innerHTML = '<div class="flex flex-col items-center justify-center h-full text-red-400"><i class="fa-solid fa-triangle-exclamation text-2xl mb-1"></i><span class="text-xs">Error</span></div>';
+                        });
+                    }
+                    state.observer.unobserve(entry.target);
+                }
+            });
+        }, { root: document.getElementById('editor-area'), rootMargin: '300px' });
+
+        // --- File Logic ---
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('main-container').classList.add('drag-active');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            // Only remove class if we're actually leaving the drop zone
+            if (!e.relatedTarget || !document.getElementById('main-container').contains(e.relatedTarget)) {
+                document.getElementById('main-container').classList.remove('drag-active');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.getElementById('main-container').classList.remove('drag-active');
+
+            const items = e.dataTransfer.items ?
+                Array.from(e.dataTransfer.items).map(item => item.getAsFile()) :
+                Array.from(e.dataTransfer.files);
+
+            // Filter out null items and validate
+            const validFiles = items.filter(file => file !== null);
+
+            if (validFiles.length === 0) {
+                showToast('No files detected', 'error');
+                return;
+            }
+
+            processFiles(validFiles);
+        }
+
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            processFiles(files);
+        }
+
+        async function processFiles(files) {
+            // Filter valid PDF files and check file size (max 50MB per file)
+            const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+            const validFiles = files.filter(f => {
+                if (!f) return false;
+                if (!(f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'))) return false;
+                if (f.size > MAX_FILE_SIZE) {
+                    showToast(`File too large: ${f.name} (${(f.size / 1024 / 1024).toFixed(1)}MB). Max: 50MB`, 'error');
+                    return false;
+                }
+                return true;
+            });
+
+            if (!validFiles.length) {
+                if (files.length > 0) {
+                    showToast('No valid PDF files found. Please check file type and size.', 'error');
+                }
+                return;
+            }
+
+            // Check current total pages
+            const currentPageCount = state.pages.length;
+            const MAX_TOTAL_PAGES = 500; // Maximum total pages to prevent performance issues
+
+            if (currentPageCount >= MAX_TOTAL_PAGES) {
+                showToast(`Maximum page limit reached (${MAX_TOTAL_PAGES}). Please export current work first.`, 'error');
+                return;
+            }
+
+            toggleView(true);
+
+            let totalNewPages = 0;
+            for (const file of validFiles) {
+                try {
+                    showToast(`Processing: ${file.name}`, 'neutral');
+
+                    // Get file buffer with timeout
+                    const buffer = await file.arrayBuffer();
+
+                    // Validate buffer size
+                    if (buffer.byteLength === 0) {
+                        throw new Error('File appears to be empty');
+                    }
+
+                    // First, try to validate the PDF with pdf.js
+                    let pdfJsDoc;
+                    try {
+                        pdfJsDoc = await pdfjsLib.getDocument({ data: buffer }).promise;
+                    } catch (e) {
+                        if (e.name === 'PasswordException') {
+                            showToast(`🔒 Password Protected: ${file.name}`, 'error');
+                            continue;
+                        } else if (e.name === 'InvalidPDFException') {
+                            throw new Error('Invalid or corrupted PDF file');
+                        } else {
+                            throw new Error(`Failed to read PDF: ${e.message}`);
+                        }
+                    }
+
+                    // Check if PDF has pages
+                    if (pdfJsDoc.numPages === 0) {
+                        throw new Error('PDF has no pages');
+                    }
+
+                    // Check if adding these pages would exceed the limit
+                    if (currentPageCount + totalNewPages + pdfJsDoc.numPages > MAX_TOTAL_PAGES) {
+                        showToast(`Adding ${file.name} would exceed maximum page limit (${MAX_TOTAL_PAGES}). File has ${pdfJsDoc.numPages} pages.`, 'error');
+                        continue;
+                    }
+
+                    // Load with PDF-lib for manipulation
+                    let pdfLibDoc;
+                    try {
+                        pdfLibDoc = await PDFLib.PDFDocument.load(buffer);
+                    } catch (e) {
+                        throw new Error(`Failed to load PDF for editing: ${e.message}`);
+                    }
+
+                    const docId = `d${++state.docCount}`;
+                    state.buffers[docId] = buffer;
+                    state.docs[docId] = pdfLibDoc;
+
+                    // Create page cards
+                    const frag = document.createDocumentFragment();
+                    for (let i = 0; i < pdfJsDoc.numPages; i++) {
+                        addPageInternal(frag, docId, i);
+                    }
+                    document.getElementById('pages-grid').appendChild(frag);
+
+                    totalNewPages += pdfJsDoc.numPages;
+                    showToast(`✅ Added: ${file.name} (${pdfJsDoc.numPages} pages)`, 'success');
+
+                } catch (e) {
+                    console.error('File processing error:', e);
+                    const errorMessage = e.message || 'Unknown error occurred';
+                    showToast(`❌ Error reading ${file.name}: ${errorMessage}`, 'error');
+                }
+            }
+
+            if (totalNewPages > 0) {
+                showToast(`Total pages added: ${totalNewPages}`, 'success');
+            }
+
+            updateUI();
+
+            // Clear input so same file can be selected again
+            const inputs = document.querySelectorAll('input[type="file"]');
+            inputs.forEach(input => input.value = '');
+        }
+
+        function addPageInternal(container, docId, index, isBlank = false) {
+            const pid = `p${Date.now()}_${Math.random().toString(36).slice(2)}`;
+            state.pages.push({ id: pid, docId, originalIndex: index, rotation: 0, isBlank });
+            const card = createCard(pid, state.pages.length);
+            container.appendChild(card);
+            if (!isBlank) state.observer.observe(card);
+            else renderBlankThumbnail(card.querySelector('.canvas-container'));
+        }
+
+        function createCard(id, num) {
+            const div = document.createElement('div');
+            div.className = 'page-card group relative bg-white rounded-xl shadow-sm border border-slate-200 aspect-[3/4] flex flex-col overflow-hidden cursor-pointer select-none hover:shadow-md animate-fade-up';
+            div.setAttribute('data-id', id);
+            div.onclick = (e) => handleCardClick(e, id);
+            div.innerHTML = `
+                <div class="page-badge absolute top-2 left-2 z-10 bg-slate-900/90 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur pointer-events-none">${num}</div>
+                <div class="select-indicator absolute top-2 right-2 z-10 w-5 h-5 rounded-full border-2 border-slate-300 bg-white hidden group-hover:block transition-colors"></div>
+                <div class="canvas-container flex-1 relative flex items-center justify-center overflow-hidden bg-slate-50"><div class="loader"></div></div>
+                <div class="card-actions absolute inset-0 bg-slate-900/40 backdrop-blur-[1px] flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div class="flex gap-2">
+                        <button onclick="event.stopPropagation(); rotatePage('${id}')" class="w-8 h-8 bg-white rounded-full text-indigo-600 hover:bg-indigo-600 hover:text-white shadow flex items-center justify-center"><i class="fa-solid fa-rotate-right text-xs"></i></button>
+                        <button onclick="event.stopPropagation(); previewPage('${id}')" class="w-8 h-8 bg-white rounded-full text-slate-700 hover:bg-slate-700 hover:text-white shadow flex items-center justify-center"><i class="fa-solid fa-eye text-xs"></i></button>
+                    </div>
+                </div>`;
+            return div;
+        }
+
+        async function renderThumbnail(pData, container) {
+            try {
+                if (pData.isBlank) return renderBlankThumbnail(container);
+
+                // Get the buffer for this document
+                const buffer = state.buffers[pData.docId];
+                if (!buffer) {
+                    throw new Error('PDF buffer not found');
+                }
+
+                // Load PDF with pdf.js for rendering
+                const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+                const page = await pdf.getPage(pData.originalIndex + 1);
+
+                // Calculate appropriate scale for thumbnail
+                const viewport = page.getViewport({ scale: 0.3 });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                // Render the page
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+
+                await page.render(renderContext).promise;
+
+                // Apply rotation if needed
+                canvas.style.transform = `rotate(${pData.rotation}deg)`;
+                canvas.style.maxHeight = (pData.rotation % 180 === 0) ? '100%' : '75%';
+
+                container.innerHTML = '';
+                container.appendChild(canvas);
+
+            } catch (e) {
+                console.error('Thumbnail render error:', e);
+                container.innerHTML = '<div class="flex flex-col items-center justify-center h-full text-red-400"><i class="fa-solid fa-triangle-exclamation text-2xl mb-1"></i><span class="text-xs">Error</span></div>';
+            }
+        }
+
+        function renderBlankThumbnail(container) {
+            container.innerHTML = '<div class="blank-page-thumb w-full h-full bg-white flex flex-col items-center justify-center border-4 border-slate-100"><i class="fa-regular fa-file-lines text-slate-200 text-3xl mb-2"></i><span class="text-slate-400 text-[10px] uppercase font-bold tracking-widest">BLANK</span></div>';
+        }
+
+        // --- Grid Zoom ---
+        window.toggleGridSize = () => {
+            state.isZoomedOut = !state.isZoomedOut;
+            const grid = document.getElementById('pages-grid');
+            grid.className = state.isZoomedOut
+                ? "grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3 max-w-7xl mx-auto pb-32 transition-all"
+                : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 max-w-7xl mx-auto pb-32 transition-all";
+        }
+
+        // --- Interaction ---
+        function handleCardClick(e, id) {
+            if (e.ctrlKey || e.metaKey || state.isSelectMode) toggleSelection(id);
+            else if (state.selected.size > 0 && !state.isSelectMode) clearSelection();
+        }
+        function toggleSelection(id) {
+            const card = document.querySelector(`[data-id="${id}"]`);
+            const ind = card.querySelector('.select-indicator');
+            if (state.selected.has(id)) {
+                state.selected.delete(id); card.classList.remove('selected'); ind.style = ''; ind.innerHTML = '';
+            } else {
+                state.selected.add(id); card.classList.add('selected');
+                ind.style.display = 'block'; ind.style.backgroundColor = '#4f46e5'; ind.style.borderColor = '#4f46e5';
+                ind.innerHTML = '<i class="fa-solid fa-check text-white text-[10px] flex items-center justify-center h-full"></i>';
+            }
+            updateToolbar();
+        }
+        function toggleSelectMode() {
+            state.isSelectMode = !state.isSelectMode;
+            document.getElementById('select-mode-btn').classList.toggle('bg-indigo-100', state.isSelectMode);
+            if (!state.isSelectMode) clearSelection(); else showToast("Select Mode ON", "neutral");
+        }
+        function clearSelection() {
+            state.selected.clear();
+            document.querySelectorAll('.page-card.selected').forEach(el => {
+                el.classList.remove('selected'); el.querySelector('.select-indicator').style = ''; el.querySelector('.select-indicator').innerHTML = '';
+            });
+            updateToolbar();
+        }
+        window.selectAll = () => document.querySelectorAll('.page-card').forEach(c => { if (!state.selected.has(c.getAttribute('data-id'))) toggleSelection(c.getAttribute('data-id')); });
+        function updateToolbar() {
+            const bar = document.getElementById('selection-toolbar');
+            if (state.selected.size > 0) { bar.classList.remove('hidden'); bar.classList.add('flex'); document.getElementById('selection-count').innerText = `${state.selected.size} Selected`; }
+            else { bar.classList.add('hidden'); bar.classList.remove('flex'); }
+        }
+
+        // --- Actions ---
+        window.rotateSelected = () => state.selected.forEach(id => updateRotation(id, 90));
+        window.deleteSelected = () => {
+            const ids = Array.from(state.selected); const batch = [];
+            ids.forEach(id => {
+                const card = document.querySelector(`[data-id="${id}"]`);
+                const idx = Array.from(card.parentNode.children).indexOf(card);
+                const p = state.pages.find(x => x.id === id);
+                batch.push({ idx, data: p, el: card });
+                card.remove(); state.pages = state.pages.filter(x => x.id !== id);
+            });
+            state.trash.push(batch); clearSelection(); updateUI(); showUndo(ids.length);
+        };
+        window.undoAction = () => {
+            const batch = state.trash.pop(); if (!batch) return;
+            batch.sort((a, b) => a.idx - b.idx).forEach(item => {
+                state.pages.splice(item.idx, 0, item.data);
+                const grid = document.getElementById('pages-grid');
+                if (item.idx >= grid.children.length) grid.appendChild(item.el); else grid.insertBefore(item.el, grid.children[item.idx]);
+                if (!item.data.isBlank) updateRotation(item.data.id, 0);
+            });
+            hideUndo(); updateUI();
+        }
+        window.applyRange = () => {
+            const val = document.getElementById('range-input').value; if (!val) return;
+            const keep = new Set();
+            try {
+                val.split(',').forEach(s => {
+                    const [a, b] = s.split('-').map(Number); if (isNaN(a)) return;
+                    for (let i = (b ? Math.min(a, b) : a); i <= (b ? Math.max(a, b) : a); i++) keep.add(i - 1);
+                });
+                if (!keep.size) throw 1;
+                const batch = [];
+                Array.from(document.getElementById('pages-grid').children).forEach((c, i) => {
+                    if (!keep.has(i)) {
+                        const id = c.getAttribute('data-id'); const p = state.pages.find(x => x.id === id);
+                        batch.push({ idx: i, data: p, el: c }); c.remove(); state.pages = state.pages.filter(x => x.id !== id);
+                    }
+                });
+                if (batch.length) { state.trash.push(batch); showUndo(batch.length); showToast(`Filtered ${keep.size} pages`, 'success'); }
+                else showToast('No change', 'neutral');
+                updateUI();
+            } catch { showToast('Invalid Range', 'error'); }
+        }
+        window.rotateAll = () => state.pages.forEach(p => updateRotation(p.id, 90));
+        window.rotatePage = (id) => updateRotation(id, 90);
+        function updateRotation(id, deg) {
+            const p = state.pages.find(x => x.id === id); if (!p) return;
+            p.rotation = (p.rotation + deg) % 360;
+            const cvs = document.querySelector(`[data-id="${id}"] canvas`);
+            if (cvs) { cvs.style.transform = `rotate(${p.rotation}deg)`; cvs.style.maxHeight = (p.rotation % 180 === 0) ? '100%' : '75%'; }
+        }
+        window.addBlankPage = () => {
+            toggleView(true); const frag = document.createDocumentFragment();
+            addPageInternal(frag, null, -1, true); document.getElementById('pages-grid').appendChild(frag);
+            updateUI(); showToast("Blank page inserted", "success");
+        }
+        window.previewPage = async (id) => {
+            const p = state.pages.find(x => x.id === id);
+            if (!p || p.isBlank) return;
+
+            try {
+                document.getElementById('preview-modal').classList.remove('hidden');
+                const img = document.getElementById('preview-img');
+                img.src = '';
+
+                // Get the buffer for this document
+                const buffer = state.buffers[p.docId];
+                if (!buffer) {
+                    throw new Error('PDF buffer not found');
+                }
+
+                // Load PDF with pdf.js for high-quality preview
+                const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+                const page = await pdf.getPage(p.originalIndex + 1);
+
+                // Higher scale for preview
+                const viewport = page.getViewport({ scale: 2.0, rotation: p.rotation });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                // Render the page
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+
+                await page.render(renderContext).promise;
+
+                img.src = canvas.toDataURL();
+            } catch (e) {
+                console.error('Preview error:', e);
+                showToast('Failed to load preview', 'error');
+                document.getElementById('preview-modal').classList.add('hidden');
+            }
+        }
+        window.closePreview = () => document.getElementById('preview-modal').classList.add('hidden');
+
+        // --- Save Logic ---
+        window.openSaveModal = () => { document.getElementById('save-modal').classList.remove('hidden'); document.getElementById('final-filename').focus(); }
+        window.closeSaveModal = () => document.getElementById('save-modal').classList.add('hidden');
+        window.savePDF = () => openSaveModal();
+        window.executeSave = async () => {
+            closeSaveModal();
+            if (!state.pages.length) {
+                showToast('No pages to export', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('save-btn');
+            const oldHtml = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...`;
+            btn.disabled = true;
+
+            try {
+                showToast('Creating PDF...', 'neutral');
+
+                const newPdf = await PDFLib.PDFDocument.create();
+
+                // Get default page size from first real page
+                let defaultWidth = 595.28; // A4 width
+                let defaultHeight = 841.89; // A4 height
+
+                const firstRealPage = state.pages.find(p => !p.isBlank);
+                if (firstRealPage) {
+                    try {
+                        const page = await state.docs[firstRealPage.docId].getPage(firstRealPage.originalIndex);
+                        const size = page.getSize();
+                        defaultWidth = size.width;
+                        defaultHeight = size.height;
+                    } catch (e) {
+                        console.warn('Could not get page size, using A4 default:', e);
+                    }
+                }
+
+                // Get the current order from DOM
+                const domIds = Array.from(document.getElementById('pages-grid').children)
+                    .map(card => card.getAttribute('data-id'))
+                    .filter(id => id);
+
+                let processedPages = 0;
+
+                for (const id of domIds) {
+                    const pageData = state.pages.find(p => p.id === id);
+                    if (!pageData) continue;
+
+                    try {
+                        if (pageData.isBlank) {
+                            // Add blank page
+                            const blankPage = newPdf.addPage([defaultWidth, defaultHeight]);
+                            processedPages++;
+                        } else {
+                            // Copy existing page
+                            const sourceDoc = state.docs[pageData.docId];
+                            if (!sourceDoc) {
+                                throw new Error('Source document not found');
+                            }
+
+                            const [copiedPage] = await newPdf.copyPages(sourceDoc, [pageData.originalIndex]);
+
+                            // Apply rotation
+                            if (pageData.rotation !== 0) {
+                                copiedPage.setRotation(copiedPage.getRotation().angle + pageData.rotation);
+                            }
+
+                            newPdf.addPage(copiedPage);
+                            processedPages++;
+                        }
+                    } catch (e) {
+                        console.error(`Error processing page ${id}:`, e);
+                        throw new Error(`Failed to process page ${processedPages + 1}`);
+                    }
+                }
+
+                if (processedPages === 0) {
+                    throw new Error('No pages were successfully processed');
+                }
+
+                // Generate the PDF
+                const bytes = await newPdf.save();
+
+                if (bytes.length === 0) {
+                    throw new Error('Generated PDF is empty');
+                }
+
+                // Create download link
+                const blob = new Blob([bytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = url;
+
+                const filename = document.getElementById('final-filename').value.trim();
+                link.download = filename ? `${filename}.pdf` : `reordered-document.pdf`;
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Clean up
+                URL.revokeObjectURL(url);
+
+                showToast(`✅ Successfully exported ${processedPages} pages!`, 'success');
+
+            } catch (e) {
+                console.error('Export error:', e);
+                const errorMessage = e.message || 'Unknown error occurred during export';
+                showToast(`❌ Export failed: ${errorMessage}`, 'error');
+            } finally {
+                btn.innerHTML = oldHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // --- Init ---
+        new Sortable(document.getElementById('pages-grid'), {
+            animation: 200, ghostClass: 'ghost-card', dragClass: 'drag-card',
+            delay: 100, delayOnTouchOnly: true, filter: '.card-actions',
+            onStart: () => { if (state.selected.size > 0 && !state.isSelectMode) clearSelection(); },
+            onEnd: updateUI
+        });
+        function handleKeyDown(e) { if ((e.key === 'Delete' || e.key === 'Backspace') && state.selected.size) deleteSelected(); }
+        function toggleView(show) {
+            document.getElementById('welcome-screen').classList.toggle('hidden', show);
+            document.getElementById('editor-area').classList.toggle('hidden', !show);
+            document.getElementById('save-btn').disabled = !show;
+            const fab = document.getElementById('fab-menu'); const filter = document.getElementById('filter-bar');
+            if (show) { fab.classList.remove('translate-y-64'); filter.classList.remove('translate-y-32'); }
+            else { fab.classList.add('translate-y-64'); filter.classList.add('translate-y-32'); }
+        }
+        function updateUI() {
+            const cards = document.querySelectorAll('.page-card');
+            cards.forEach((c, i) => c.querySelector('.page-badge').innerText = i + 1);
+            document.getElementById('status-text').innerText = `${cards.length} Pages`;
+            if (cards.length === 0) toggleView(false);
+            const bar = document.getElementById('selection-toolbar');
+            if (state.selected.size > 0) { bar.classList.remove('hidden'); bar.classList.add('flex'); document.getElementById('selection-count').innerText = `${state.selected.size} Selected`; }
+            else { bar.classList.add('hidden'); bar.classList.remove('flex'); }
+        }
+        window.resetApp = () => {
+            if (confirm("Clear all pages and start over?")) {
+                // Clear all data
+                state.docs = {};
+                state.buffers = {};
+                state.pages = [];
+                state.selected.clear();
+                state.trash = [];
+                state.docCount = 0;
+                state.isSelectMode = false;
+
+                // Clear DOM
+                document.getElementById('pages-grid').innerHTML = '';
+                document.getElementById('toast-container').innerHTML = '';
+
+                // Reset UI
+                updateUI();
+                toggleView(false);
+                showToast('Workspace cleared', 'success');
+            }
+        }
+        function showUndo(count) { document.getElementById('undo-count').innerText = count; document.getElementById('undo-toast').classList.remove('hidden'); setTimeout(hideUndo, 5000); }
+        window.hideUndo = () => document.getElementById('undo-toast').classList.add('hidden');
+        function showToast(m, t) {
+            const d = document.createElement('div'); d.className = `px-4 py-2 rounded text-white text-xs font-bold shadow-lg animate-fade-up ${t === 'error' ? 'bg-red-500' : 'bg-slate-800'}`;
+            d.innerText = m; document.getElementById('toast-container').appendChild(d); setTimeout(() => d.remove(), 3000);
+        }
+    </script>
+</body>
+
+</html>
