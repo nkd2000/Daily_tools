@@ -473,9 +473,10 @@
         <div class="bg-white border-t border-slate-200 p-4 shrink-0">
             <div class="flex items-center justify-center gap-3">
                 <span class="text-sm font-medium text-slate-700">Reorder to:</span>
-                <input type="text" id="single-reorder-input" placeholder="3,2,5,4,1 or 5-1"
+                <input type="text" id="single-reorder-input" placeholder="8 (swap with current) or 3,2,5,4,1"
                     class="flex-1 max-w-md px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    onkeydown="if(event.key==='Enter') applySingleReorder()">
+                    onkeydown="if(event.key==='Enter') applySingleReorder()"
+                    title="Enter single page number to swap with current page, or full sequence like 3,2,5,4,1">
                 <button onclick="applySingleReorder()"
                     class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors">
                     Apply
@@ -1361,60 +1362,106 @@
             if (!val) return;
 
             try {
-                const newOrder = parsePageOrder(val);
-                if (!newOrder || newOrder.length === 0) {
-                    throw new Error('Invalid page order');
-                }
+                // Check if it's a single page number for swapping
+                const singlePageMatch = val.match(/^(\d+)$/);
+                if (singlePageMatch) {
+                    const targetPageNum = parseInt(singlePageMatch[1]);
+                    const totalPages = state.pages.length;
 
-                // Validate that all pages exist
-                const totalPages = state.pages.length;
-                const invalidPages = newOrder.filter(pageNum => pageNum < 1 || pageNum > totalPages);
-                if (invalidPages.length > 0) {
-                    throw new Error(`Page(s) ${invalidPages.join(', ')} do not exist`);
-                }
-
-                // Check for duplicates
-                const uniquePages = [...new Set(newOrder)];
-                if (uniquePages.length !== newOrder.length) {
-                    throw new Error('Duplicate page numbers found');
-                }
-
-                // Save previous state for undo
-                state.previousPages = [...state.pages];
-
-                // Create new page order
-                const reorderedPages = [];
-                newOrder.forEach(pageNum => {
-                    const pageIndex = pageNum - 1;
-                    const pageData = state.pages[pageIndex];
-                    if (pageData) {
-                        reorderedPages.push(pageData);
+                    if (targetPageNum < 1 || targetPageNum > totalPages) {
+                        throw new Error(`Page ${targetPageNum} does not exist`);
                     }
-                });
 
-                // Update state
-                state.pages = reorderedPages;
+                    const currentPageNum = state.currentPageIndex + 1;
+                    if (targetPageNum === currentPageNum) {
+                        showToast('Same page selected', 'neutral');
+                        return;
+                    }
 
-                // Update grid
-                const grid = document.getElementById('pages-grid');
-                const fragment = document.createDocumentFragment();
-                reorderedPages.forEach((pageData, index) => {
-                    const card = createCard(pageData.id, index + 1);
-                    fragment.appendChild(card);
-                    if (!pageData.isBlank) state.observer.observe(card);
-                });
-                grid.innerHTML = '';
-                grid.appendChild(fragment);
+                    // Save previous state for undo
+                    state.previousPages = [...state.pages];
 
-                // Clear input and show success
-                document.getElementById('single-reorder-input').value = '';
-                updateUI();
-                showToast(`Reordered to: ${newOrder.join(', ')}`, 'success');
+                    // Swap the current page with the target page
+                    const temp = state.pages[state.currentPageIndex];
+                    state.pages[state.currentPageIndex] = state.pages[targetPageNum - 1];
+                    state.pages[targetPageNum - 1] = temp;
 
-                // Update current page index if it changed
-                const currentPageData = state.pages[state.currentPageIndex];
-                if (currentPageData) {
+                    // Update grid
+                    const grid = document.getElementById('pages-grid');
+                    const fragment = document.createDocumentFragment();
+                    state.pages.forEach((pageData, index) => {
+                        const card = createCard(pageData.id, index + 1);
+                        fragment.appendChild(card);
+                        if (!pageData.isBlank) state.observer.observe(card);
+                    });
+                    grid.innerHTML = '';
+                    grid.appendChild(fragment);
+
+                    // Clear input and show success
+                    document.getElementById('single-reorder-input').value = '';
+                    updateUI();
+                    showToast(`Swapped page ${currentPageNum} with page ${targetPageNum}`, 'success');
+
+                    // Re-render the current page (which is now at the same position)
                     renderSinglePage();
+
+                } else {
+                    // Handle full reorder sequences
+                    const newOrder = parsePageOrder(val);
+                    if (!newOrder || newOrder.length === 0) {
+                        throw new Error('Invalid page order');
+                    }
+
+                    // Validate that all pages exist
+                    const totalPages = state.pages.length;
+                    const invalidPages = newOrder.filter(pageNum => pageNum < 1 || pageNum > totalPages);
+                    if (invalidPages.length > 0) {
+                        throw new Error(`Page(s) ${invalidPages.join(', ')} do not exist`);
+                    }
+
+                    // Check for duplicates
+                    const uniquePages = [...new Set(newOrder)];
+                    if (uniquePages.length !== newOrder.length) {
+                        throw new Error('Duplicate page numbers found');
+                    }
+
+                    // Save previous state for undo
+                    state.previousPages = [...state.pages];
+
+                    // Create new page order
+                    const reorderedPages = [];
+                    newOrder.forEach(pageNum => {
+                        const pageIndex = pageNum - 1;
+                        const pageData = state.pages[pageIndex];
+                        if (pageData) {
+                            reorderedPages.push(pageData);
+                        }
+                    });
+
+                    // Update state
+                    state.pages = reorderedPages;
+
+                    // Update grid
+                    const grid = document.getElementById('pages-grid');
+                    const fragment = document.createDocumentFragment();
+                    reorderedPages.forEach((pageData, index) => {
+                        const card = createCard(pageData.id, index + 1);
+                        fragment.appendChild(card);
+                        if (!pageData.isBlank) state.observer.observe(card);
+                    });
+                    grid.innerHTML = '';
+                    grid.appendChild(fragment);
+
+                    // Clear input and show success
+                    document.getElementById('single-reorder-input').value = '';
+                    updateUI();
+                    showToast(`Reordered to: ${newOrder.join(', ')}`, 'success');
+
+                    // Update current page index if it changed
+                    const currentPageData = state.pages[state.currentPageIndex];
+                    if (currentPageData) {
+                        renderSinglePage();
+                    }
                 }
 
             } catch (e) {
