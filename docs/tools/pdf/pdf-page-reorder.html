@@ -1109,7 +1109,7 @@
                             processedPages++;
                         }
                     } catch (e) {
-                        console.error(`Error processing page ${id}:`, e);
+                        console.error(`Error processing page ${processedPages + 1}:`, e);
                         throw new Error(`Failed to process page ${processedPages + 1}`);
                     }
                 }
