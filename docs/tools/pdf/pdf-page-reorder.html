@@ -988,6 +988,7 @@
             const cvs = document.querySelector(`[data-id="${id}"] canvas`);
             if (cvs) { cvs.style.transform = `rotate(${p.rotation}deg)`; cvs.style.maxHeight = (p.rotation % 180 === 0) ? '100%' : '75%'; }
         }
+        window.rotatePage = (id) => updateRotation(id, 90);
         window.addBlankPage = () => {
             toggleView(true); const frag = document.createDocumentFragment();
             addPageInternal(frag, null, -1, true); document.getElementById('pages-grid').appendChild(frag);
