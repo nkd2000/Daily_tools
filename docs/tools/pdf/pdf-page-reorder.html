@@ -1103,7 +1103,9 @@
 
                             // Apply rotation
                             if (pageData.rotation !== 0) {
-                                copiedPage.setRotation(copiedPage.getRotation().angle + pageData.rotation);
+                                const currentRotation = copiedPage.getRotation()?.angle || 0;
+                                const newRotation = (currentRotation + pageData.rotation) % 360;
+                                copiedPage.setRotation(newRotation);
                             }
 
                             newPdf.addPage(copiedPage);
