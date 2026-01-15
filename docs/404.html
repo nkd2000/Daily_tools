@@ -17,6 +17,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
 
+    <!-- Load Tools Database -->
+    <script src="tools-data.js"></script>
+
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
@@ -178,26 +181,20 @@
             }
 
             // --- 1. TOOL DATA FOR SEARCH ---
-            // Hardcoded list of popular tools for instant search on 404 page
-            const toolsList = [
-                { name: "Image Compressor", url: "/tools/image-compressor.html", icon: "fa-image" },
-                { name: "PDF Compressor", url: "/tools/pdf-compressor.html", icon: "fa-file-pdf" },
-                { name: "Age Calculator", url: "/tools/age-calculator.html", icon: "fa-cake-candles" },
-                { name: "Resume Builder", url: "/tools/resume-builder.html", icon: "fa-user-tie" },
-                { name: "Typing Speed Test", url: "/tools/typing-speed-test.html", icon: "fa-keyboard" },
-                { name: "Screen Recorder", url: "/tools/screen-recorder.html", icon: "fa-video" },
-                { name: "BMI Calculator", url: "/tools/bmi-calculator.html", icon: "fa-weight-scale" },
-                { name: "QR Code Generator", url: "/tools/qr-code-generator.html", icon: "fa-qrcode" },
-                { name: "Password Generator", url: "/tools/password-generator.html", icon: "fa-key" },
-                { name: "Text to Speech", url: "/tools/text-to-speech.html", icon: "fa-volume-high" },
-                { name: "Merge PDF", url: "/tools/merge-pdf.html", icon: "fa-file-circle-plus" }
+            // Load from external tools-data.js for consistency
+            // If TOOLS_DATABASE not loaded, use fallback
+            const toolsList = typeof TOOLS_DATABASE !== 'undefined' ? TOOLS_DATABASE : [
+                { name: "Image Compressor", url: "tools/image/image-compressor.html", icon: "fa-compress" },
+                { name: "PDF Compressor", url: "tools/pdf/pdf-compressor.html", icon: "fa-file-zipper" },
+                { name: "Age Calculator", url: "tools/utility/age-calculator.html", icon: "fa-cake-candles" },
             ];
 
             const searchInput = document.getElementById('toolSearch');
             const searchResults = document.getElementById('searchResults');
 
+            // Enhanced search with fuzzy matching
             searchInput.addEventListener('input', (e) => {
-                const val = e.target.value.toLowerCase();
+                const val = e.target.value.toLowerCase().trim();
                 searchResults.innerHTML = '';
                 
                 if(val.length < 1) {
@@ -205,7 +202,17 @@
                     return;
                 }
 
-                const matches = toolsList.filter(t => t.name.toLowerCase().includes(val));
+                // Use searchTools function from tools-data.js if available
+                let matches = [];
+                if (typeof searchTools === 'function') {
+                    matches = searchTools(val).slice(0, 10); // Limit to 10 results
+                } else {
+                    // Fallback search
+                    matches = toolsList.filter(t => 
+                        t.name.toLowerCase().includes(val) ||
+                        (t.desc && t.desc.toLowerCase().includes(val))
+                    );
+                }
                 
                 if(matches.length > 0) {
                     searchResults.classList.remove('hidden');
@@ -213,14 +220,27 @@
                         const div = document.createElement('a');
                         div.href = tool.url;
                         div.className = "flex items-center gap-3 p-3 hover:bg-slate-700/50 transition cursor-pointer border-b border-slate-700/50 last:border-0";
+                        
+                        const iconClass = tool.icon.includes('fa-') ? tool.icon : 'fa-solid ' + tool.icon;
                         div.innerHTML = `
-                            <div class="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-blue-400"><i class="fa-solid ${tool.icon}"></i></div>
-                            <span class="text-sm font-medium text-slate-200">${tool.name}</span>
+                            <div class="w-8 h-8 rounded bg-slate-700 flex items-center justify-center text-blue-400">
+                                <i class="fa-solid ${iconClass.split(' ').pop()}"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-medium text-slate-200">${tool.name}</div>
+                                ${tool.cat ? `<div class="text-xs text-slate-400">${tool.cat}</div>` : ''}
+                            </div>
                         `;
                         searchResults.appendChild(div);
                     });
                 } else {
-                    searchResults.classList.add('hidden');
+                    searchResults.innerHTML = `
+                        <div class="p-4 text-center text-slate-400 text-sm">
+                            <i class="fa-solid fa-magnifying-glass mb-2 block"></i>
+                            No tools found. Try "PDF", "Image", or "Calculator"
+                        </div>
+                    `;
+                    searchResults.classList.remove('hidden');
                 }
             });
 
