@@ -1,14 +1,19 @@
 /**
  * TOOLS DATABASE - Single Source of Truth
- * Auto-generated from index.html toolsData structure
- * Used by: index.html (main display) & 404.html (search & suggestions)
+ * AUTO-GENERATED from index.html toolsData
  * 
- * Update this whenever a new tool is added!
- * Format: { name, url, cat, icon, color, desc }
+ * Generated: 2026-01-15T11:29:14.384Z
+ * Total tools: 35
+ * 
+ * ⚠️  DO NOT EDIT MANUALLY - Run: node build-tools-data.js
+ * 
+ * Instead of editing this file:
+ * 1. Update toolsData[] in docs/index.html
+ * 2. Run: node build-tools-data.js
+ * 3. This file will auto-update
  */
 
 const TOOLS_DATABASE = [
-    // --- IMAGE TOOLS ---
     {
         name: 'Image Compression',
         url: 'tools/image/image-compressor.html',
@@ -58,7 +63,7 @@ const TOOLS_DATABASE = [
         desc: 'Convert SVG code/files to high-res PNG, JPG, or WEBP.'
     },
     {
-        name: 'YT Thumbnail Downloader',
+        name: 'YT Thumbnail',
         url: 'tools/image/yt-thumbnail.html',
         cat: 'Image',
         icon: 'fa-youtube',
@@ -81,16 +86,6 @@ const TOOLS_DATABASE = [
         title: 'Image Converter',
         desc: 'Bulk convert images to WebP, AVIF, or JPG format.'
     },
-    {
-        name: 'Color Picker',
-        url: 'tools/image/color-picker.html',
-        cat: 'Dev',
-        icon: 'fa-eye-dropper',
-        title: 'Color Picker',
-        desc: 'Get HEX, RGB, HSL codes and generate palettes.'
-    },
-
-    // --- PDF & DOCS ---
     {
         name: 'PDF Merger',
         url: 'tools/pdf/merge-pdf.html',
@@ -124,15 +119,13 @@ const TOOLS_DATABASE = [
         desc: 'Convert photos (JPG, PNG) into a single PDF document.'
     },
     {
-        name: 'VCF to Excel Converter',
+        name: 'VCF to Excel',
         url: 'tools/converter/vfc-to-excel-converter.html',
         cat: 'PDF',
         icon: 'fa-address-book',
         title: 'VCF to Excel',
         desc: 'Convert contact files (.vcf) into Excel spreadsheets.'
     },
-
-    // --- CALCULATORS ---
     {
         name: 'Age Calculator',
         url: 'tools/utility/age-calculator.html',
@@ -181,8 +174,6 @@ const TOOLS_DATABASE = [
         title: 'Unit Converter',
         desc: 'Convert Length, Weight, Temp, and Speed effortlessly.'
     },
-
-    // --- DEVELOPER ---
     {
         name: 'JSON Formatter',
         url: 'tools/developer/json-formatter.html',
@@ -200,12 +191,12 @@ const TOOLS_DATABASE = [
         desc: 'Minify HTML, CSS, and JS to boost website speed.'
     },
     {
-        name: 'Text Diff Checker',
-        url: 'tools/developer/text-diff-checker.html',
+        name: 'Color Picker',
+        url: 'tools/image/color-picker.html',
         cat: 'Dev',
-        icon: 'fa-code-compare',
-        title: 'Text Diff Checker',
-        desc: 'Compare code/text differences with syntax highlighting and live preview.'
+        icon: 'fa-eye-dropper',
+        title: 'Color Picker',
+        desc: 'Get HEX, RGB, HSL codes and generate palettes.'
     },
     {
         name: 'QR Code Generator',
@@ -223,8 +214,14 @@ const TOOLS_DATABASE = [
         title: 'Password Generator',
         desc: 'Generate strong, secure, and random passwords.'
     },
-
-    // --- UTILITY ---
+    {
+        name: 'Text Diff Checker',
+        url: 'tools/developer/text-diff-checker.html',
+        cat: 'Dev',
+        icon: 'fa-code-compare',
+        title: 'Text Diff Checker',
+        desc: 'Compare code/text differences with syntax highlighting and live preview.'
+    },
     {
         name: 'Resume Builder',
         url: 'tools/utility/resume-builder.html',

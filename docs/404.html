@@ -139,6 +139,22 @@
                 <i class="fa-solid fa-spinner fa-spin"></i> Found it! Redirecting...
             </div>
 
+            <!-- URL Diagnostics Panel -->
+            <div id="diagnosticsPanel" class="hidden mb-6 p-4 bg-slate-800/50 border border-slate-700 rounded-xl text-xs text-slate-300 space-y-2">
+                <div class="flex items-center gap-2 text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <span><strong>Attempted URL:</strong> <code id="attemptedUrl" class="text-slate-200 font-mono">N/A</code></span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-400">
+                    <i class="fa-solid fa-tag"></i>
+                    <span><strong>Detected:</strong> <span id="detectedInfo">Unknown</span></span>
+                </div>
+                <div class="flex items-center gap-2 text-slate-400">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span id="suggestion" class="text-slate-300">Use search to find what you're looking for</span>
+                </div>
+            </div>
+
             <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
                 <a href="https://nkd2000.github.io/Daily_tools/docs/index.html" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/50 transition transform hover:-translate-y-1">
                     <i class="fa-solid fa-house mr-2"></i> Go Home
@@ -180,7 +196,63 @@
                 starsContainer.appendChild(star);
             }
 
-            // --- 1. TOOL DATA FOR SEARCH ---
+            // --- 1. ANALYTICS SYSTEM ---
+            const Analytics = {
+                storageKey: 'tools_404_analytics',
+                
+                track: function(eventType, data) {
+                    try {
+                        const stored = JSON.parse(localStorage.getItem(this.storageKey)) || {};
+                        stored[eventType] = stored[eventType] || [];
+                        stored[eventType].push({
+                            timestamp: new Date().toISOString(),
+                            ...data
+                        });
+                        localStorage.setItem(this.storageKey, JSON.stringify(stored));
+                    } catch(e) { /* localStorage not available */ }
+                },
+                
+                getStats: function() {
+                    try {
+                        return JSON.parse(localStorage.getItem(this.storageKey)) || {};
+                    } catch(e) { return {}; }
+                },
+                
+                clearStats: function() {
+                    try {
+                        localStorage.removeItem(this.storageKey);
+                    } catch(e) { /* localStorage not available */ }
+                }
+            };
+
+            // --- 2. URL DIAGNOSTICS ---
+            const Diagnostics = {
+                panel: document.getElementById('diagnosticsPanel'),
+                
+                show: function(url) {
+                    const fileName = url.split('/').pop();
+                    const category = this.detectCategory(fileName);
+                    
+                    document.getElementById('attemptedUrl').textContent = url;
+                    document.getElementById('detectedInfo').textContent = 
+                        category ? `Category: ${category}` : 'Unable to detect category';
+                    document.getElementById('suggestion').textContent = 
+                        category ? `Search for "${category}" tools above` : 'Try searching by tool name or category';
+                    
+                    this.panel.classList.remove('hidden');
+                    Analytics.track('diagnostic_shown', { url, category });
+                },
+                
+                detectCategory: function(fileName) {
+                    const lower = fileName.toLowerCase();
+                    if (lower.includes('pdf') || lower.includes('merge') || lower.includes('compress')) return 'PDF';
+                    if (lower.includes('image') || lower.includes('photo') || lower.includes('compress')) return 'Image';
+                    if (lower.includes('calc') || lower.includes('age') || lower.includes('bmi')) return 'Calculator';
+                    if (lower.includes('json') || lower.includes('code') || lower.includes('format')) return 'Developer';
+                    return null;
+                }
+            };
+
             // Load from external tools-data.js for consistency
             // If TOOLS_DATABASE not loaded, use fallback
             const toolsList = typeof TOOLS_DATABASE !== 'undefined' ? TOOLS_DATABASE : [
@@ -191,16 +263,21 @@
 
             const searchInput = document.getElementById('toolSearch');
             const searchResults = document.getElementById('searchResults');
+            let selectedResultIndex = -1; // For keyboard navigation
 
             // Enhanced search with fuzzy matching
             searchInput.addEventListener('input', (e) => {
                 const val = e.target.value.toLowerCase().trim();
                 searchResults.innerHTML = '';
+                selectedResultIndex = -1;
                 
                 if(val.length < 1) {
                     searchResults.classList.add('hidden');
                     return;
                 }
+
+                // Track search analytics
+                Analytics.track('search', { query: val });
 
                 // Use searchTools function from tools-data.js if available
                 let matches = [];
@@ -231,6 +308,12 @@
                                 ${tool.cat ? `<div class="text-xs text-slate-400">${tool.cat}</div>` : ''}
                             </div>
                         `;
+                        div.dataset.toolIndex = searchResults.children.length;
+                        div.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            Analytics.track('tool_clicked', { tool: tool.name, url: tool.url });
+                            window.location.href = tool.url;
+                        });
                         searchResults.appendChild(div);
                     });
                 } else {
@@ -244,6 +327,37 @@
                 }
             });
 
+            // Keyboard Navigation (Arrow keys + Enter)
+            searchInput.addEventListener('keydown', (e) => {
+                const results = Array.from(searchResults.querySelectorAll('a'));
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedResultIndex = Math.min(selectedResultIndex + 1, results.length - 1);
+                    updateSelectedResult(results);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedResultIndex = Math.max(selectedResultIndex - 1, -1);
+                    updateSelectedResult(results);
+                } else if (e.key === 'Enter' && selectedResultIndex >= 0 && results[selectedResultIndex]) {
+                    e.preventDefault();
+                    results[selectedResultIndex].click();
+                }
+            });
+
+            function updateSelectedResult(results) {
+                results.forEach((result, idx) => {
+                    if (idx === selectedResultIndex) {
+                        result.classList.add('bg-slate-700/70');
+                        result.classList.remove('hover:bg-slate-700/50');
+                        result.scrollIntoView({ block: 'nearest' });
+                    } else {
+                        result.classList.remove('bg-slate-700/70');
+                        result.classList.add('hover:bg-slate-700/50');
+                    }
+                });
+            }
+
             // Click outside to close search
             document.addEventListener('click', (e) => {
                 if(!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
@@ -251,10 +365,15 @@
                 }
             });
 
-            // --- 2. SMART REDIRECT & AUTO-CHECKER ---
+            // --- 3. SMART REDIRECT & AUTO-CHECKER ---
             const currentPath = window.location.pathname;
             const filename = currentPath.split('/').pop();
             let targetUrl = null;
+
+            // Show diagnostics for failed URL
+            if (filename && filename !== '404.html') {
+                Diagnostics.show(currentPath);
+            }
 
             const toKebabCase = (str) => {
                 const name = str.split('.')[0];
