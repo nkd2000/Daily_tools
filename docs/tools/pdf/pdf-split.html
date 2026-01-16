@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 🔍 SEO & Meta Tags -->
+    <title>PDF Split & Extract | Separate PDF Pages Online Free</title>
+    <meta name="description"
+        content="Free online tool to split PDF files into individual pages or extract specific pages securely in your browser. 100% Client-side.">
+    <meta name="keywords" content="split pdf, extract pdf pages, pdf splitter, free pdf tool, client-side pdf">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://nkd2000.github.io/Daily_tools/tools/pdf/pdf-split.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PDF Split & Extract | Free Online Tools">
+    <meta property="og:description"
+        content="Split your PDF into multiple files or extract specific pages securely in your browser.">
+    <meta property="og:url" content="https://nkd2000.github.io/Daily_tools/tools/pdf/pdf-split.html">
+
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- Fonts & Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .page-card {
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .page-card.selected {
+            border-color: #0d9488;
+            background-color: #f0fdfa;
+        }
+
+        .page-card.selected .select-icon {
+            display: flex;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-slate-800 flex flex-col min-h-full">
+
+    <!-- 🧭 Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-teal-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-scissors"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">PDF Splitter</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
+                    <a href="../../index.html" class="hover:text-teal-600 transition">Home</a>
+                    <a href="https://jansuchnaforall.blogspot.com" target="_blank"
+                        class="hover:text-teal-600 transition">Blog</a>
+                    <a href="../../pages/contact.html" class="hover:text-teal-600 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 📄 Header -->
+    <header class="max-w-7xl mx-auto px-4 pt-10 text-center fade-in">
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">PDF Split & Extract</h1>
+        <p class="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
+            एक ही PDF से कई फाइलें बनाएं या सिर्फ जरूरी पेजों को बाहर निकालें। 100% सुरक्षित और तेज़।
+        </p>
+    </header>
+
+    <!-- 📄 Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 w-full flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- Left: Preview & Upload -->
+            <div class="lg:col-span-8 space-y-6">
+                <div id="upload-container"
+                    class="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 p-12 text-center hover:border-teal-500 transition-all cursor-pointer group"
+                    onclick="document.getElementById('pdf-file').click()">
+                    <input type="file" id="pdf-file" class="hidden" accept="application/pdf">
+                    <div class="flex flex-col items-center">
+                        <div
+                            class="w-16 h-16 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-file-arrow-up text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800">Choose PDF File</h3>
+                        <p class="text-sm text-gray-500 mt-1">Select the document you want to process</p>
+                    </div>
+                </div>
+
+                <div id="preview-area" class="hidden space-y-4 fade-in">
+                    <div
+                        class="flex flex-wrap justify-between items-center gap-4 bg-white p-4 rounded-lg border border-gray-200">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-xs font-bold"
+                                id="page-count-badge">0 Pages</span>
+                            <span class="text-xs text-gray-500 font-medium" id="selection-label">0 Selected</span>
+                        </div>
+                        <div class="flex gap-4">
+                            <button onclick="handleSelectionAll(true)"
+                                class="text-xs font-bold text-teal-600 hover:text-teal-700 uppercase tracking-wider">Select
+                                All</button>
+                            <button onclick="handleSelectionAll(false)"
+                                class="text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wider">Clear</button>
+                        </div>
+                    </div>
+                    <div id="thumbnail-grid"
+                        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[550px] overflow-y-auto p-4 bg-gray-100 rounded-xl border-inner custom-scroll">
+                        <!-- Thumbs -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Split Controls -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+                    <h3 class="font-bold text-gray-900 border-b pb-4 mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-teal-600"></i> स्प्लिट विकल्प
+                    </h3>
+
+                    <div class="space-y-6">
+                        <!-- Option 1 -->
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-gray-800">सभी पेज अलग करें</label>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">प्रत्येक पेज की एक स्वतंत्र PDF फाइल
+                                बनेगी और एक ZIP में डाउनलोड होगी।</p>
+                            <button onclick="startSplitAll()" id="opt-all" disabled
+                                class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all disabled:opacity-40">
+                                <i class="fa-solid fa-file-zipper mr-2"></i> Split to ZIP
+                            </button>
+                        </div>
+
+                        <!-- Option 2 -->
+                        <div class="space-y-2 pt-4 border-t border-gray-100">
+                            <label class="text-sm font-bold text-gray-800">चुने हुए पेज निकालें</label>
+                            <p class="text-[11px] text-gray-500 leading-relaxed">ऊपर प्रिव्यू से पेज चुनें, उन्हें जोड़कर
+                                एक नई PDF बनेगी।</p>
+                            <button onclick="startExtract()" id="opt-extract" disabled
+                                class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all disabled:opacity-40">
+                                <i class="fa-solid fa-file-export mr-2"></i> Extract Pages
+                            </button>
+                        </div>
+
+                        <!-- Option 3 -->
+                        <div class="space-y-3 pt-4 border-t border-gray-100">
+                            <label class="text-sm font-bold text-gray-800">रेंज द्वारा स्प्लिट</label>
+                            <input type="text" id="range-val" placeholder="e.g. 1-3, 5-10"
+                                class="w-full border border-gray-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none bg-gray-50">
+                            <button onclick="startRangeSplit()" id="opt-range" disabled
+                                class="w-full bg-teal-600 hover:bg-teal-700 text-white py-2.5 rounded-lg font-bold text-sm shadow-sm transition-all disabled:opacity-40">
+                                <i class="fa-solid fa-arrows-split-up-and-left mr-2"></i> Split by Range
+                            </button>
+                        </div>
+
+                        <button onclick="location.reload()"
+                            class="w-full text-gray-400 hover:text-gray-600 text-xs font-bold uppercase pt-4 transition-colors">
+                            <i class="fa-solid fa-rotate mr-1"></i> Start Over
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- UI Overlay Loader -->
+    <div id="ui-loader"
+        class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[100] hidden flex-col items-center justify-center">
+        <div class="w-12 h-12 border-4 border-teal-100 border-t-teal-600 rounded-full animate-spin mb-4"></div>
+        <p class="font-bold text-teal-900" id="ui-msg">Working...</p>
+    </div>
+
+    <!-- 📄 Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">
+                &copy; 2023 Free Online Tools. <a href="../../pages/privacy.html"
+                    class="text-teal-600 hover:text-teal-500">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+            const appState = {
+                mainBuffer: null,
+                originalName: 'document',
+                totalPages: 0,
+                selectedSet: new Set()
+            };
+
+            const fileInput = document.getElementById('pdf-file');
+            const loader = document.getElementById('ui-loader');
+            const loaderMsg = document.getElementById('ui-msg');
+
+            const toggleLoader = (show, msg = "") => {
+                loaderMsg.innerText = msg;
+                loader.classList.toggle('hidden', !show);
+                loader.classList.toggle('flex', show);
+            };
+
+            // --- 1. File Selection & Buffer Handling ---
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file || file.type !== 'application/pdf') return;
+
+                appState.originalName = file.name.replace(".pdf", "");
+                toggleLoader(true, "Loading PDF Preview...");
+
+                try {
+                    // Store as ArrayBuffer once
+                    appState.mainBuffer = await file.arrayBuffer();
+
+                    // Always use a CLONE (.slice(0)) for PDF.js to prevent detachment
+                    const previewBuffer = appState.mainBuffer.slice(0);
+                    const pdf = await pdfjsLib.getDocument({ data: previewBuffer }).promise;
+
+                    appState.totalPages = pdf.numPages;
+                    document.getElementById('page-count-badge').innerText = `${appState.totalPages} Pages`;
+
+                    const grid = document.getElementById('thumbnail-grid');
+                    grid.innerHTML = '';
+                    appState.selectedSet.clear();
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const viewport = page.getViewport({ scale: 0.3 });
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        await page.render({ canvasContext: ctx, viewport }).promise;
+
+                        const card = document.createElement('div');
+                        card.className = "page-card p-2 bg-white rounded-lg shadow-sm relative cursor-pointer fade-in";
+                        card.dataset.idx = i;
+                        card.innerHTML = `
+                            <div class="select-icon absolute top-2 right-2 hidden w-6 h-6 bg-teal-600 text-white rounded-full items-center justify-center z-10 shadow-md">
+                                <i class="fa-solid fa-check text-xs"></i>
+                            </div>
+                            <img src="${canvas.toDataURL()}" class="w-full rounded border border-gray-100">
+                            <div class="text-center mt-2 text-[10px] font-bold text-gray-400">PAGE ${i}</div>
+                        `;
+
+                        card.onclick = () => {
+                            if (appState.selectedSet.has(i)) {
+                                appState.selectedSet.delete(i);
+                                card.classList.remove('selected');
+                            } else {
+                                appState.selectedSet.add(i);
+                                card.classList.add('selected');
+                            }
+                            document.getElementById('selection-label').innerText = `${appState.selectedSet.size} Selected`;
+                        };
+                        grid.appendChild(card);
+                    }
+
+                    document.getElementById('upload-container').classList.add('hidden');
+                    document.getElementById('preview-area').classList.remove('hidden');
+                    ['opt-all', 'opt-extract', 'opt-range'].forEach(id => document.getElementById(id).disabled = false);
+
+                } catch (err) {
+                    alert("Fatal Error: " + err.message);
+                    location.reload();
+                } finally {
+                    toggleLoader(false);
+                }
+            });
+
+            // --- 2. Action: Split All (ZIP) ---
+            window.startSplitAll = async () => {
+                toggleLoader(true, "Preparing ZIP file...");
+                try {
+                    const zip = new JSZip();
+                    // CRITICAL: Clone buffer before loading into PDFLib
+                    const currentBuffer = appState.mainBuffer.slice(0);
+                    const sourceDoc = await PDFLib.PDFDocument.load(currentBuffer);
+
+                    for (let i = 0; i < appState.totalPages; i++) {
+                        const newDoc = await PDFLib.PDFDocument.create();
+
+                        // --- यह हिस्सा जोड़ें ---
+                        newDoc.setTitle(`${appState.originalName} - Split Page`);
+                        newDoc.setAuthor('Free Online Tools');
+                        newDoc.setProducer('PDF Splitter Tool');
+                        newDoc.setCreator('Client-side PDF Library');
+                        // -----------------------
+
+                        // ... बाकी कोड वैसा ही रहेगा
+                        const [page] = await newDoc.copyPages(sourceDoc, [i]);
+                        newDoc.addPage(page);
+                        const bytes = await newDoc.save();
+                        zip.file(`${appState.originalName}_page_${i + 1}.pdf`, bytes);
+                    }
+
+                    const content = await zip.generateAsync({ type: 'blob' });
+                    saveBlob(content, `${appState.originalName}_split.zip`);
+                } catch (e) { alert("Split Error: " + e.message); }
+                finally { toggleLoader(false); }
+            };
+
+            // --- 3. Action: Extract Selected ---
+            window.startExtract = async () => {
+                if (appState.selectedSet.size === 0) return alert("Select at least one page.");
+                toggleLoader(true, "Extracting pages...");
+                try {
+                    const currentBuffer = appState.mainBuffer.slice(0);
+                    const sourceDoc = await PDFLib.PDFDocument.load(currentBuffer);
+                    const newDoc = await PDFLib.PDFDocument.create();
+
+                    const indices = Array.from(appState.selectedSet).sort((a, b) => a - b).map(n => n - 1);
+                    const copied = await newDoc.copyPages(sourceDoc, indices);
+                    copied.forEach(p => newDoc.addPage(p));
+
+                    const bytes = await newDoc.save();
+                    saveBlob(new Blob([bytes]), `${appState.originalName}_extracted.pdf`);
+                } catch (e) { alert("Extraction Error: " + e.message); }
+                finally { toggleLoader(false); }
+            };
+
+            // --- 4. Action: Range Split ---
+            window.startRangeSplit = async () => {
+                const input = document.getElementById('range-val').value;
+                if (!input) return alert("Please enter range (e.g., 1-5)");
+
+                toggleLoader(true, "Creating range PDFs...");
+                try {
+                    const zip = new JSZip();
+                    const currentBuffer = appState.mainBuffer.slice(0);
+                    const sourceDoc = await PDFLib.PDFDocument.load(currentBuffer);
+                    const ranges = input.split(",");
+
+                    for (let r of ranges) {
+                        const [s, e] = r.trim().split("-").map(Number);
+                        if (!s || !e || s > e || e > appState.totalPages) continue;
+
+                        const newDoc = await PDFLib.PDFDocument.create();
+                        const rangeIdx = [];
+                        for (let k = s - 1; k < e; k++) rangeIdx.push(k);
+
+                        const pages = await newDoc.copyPages(sourceDoc, rangeIdx);
+                        pages.forEach(p => newDoc.addPage(p));
+                        const bytes = await newDoc.save();
+                        zip.file(`${appState.originalName}_range_${s}-${e}.pdf`, bytes);
+                    }
+
+                    const zipBlob = await zip.generateAsync({ type: 'blob' });
+                    saveBlob(zipBlob, `${appState.originalName}_ranges.zip`);
+                } catch (e) { alert("Range Error: " + e.message); }
+                finally { toggleLoader(false); }
+            };
+
+            // Selection Helpers
+            window.handleSelectionAll = (bool) => {
+                const cards = document.querySelectorAll('.page-card');
+                cards.forEach(card => {
+                    const idx = parseInt(card.dataset.idx);
+                    if (bool) {
+                        appState.selectedSet.add(idx);
+                        card.classList.add('selected');
+                    } else {
+                        appState.selectedSet.delete(idx);
+                        card.classList.remove('selected');
+                    }
+                });
+                document.getElementById('selection-label').innerText = `${appState.selectedSet.size} Selected`;
+            };
+
+            const saveBlob = (blob, filename) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = filename; a.click();
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+            };
+
+        })();
+    </script>
+</body>
+
+</html>

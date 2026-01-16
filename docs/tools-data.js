@@ -2,8 +2,8 @@
  * TOOLS DATABASE - Single Source of Truth
  * AUTO-GENERATED from index.html toolsData
  * 
- * Generated: 2026-01-15T11:29:14.384Z
- * Total tools: 35
+ * Generated: 2026-01-16T05:51:41.692Z
+ * Total tools: 36
  * 
  * ⚠️  DO NOT EDIT MANUALLY - Run: node build-tools-data.js
  * 
@@ -93,6 +93,14 @@ const TOOLS_DATABASE = [
         icon: 'fa-file-pdf',
         title: 'PDF Merger',
         desc: 'Combine multiple PDF documents into a single file quickly.'
+    },
+    {
+        name: 'PDF Split & Extract',
+        url: 'tools/pdf/pdf-split.html',
+        cat: 'PDF',
+        icon: 'fa-file-export',
+        title: 'PDF Split & Extract',
+        desc: 'Split PDF into pages or extract specific pages securely.'
     },
     {
         name: 'PDF Compressor',
