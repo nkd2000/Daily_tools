@@ -39,6 +39,7 @@ The site is hosted using GitHub Pages from the `docs/` directory. All tools are 
 
 ### PDF Tools
 - **Image to PDF** - Convert images to PDF documents
+- **PDF to 4K Image** - Convert PDF pages to ultra-high-definition 4K images
 - **Merge PDF** - Combine multiple PDF files
 - **Passport Maker** - Create passport-sized photos
 - **PDF Compressor** - Compress PDF file sizes

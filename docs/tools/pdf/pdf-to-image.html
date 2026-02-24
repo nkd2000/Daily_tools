@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to 4K Image Converter | Free Online Tools</title>
+
+    <!-- 🔍 SEO & Meta Tags -->
+    <meta name="description" content="Convert each page of your PDF into ultra high‑definition 4K images directly in the browser. No upload, 100% client-side.">
+    <meta name="keywords" content="pdf to image, 4k image, pdf converter, pdf image, online pdf tool">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://nkd2000.github.io/Daily_tools/docs/tools/pdf/pdf-to-image.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PDF to 4K Image Converter | Free Online Tools">
+    <meta property="og:description" content="Convert PDF pages into 4K images in your browser. All processing stays local for privacy.">
+    <meta property="og:url" content="https://nkd2000.github.io/Daily_tools/docs/tools/pdf/pdf-to-image.html">
+    <meta property="og:image" content="https://nkd2000.github.io/Daily_tools/assets/og-default.svg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PDF to 4K Image Converter | Free Online Tools">
+    <meta name="twitter:description" content="Convert PDF pages into 4K images instantly in your browser.">
+
+    <!-- Author / Theme -->
+    <meta name="author" content="Free Online Tools">
+    <meta name="theme-color" content="#0ea5e9">
+
+    <!-- JSON-LD Organization/WebSite -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            { "@type": "Organization", "@id": "https://nkd2000.github.io/Daily_tools/#org", "name": "Free Online Tools", "url": "https://nkd2000.github.io/Daily_tools/", "logo": "https://nkd2000.github.io/Daily_tools/assets/og-default.svg" },
+            { "@type": "WebSite", "url": "https://nkd2000.github.io/Daily_tools/", "name": "Free Online Tools", "publisher": { "@id": "https://nkd2000.github.io/Daily_tools/#org" } }
+        ]
+    }
+    </script>
+
+    <!-- User's AdSense (if present on other pages) -->
+    <meta name="google-adsense-account" content="ca-pub-3793390054330330">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3793390054330330" crossorigin="anonymous"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- PDF.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- JSZip library for downloading all images as a single zip -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <style>
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        
+        /* Dropzone active state */
+        .dragover {
+            border-color: #3b82f6 !important;
+            background-color: #eff6ff !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-full font-sans selection:bg-blue-200 selection:text-blue-900">
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-file-image"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-gray-900">PDF2Image</span>
+                </div>
+                <div class="flex items-center gap-6 text-sm font-medium text-gray-500">
+                    <a href="../../index.html" class="hover:text-blue-600 transition">Home</a>
+                    <a href="https://jansuchnaforall.blogspot.com" target="_blank" class="hover:text-blue-600 transition">Blog</a>
+                    <a href="../../pages/contact.html" class="hover:text-blue-600 transition">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">PDF to <span class="text-blue-600">4K Image</span></h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">Upload your PDF document to convert each page into ultra-high-definition (3840px+) 4K images. All processing happens securely in your browser.</p>
+        </header>
+
+        <!-- Main Content -->
+        <section class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-10 mb-10">
+            
+            <!-- Error Message Container -->
+            <div id="error-container" class="hidden mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-3">
+                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span id="error-text" class="font-medium"></span>
+            </div>
+
+            <!-- Upload Area -->
+            <div id="dropzone" class="border-3 border-dashed border-slate-300 rounded-xl p-10 text-center transition-all duration-200 ease-in-out cursor-pointer hover:bg-slate-50 hover:border-blue-400 group">
+                <input type="file" id="file-input" class="hidden" accept="application/pdf">
+                
+                <div class="flex flex-col items-center justify-center space-y-4 pointer-events-none">
+                    <div class="p-4 bg-blue-50 text-blue-600 rounded-full group-hover:bg-blue-100 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xl font-semibold text-slate-700">Click to upload or drag and drop</p>
+                        <p class="text-sm text-slate-500 mt-2">Only PDF files are supported</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Processing Settings & Controls -->
+            <div id="processing-controls" class="hidden mt-8 border-t border-slate-100 pt-6">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <span class="text-slate-700 font-medium">Output Format:</span>
+                        <select id="image-format" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none">
+                            <option value="image/png">PNG (Lossless, Larger size)</option>
+                            <option value="image/jpeg">JPEG (High Quality, Smaller size)</option>
+                        </select>
+                    </div>
+                    
+                    <button id="convert-btn" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-0.5 focus:ring-4 focus:ring-blue-300 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        Convert to 4K
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress State -->
+            <div id="progress-container" class="hidden mt-8">
+                <div class="flex justify-between mb-2">
+                    <span id="progress-text" class="text-sm font-semibold text-blue-700">Processing page 1 of X...</span>
+                    <span id="progress-percentage" class="text-sm font-semibold text-blue-700">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-3.5">
+                    <div id="progress-bar" class="bg-blue-600 h-3.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-3 text-center">4K rendering requires high memory. Please keep this tab open.</p>
+            </div>
+        </section>
+
+        <!-- Results Area -->
+        <div id="results-area" class="hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-end mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Generated 4K Images</h2>
+                    <p class="text-slate-500 text-sm mt-1" id="results-subtitle">Ready to download</p>
+                </div>
+                <button id="download-all-btn" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-colors flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Download All (ZIP)
+                </button>
+            </div>
+            
+            <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Image cards will be injected here -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Hidden canvas used for rendering PDF -->
+    <canvas id="render-canvas" class="hidden"></canvas>
+
+    <script>
+        // Setup PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // DOM Elements
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const controlsDiv = document.getElementById('processing-controls');
+        const convertBtn = document.getElementById('convert-btn');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const resultsArea = document.getElementById('results-area');
+        const gallery = document.getElementById('gallery');
+        const downloadAllBtn = document.getElementById('download-all-btn');
+        const errorContainer = document.getElementById('error-container');
+        const errorText = document.getElementById('error-text');
+        const imageFormatSelect = document.getElementById('image-format');
+
+        // State variables
+        let currentPdf = null;
+        let originalFileName = "";
+        let generatedImages = []; // Array to hold objects with base64 data and filenames
+
+        // 4K Target Dimension (3840px is 4K UHD width)
+        const TARGET_4K_DIMENSION = 3840;
+
+        // Utility: Show Error
+        function showError(msg) {
+            errorText.textContent = msg;
+            errorContainer.classList.remove('hidden');
+            setTimeout(() => {
+                errorContainer.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Handle Drag & Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => {
+                dropzone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => {
+                dropzone.classList.remove('dragover');
+            }, false);
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        });
+
+        dropzone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length === 0) return;
+            const file = files[0];
+            
+            if (file.type !== 'application/pdf') {
+                showError('Please upload a valid PDF file.');
+                return;
+            }
+
+            originalFileName = file.name.replace(/\.pdf$/i, '');
+            dropzone.querySelector('p.text-xl').textContent = file.name;
+            dropzone.querySelector('p.text-sm').textContent = `Ready to convert (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            
+            // Read PDF immediately to ensure it's valid
+            const fileReader = new FileReader();
+            fileReader.onload = async function() {
+                const typedarray = new Uint8Array(this.result);
+                try {
+                    currentPdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+                    controlsDiv.classList.remove('hidden');
+                    resultsArea.classList.add('hidden');
+                    errorContainer.classList.add('hidden');
+                } catch (err) {
+                    showError('Could not read PDF. It might be corrupted or password protected.');
+                    console.error(err);
+                }
+            };
+            fileReader.readAsArrayBuffer(file);
+        }
+
+        // Handle Conversion Process
+        convertBtn.addEventListener('click', async () => {
+            if (!currentPdf) return;
+
+            // UI Updates
+            controlsDiv.classList.add('hidden');
+            progressContainer.classList.remove('hidden');
+            resultsArea.classList.add('hidden');
+            gallery.innerHTML = '';
+            generatedImages = [];
+            dropzone.classList.add('opacity-50', 'pointer-events-none');
+
+            const numPages = currentPdf.numPages;
+            const format = imageFormatSelect.value;
+            const fileExtension = format === 'image/png' ? 'png' : 'jpg';
+
+            try {
+                for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+                    // Update progress UI
+                    progressText.textContent = `Processing page ${pageNum} of ${numPages}...`;
+                    const percent = Math.round(((pageNum - 1) / numPages) * 100);
+                    progressBar.style.width = `${percent}%`;
+                    progressPercentage.textContent = `${percent}%`;
+
+                    const page = await currentPdf.getPage(pageNum);
+                    
+                    // --- 4K SCALING LOGIC ---
+                    // Get base viewport at 1.0 scale to determine original dimensions
+                    const baseViewport = page.getViewport({ scale: 1.0 });
+                    
+                    // Find the largest dimension (width or height)
+                    const maxDim = Math.max(baseViewport.width, baseViewport.height);
+                    
+                    // Calculate scale required to make the largest dimension equal to 3840px
+                    let scaleFor4K = TARGET_4K_DIMENSION / maxDim;
+                    
+                    // Guarantee a minimum scale of 3 for quality, cap at 10 to avoid browser crashing out of memory
+                    scaleFor4K = Math.max(3, Math.min(scaleFor4K, 10));
+
+                    const viewport = page.getViewport({ scale: scaleFor4K });
+
+                    // Prepare Canvas
+                    const canvas = document.getElementById('render-canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+
+                    // Render PDF page into canvas context
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    
+                    await page.render(renderContext).promise;
+
+                    // Convert Canvas to Image Data URL (Quality 1.0 for JPEGs)
+                    const imgData = canvas.toDataURL(format, 1.0);
+                    const filename = `${originalFileName}_page_${pageNum}_4K.${fileExtension}`;
+                    
+                    // Save to our array
+                    generatedImages.push({
+                        dataUrl: imgData,
+                        filename: filename,
+                        width: viewport.width,
+                        height: viewport.height
+                    });
+
+                    // Update DOM incrementally
+                    createImageCard(imgData, filename, viewport.width, viewport.height, pageNum);
+
+                    // A brief pause to let UI breathe and browser clear memory slightly
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+
+                // Finalize Progress UI
+                progressBar.style.width = '100%';
+                progressPercentage.textContent = '100%';
+                progressText.textContent = 'Conversion Complete!';
+                
+                setTimeout(() => {
+                    progressContainer.classList.add('hidden');
+                    controlsDiv.classList.remove('hidden');
+                    resultsArea.classList.remove('hidden');
+                    dropzone.classList.remove('opacity-50', 'pointer-events-none');
+                    document.getElementById('results-subtitle').textContent = `Successfully extracted ${numPages} images at 4K resolution.`;
+                }, 800);
+
+            } catch (err) {
+                showError('An error occurred during rendering. The PDF might be too complex or out of memory.');
+                console.error(err);
+                progressContainer.classList.add('hidden');
+                dropzone.classList.remove('opacity-50', 'pointer-events-none');
+            }
+        });
+
+        // Create individual card in the gallery
+        function createImageCard(dataUrl, filename, width, height, pageNum) {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col group hover:shadow-md transition-shadow';
+            
+            // Image Preview wrapper
+            const imgWrapper = document.createElement('div');
+            imgWrapper.className = 'w-full aspect-[3/4] bg-slate-100 flex items-center justify-center overflow-hidden border-b border-slate-100 relative';
+            
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            img.className = 'max-w-full max-h-full object-contain';
+            img.alt = `Page ${pageNum}`;
+            
+            // Resolution badge
+            const badge = document.createElement('span');
+            badge.className = 'absolute top-2 right-2 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm';
+            badge.textContent = `${Math.round(width)}x${Math.round(height)}`;
+
+            imgWrapper.appendChild(img);
+            imgWrapper.appendChild(badge);
+
+            // Card body
+            const body = document.createElement('div');
+            body.className = 'p-4 flex flex-col flex-grow';
+            
+            const title = document.createElement('h3');
+            title.className = 'font-semibold text-slate-800 text-sm mb-1 truncate';
+            title.textContent = `Page ${pageNum}`;
+
+            const resolutionText = document.createElement('p');
+            resolutionText.className = 'text-xs text-slate-500 mb-4';
+            resolutionText.textContent = '4K UHD Resolution';
+
+            const dlBtn = document.createElement('button');
+            dlBtn.className = 'mt-auto w-full bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-sm font-medium py-2 rounded-lg transition-colors flex justify-center items-center gap-2';
+            dlBtn.innerHTML = `
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Download
+            `;
+            
+            dlBtn.addEventListener('click', () => {
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+
+            body.appendChild(title);
+            body.appendChild(resolutionText);
+            body.appendChild(dlBtn);
+
+            card.appendChild(imgWrapper);
+            card.appendChild(body);
+            gallery.appendChild(card);
+        }
+
+        // Download All (ZIP) functionality
+        downloadAllBtn.addEventListener('click', async () => {
+            if (generatedImages.length === 0) return;
+
+            // Change button state to loading
+            const originalText = downloadAllBtn.innerHTML;
+            downloadAllBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Zipping...
+            `;
+            downloadAllBtn.disabled = true;
+
+            try {
+                const zip = new JSZip();
+                
+                // Add all images to the zip file
+                generatedImages.forEach((img, index) => {
+                    // Extract base64 data, removing the Data URI scheme prefix (e.g. "data:image/png;base64,")
+                    const base64Data = img.dataUrl.split(',')[1];
+                    zip.file(img.filename, base64Data, { base64: true });
+                });
+
+                // Generate the zip file asynchronously
+                const content = await zip.generateAsync({ type: 'blob' });
+                
+                // Create a temporary link to download the zip
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(content);
+                a.download = `${originalFileName}_4K_Images.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+
+            } catch (err) {
+                showError('Error creating ZIP file.');
+                console.error(err);
+            } finally {
+                // Restore button state
+                downloadAllBtn.innerHTML = originalText;
+                downloadAllBtn.disabled = false;
+            }
+        });
+
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-500">
+                &copy; 2023 Free Online Tools. <a href="../../pages/privacy.html" class="text-teal-600 hover:text-teal-500">Privacy Policy</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

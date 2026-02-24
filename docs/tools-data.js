@@ -2,8 +2,8 @@
  * TOOLS DATABASE - Single Source of Truth
  * AUTO-GENERATED from index.html toolsData
  * 
- * Generated: 2026-01-16T05:51:41.692Z
- * Total tools: 36
+ * Generated: 2026-02-24T10:33:55.680Z
+ * Total tools: 37
  * 
  * ⚠️  DO NOT EDIT MANUALLY - Run: node build-tools-data.js
  * 
@@ -125,6 +125,14 @@ const TOOLS_DATABASE = [
         icon: 'fa-images',
         title: 'Image to PDF',
         desc: 'Convert photos (JPG, PNG) into a single PDF document.'
+    },
+    {
+        name: 'PDF to 4K Image',
+        url: 'tools/pdf/pdf-to-image.html',
+        cat: 'PDF',
+        icon: 'fa-image',
+        title: 'PDF to 4K Image',
+        desc: 'Convert PDF pages into ultra-high-definition 4K images in-browser.'
     },
     {
         name: 'VCF to Excel',
