@@ -106,7 +106,7 @@
         <!-- Header -->
         <header class="text-center mb-10">
             <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">PDF to <span class="text-blue-600">4K Image</span></h1>
-            <p class="text-lg text-slate-600 max-w-2xl mx-auto">Upload your PDF document and choose a target resolution (1080p–8K) to convert each page into high-definition images. All processing happens securely in your browser.</p>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">Upload your PDF document, select specific pages and choose a target resolution (1080p–8K) to convert pages into high-definition images. All processing happens securely in your browser.</p>
         </header>
 
         <!-- Main Content -->
@@ -116,6 +116,15 @@
             <div id="error-container" class="hidden mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-3">
                 <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <span id="error-text" class="font-medium"></span>
+            </div>
+
+            <!-- Password Prompt (shows when PDF is encrypted) -->
+            <div id="password-container" class="hidden mb-6">
+                <label class="block text-slate-700 font-medium mb-2">Password required</label>
+                <div class="flex gap-2">
+                    <input type="password" id="password-input" class="flex-grow bg-slate-50 border border-slate-300 rounded-lg p-2" placeholder="Enter PDF password">
+                    <button id="password-submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg">Unlock</button>
+                </div>
             </div>
 
             <!-- Upload Area -->
@@ -165,6 +174,13 @@
                         <span id="convert-label">Convert</span>
                     </button>
                 </div>
+            </div>
+
+            <!-- Page selection -->
+            <div id="page-selection" class="hidden mt-6 border-t border-slate-100 pt-6">
+                <label for="page-input" class="text-slate-700 font-medium mb-2 block">Pages to convert:</label>
+                <input type="text" id="page-input" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2" placeholder="e.g. 1,3-5">
+                <p class="text-xs text-slate-500 mt-1">Leave empty for all pages. Use comma-separated numbers and ranges.</p>
             </div>
 
             <!-- Progress State -->
@@ -226,11 +242,17 @@
         const qualityContainer = document.getElementById('quality-container');
         const qualityRange = document.getElementById('quality-range');
         const qualityValue = document.getElementById('quality-value');
+        const passwordContainer = document.getElementById('password-container');
+        const passwordInput = document.getElementById('password-input');
+        const passwordSubmit = document.getElementById('password-submit');
+        const pageSelection = document.getElementById('page-selection');
+        const pageInput = document.getElementById('page-input');
 
         // State variables
         let currentPdf = null;
         let originalFileName = "";
         let generatedImages = []; // Array to hold objects with base64 data and filenames
+        let lastPdfData = null; // used for password retries
 
         // Utility: Show Error
         function showError(msg) {
@@ -239,6 +261,53 @@
             setTimeout(() => {
                 errorContainer.classList.add('hidden');
             }, 5000);
+        }
+
+        function parsePageRanges(str, max) {
+            if (!str || str.trim() === '') return Array.from({ length: max }, (_, i) => i + 1);
+            const pages = new Set();
+            const parts = str.split(',');
+            parts.forEach(p => {
+                const range = p.split('-').map(x => parseInt(x.trim(), 10));
+                if (range.length === 1 && !isNaN(range[0])) {
+                    if (range[0] >= 1 && range[0] <= max) pages.add(range[0]);
+                } else if (range.length === 2) {
+                    let [start, end] = range;
+                    if (isNaN(start) || isNaN(end)) return;
+                    if (start < 1) start = 1;
+                    if (end > max) end = max;
+                    for (let i = start; i <= end; i++) pages.add(i);
+                }
+            });
+            return Array.from(pages).sort((a, b) => a - b);
+        }
+
+        async function attemptLoadPdf(data, password = null) {
+            try {
+                const loadingTask = pdfjsLib.getDocument({ data, password });
+                currentPdf = await loadingTask.promise;
+
+                // success
+                controlsDiv.classList.remove('hidden');
+                resultsArea.classList.add('hidden');
+                errorContainer.classList.add('hidden');
+                passwordContainer.classList.add('hidden');
+
+                // prepare page selection UI
+                pageSelection.classList.remove('hidden');
+                pageInput.value = '';
+                pageInput.placeholder = `1-${currentPdf.numPages}`;
+
+            } catch (err) {
+                if (err && (err.name === 'PasswordException' || /password/i.test(err.message))) {
+                    showError('PDF is password protected. Please enter password.');
+                    passwordContainer.classList.remove('hidden');
+                } else {
+                    showError('Could not read PDF. It might be corrupted or password protected.');
+                    console.error(err);
+                }
+                currentPdf = null;
+            }
         }
 
         // Persist settings
@@ -328,6 +397,19 @@
             saveSettings();
         });
 
+        // password submit
+        passwordSubmit.addEventListener('click', () => {
+            const pwd = passwordInput.value;
+            if (lastPdfData) {
+                attemptLoadPdf(lastPdfData, pwd);
+            }
+        });
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                passwordSubmit.click();
+            }
+        });
+
         // load preferences
         loadSettings();
         updateConvertLabel();
@@ -335,6 +417,9 @@
         function handleFiles(files) {
             if (files.length === 0) return;
             const file = files[0];
+            
+            // hide any previous password prompt
+            passwordContainer.classList.add('hidden');
             
             if (file.type !== 'application/pdf') {
                 showError('Please upload a valid PDF file.');
@@ -344,18 +429,17 @@
             originalFileName = file.name.replace(/\.pdf$/i, '');
             dropzone.querySelector('p.text-xl').textContent = file.name;
             dropzone.querySelector('p.text-sm').textContent = `Ready to convert (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            pageSelection.classList.add('hidden');
             
             // Read PDF immediately to ensure it's valid
             const fileReader = new FileReader();
             fileReader.onload = async function() {
                 const typedarray = new Uint8Array(this.result);
+                lastPdfData = typedarray;
+                passwordInput.value = '';
                 try {
-                    currentPdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
-                    controlsDiv.classList.remove('hidden');
-                    resultsArea.classList.add('hidden');
-                    errorContainer.classList.add('hidden');
+                    await attemptLoadPdf(typedarray);
                 } catch (err) {
-                    showError('Could not read PDF. It might be corrupted or password protected.');
                     console.error(err);
                 }
             };
@@ -368,13 +452,13 @@
 
             // UI Updates
             controlsDiv.classList.add('hidden');
+            pageSelection.classList.add('hidden');
             progressContainer.classList.remove('hidden');
             resultsArea.classList.add('hidden');
             gallery.innerHTML = '';
             generatedImages = [];
             dropzone.classList.add('opacity-50', 'pointer-events-none');
 
-            const numPages = currentPdf.numPages;
             const format = imageFormatSelect.value;
             const fileExtension = format === 'image/png' ? 'png' : 'jpg';
 
@@ -382,11 +466,16 @@
             const targetDim = parseInt(resolutionSelect.value, 10) || 3840;
             const jpegQuality = format === 'image/jpeg' ? parseFloat(qualityRange.value) : 1.0;
 
+            const pagesToProcess = parsePageRanges(pageInput.value, currentPdf.numPages);
+            let total = pagesToProcess.length;
+
             try {
-                for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+                for (let idx = 0; idx < total; idx++) {
+                    const pageNum = pagesToProcess[idx];
+
                     // Update progress UI
-                    progressText.textContent = `Processing page ${pageNum} of ${numPages}...`;
-                    const percent = Math.round(((pageNum - 1) / numPages) * 100);
+                    progressText.textContent = `Processing page ${idx+1} of ${total} (original ${pageNum})...`;
+                    const percent = Math.round((idx / total) * 100);
                     progressBar.style.width = `${percent}%`;
                     progressPercentage.textContent = `${percent}%`;
 
@@ -450,7 +539,7 @@
                     controlsDiv.classList.remove('hidden');
                     resultsArea.classList.remove('hidden');
                     dropzone.classList.remove('opacity-50', 'pointer-events-none');
-                    document.getElementById('results-subtitle').textContent = `Successfully extracted ${numPages} images at ${targetDim}‑px resolution.`;
+                    document.getElementById('results-subtitle').textContent = `Successfully extracted ${total} images at ${targetDim}‑px resolution.`;
                     document.getElementById('results-title').textContent = `Generated ${targetDim}-px Images`;
                 }, 800);
 
