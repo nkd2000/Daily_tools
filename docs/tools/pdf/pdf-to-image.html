@@ -106,7 +106,7 @@
         <!-- Header -->
         <header class="text-center mb-10">
             <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">PDF to <span class="text-blue-600">4K Image</span></h1>
-            <p class="text-lg text-slate-600 max-w-2xl mx-auto">Upload your PDF document to convert each page into ultra-high-definition (3840px+) 4K images. All processing happens securely in your browser.</p>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">Upload your PDF document and choose a target resolution (1080p–8K) to convert each page into high-definition images. All processing happens securely in your browser.</p>
         </header>
 
         <!-- Main Content -->
@@ -145,10 +145,24 @@
                             <option value="image/jpeg">JPEG (High Quality, Smaller size)</option>
                         </select>
                     </div>
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <span class="text-slate-700 font-medium">Resolution:</span>
+                        <select id="resolution-select" class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none">
+                            <option value="1920">1080p</option>
+                            <option value="2560">2K</option>
+                            <option value="3840" selected>4K (default)</option>
+                            <option value="7680">8K</option>
+                        </select>
+                    </div>
+                    <div id="quality-container" class="flex items-center gap-3 w-full md:w-auto hidden">
+                        <span class="text-slate-700 font-medium">JPEG Quality:</span>
+                        <input type="range" id="quality-range" min="0.1" max="1" step="0.1" value="1" class="w-32">
+                        <span id="quality-value" class="text-sm text-slate-600">100%</span>
+                    </div>
                     
                     <button id="convert-btn" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-0.5 focus:ring-4 focus:ring-blue-300 flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        Convert to 4K
+                        <span id="convert-label">Convert</span>
                     </button>
                 </div>
             </div>
@@ -162,7 +176,7 @@
                 <div class="w-full bg-slate-200 rounded-full h-3.5">
                     <div id="progress-bar" class="bg-blue-600 h-3.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
-                <p class="text-xs text-slate-500 mt-3 text-center">4K rendering requires high memory. Please keep this tab open.</p>
+                <p class="text-xs text-slate-500 mt-3 text-center">High‑resolution rendering may use a lot of memory. Please keep this tab open during conversion.</p>
             </div>
         </section>
 
@@ -170,7 +184,7 @@
         <div id="results-area" class="hidden">
             <div class="flex flex-col sm:flex-row justify-between items-end mb-6 gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-slate-800">Generated 4K Images</h2>
+                    <h2 class="text-2xl font-bold text-slate-800" id="results-title">Generated Images</h2>
                     <p class="text-slate-500 text-sm mt-1" id="results-subtitle">Ready to download</p>
                 </div>
                 <button id="download-all-btn" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-colors flex items-center gap-2">
@@ -208,14 +222,15 @@
         const errorContainer = document.getElementById('error-container');
         const errorText = document.getElementById('error-text');
         const imageFormatSelect = document.getElementById('image-format');
+        const resolutionSelect = document.getElementById('resolution-select');
+        const qualityContainer = document.getElementById('quality-container');
+        const qualityRange = document.getElementById('quality-range');
+        const qualityValue = document.getElementById('quality-value');
 
         // State variables
         let currentPdf = null;
         let originalFileName = "";
         let generatedImages = []; // Array to hold objects with base64 data and filenames
-
-        // 4K Target Dimension (3840px is 4K UHD width)
-        const TARGET_4K_DIMENSION = 3840;
 
         // Utility: Show Error
         function showError(msg) {
@@ -224,6 +239,42 @@
             setTimeout(() => {
                 errorContainer.classList.add('hidden');
             }, 5000);
+        }
+
+        // Persist settings
+        function saveSettings() {
+            localStorage.setItem('pdfToImageFormat', imageFormatSelect.value);
+            localStorage.setItem('pdfToImageResolution', resolutionSelect.value);
+            localStorage.setItem('pdfToImageQuality', qualityRange.value);
+        }
+
+        function loadSettings() {
+            const fmt = localStorage.getItem('pdfToImageFormat');
+            const res = localStorage.getItem('pdfToImageResolution');
+            const q = localStorage.getItem('pdfToImageQuality');
+            if (fmt) imageFormatSelect.value = fmt;
+            if (res) resolutionSelect.value = res;
+            if (q) qualityRange.value = q;
+            updateQualityDisplay();
+            toggleQualityContainer();
+        }
+
+        function toggleQualityContainer() {
+            if (imageFormatSelect.value === 'image/jpeg') {
+                qualityContainer.classList.remove('hidden');
+            } else {
+                qualityContainer.classList.add('hidden');
+            }
+        }
+
+        function updateQualityDisplay() {
+            qualityValue.textContent = `${Math.round(qualityRange.value * 100)}%`;
+        }
+
+        function updateConvertLabel() {
+            const resText = resolutionSelect.options[resolutionSelect.selectedIndex].text;
+            const fmtText = imageFormatSelect.value === 'image/png' ? 'PNG' : 'JPEG';
+            document.getElementById('convert-label').textContent = `Convert (${resText}, ${fmtText})`;
         }
 
         // Handle Drag & Drop
@@ -261,6 +312,25 @@
         fileInput.addEventListener('change', function() {
             handleFiles(this.files);
         });
+
+        // control listeners and persistence
+        imageFormatSelect.addEventListener('change', () => {
+            toggleQualityContainer();
+            updateConvertLabel();
+            saveSettings();
+        });
+        resolutionSelect.addEventListener('change', () => {
+            updateConvertLabel();
+            saveSettings();
+        });
+        qualityRange.addEventListener('input', () => {
+            updateQualityDisplay();
+            saveSettings();
+        });
+
+        // load preferences
+        loadSettings();
+        updateConvertLabel();
 
         function handleFiles(files) {
             if (files.length === 0) return;
@@ -308,6 +378,10 @@
             const format = imageFormatSelect.value;
             const fileExtension = format === 'image/png' ? 'png' : 'jpg';
 
+            // read user options
+            const targetDim = parseInt(resolutionSelect.value, 10) || 3840;
+            const jpegQuality = format === 'image/jpeg' ? parseFloat(qualityRange.value) : 1.0;
+
             try {
                 for (let pageNum = 1; pageNum <= numPages; pageNum++) {
                     // Update progress UI
@@ -318,20 +392,20 @@
 
                     const page = await currentPdf.getPage(pageNum);
                     
-                    // --- 4K SCALING LOGIC ---
+                    // --- SCALING LOGIC ---
                     // Get base viewport at 1.0 scale to determine original dimensions
                     const baseViewport = page.getViewport({ scale: 1.0 });
                     
                     // Find the largest dimension (width or height)
                     const maxDim = Math.max(baseViewport.width, baseViewport.height);
                     
-                    // Calculate scale required to make the largest dimension equal to 3840px
-                    let scaleFor4K = TARGET_4K_DIMENSION / maxDim;
+                    // Calculate scale required to make the largest dimension equal to chosen targetDim
+                    let scale = targetDim / maxDim;
                     
-                    // Guarantee a minimum scale of 3 for quality, cap at 10 to avoid browser crashing out of memory
-                    scaleFor4K = Math.max(3, Math.min(scaleFor4K, 10));
+                    // Guarantee a minimum scale of 1 for quality, cap at 10 to avoid browser crashing out of memory
+                    scale = Math.max(1, Math.min(scale, 10));
 
-                    const viewport = page.getViewport({ scale: scaleFor4K });
+                    const viewport = page.getViewport({ scale: scale });
 
                     // Prepare Canvas
                     const canvas = document.getElementById('render-canvas');
@@ -347,9 +421,9 @@
                     
                     await page.render(renderContext).promise;
 
-                    // Convert Canvas to Image Data URL (Quality 1.0 for JPEGs)
-                    const imgData = canvas.toDataURL(format, 1.0);
-                    const filename = `${originalFileName}_page_${pageNum}_4K.${fileExtension}`;
+                    // Convert Canvas to Image Data URL (use user-specified JPEG quality)
+                    const imgData = canvas.toDataURL(format, jpegQuality);
+                    const filename = `${originalFileName}_page_${pageNum}_${targetDim}p.${fileExtension}`;
                     
                     // Save to our array
                     generatedImages.push({
@@ -376,7 +450,8 @@
                     controlsDiv.classList.remove('hidden');
                     resultsArea.classList.remove('hidden');
                     dropzone.classList.remove('opacity-50', 'pointer-events-none');
-                    document.getElementById('results-subtitle').textContent = `Successfully extracted ${numPages} images at 4K resolution.`;
+                    document.getElementById('results-subtitle').textContent = `Successfully extracted ${numPages} images at ${targetDim}‑px resolution.`;
+                    document.getElementById('results-title').textContent = `Generated ${targetDim}-px Images`;
                 }, 800);
 
             } catch (err) {
@@ -419,7 +494,7 @@
 
             const resolutionText = document.createElement('p');
             resolutionText.className = 'text-xs text-slate-500 mb-4';
-            resolutionText.textContent = '4K UHD Resolution';
+            resolutionText.textContent = `${Math.round(width)}×${Math.round(height)} px`;
 
             const dlBtn = document.createElement('button');
             dlBtn.className = 'mt-auto w-full bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-sm font-medium py-2 rounded-lg transition-colors flex justify-center items-center gap-2';
