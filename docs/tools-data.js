@@ -2,8 +2,8 @@
  * TOOLS DATABASE - Single Source of Truth
  * AUTO-GENERATED from index.html toolsData
  * 
- * Generated: 2026-02-24T10:33:55.680Z
- * Total tools: 37
+ * Generated: 2026-04-18T11:40:15.904Z
+ * Total tools: 38
  * 
  * ⚠️  DO NOT EDIT MANUALLY - Run: node build-tools-data.js
  * 
@@ -309,6 +309,14 @@ const TOOLS_DATABASE = [
         icon: 'fa-keyboard',
         title: 'Typing Speed Test',
         desc: 'Check your WPM and Accuracy with this typing game.'
+    },
+    {
+        name: 'MP4 to MP3 Converter',
+        url: 'tools/converter/mp4-to-mp3-converter.html',
+        cat: 'Converter',
+        icon: 'fa-music',
+        title: 'MP4 to MP3 Converter',
+        desc: 'Convert MP4 video files to MP3 audio format instantly.'
     }
 ];
 

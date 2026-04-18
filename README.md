@@ -14,6 +14,7 @@ The site is hosted using GitHub Pages from the `docs/` directory. All tools are 
 
 ### Converter Tools
 - **VFC to Excel Converter** - Convert VFC files to Excel format
+- **MP4 to MP3 Converter** - Convert MP4 video files to MP3 audio format
 
 ### Developer Tools
 - **Code Minifier** - Minify your code for production
