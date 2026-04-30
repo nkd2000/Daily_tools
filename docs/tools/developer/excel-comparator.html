@@ -205,22 +205,41 @@
         let workbooks = { 1: null, 2: null };
         let sheetHeaders = { 1: [], 2: [] }; // Column headers store karne ke liye
 
+        const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB limit
+
         // File upload handle karein
         function handleFileUpload(event, fileNum) {
             const file = event.target.files[0];
             if (!file) return;
 
+            if (file.size > MAX_FILE_SIZE) {
+                alert(`File bahut bada hai (${(file.size/1024/1024).toFixed(2)}MB). Maximum 50MB allowed.`);
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const data = new Uint8Array(e.target.result);
+                    // Verify it's actually an Excel file by checking magic bytes
+                    if (data.length < 8 || 
+                        !(data[0] === 0x50 && data[1] === 0x4B) && // ZIP/XLSX signature
+                        !(data[0] === 0xD0 && data[1] === 0xCF)) { // XLS signature
+                        throw new Error("Invalid file format");
+                    }
                     const workbook = XLSX.read(data, {type: 'array'});
                     workbooks[fileNum] = workbook;
                     populateSheetDropdown(fileNum);
                     checkReadyState();
                 } catch (error) {
-                    alert(`File ${fileNum} read karne mein error aayi. Kripya valid Excel/CSV file chunein.`);
-                    console.error(error);
+                    let userMessage = "Unknown error occurred";
+                    if (error.message.includes("Unsupported file")) {
+                        userMessage = "This Excel file format is not supported. Please save as .xlsx or .xls";
+                    } else if (error.message.includes("Invalid or corrupted")) {
+                        userMessage = "The Excel file appears to be corrupted. Please check the file and try again.";
+                    }
+                    alert(`File ${fileNum} processing failed: ${userMessage}`);
+                    console.error("File processing error:", error);
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -385,6 +404,14 @@
                 // Sheets ko 2D array mein badlein
                 const data1 = XLSX.utils.sheet_to_json(sheet1, {header: 1, defval: ""});
                 const data2 = XLSX.utils.sheet_to_json(sheet2, {header: 1, defval: ""});
+
+                // Check data size before processing
+                const totalCells = Math.max(data1.length * data1[0]?.length || 0, data2.length * data2[0]?.length || 0);
+                if (totalCells > 100000) { // 100K cells limit
+                    if (!confirm(`This comparison involves ${totalCells.toLocaleString()} cells. It may be slow. Continue?`)) {
+                        return;
+                    }
+                }
 
                 const mode = document.getElementById('compareMode').value;
                 const scopeInput = document.getElementById('scopeInput').value.trim().toUpperCase();
