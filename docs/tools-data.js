@@ -2,8 +2,8 @@
  * TOOLS DATABASE - Single Source of Truth
  * AUTO-GENERATED from index.html toolsData
  * 
- * Generated: 2026-04-18T11:40:15.904Z
- * Total tools: 38
+ * Generated: 2026-04-30T07:16:00.022Z
+ * Total tools: 39
  * 
  * ⚠️  DO NOT EDIT MANUALLY - Run: node build-tools-data.js
  * 
@@ -237,6 +237,14 @@ const TOOLS_DATABASE = [
         icon: 'fa-code-compare',
         title: 'Text Diff Checker',
         desc: 'Compare code/text differences with syntax highlighting and live preview.'
+    },
+    {
+        name: 'Excel Comparator',
+        url: 'tools/developer/excel-comparator.html',
+        cat: 'Dev',
+        icon: 'fa-table-columns',
+        title: 'Excel Comparator',
+        desc: 'Compare two Excel files side-by-side and identify differences.'
     },
     {
         name: 'Resume Builder',

@@ -20,6 +20,7 @@ The site is hosted using GitHub Pages from the `docs/` directory. All tools are 
 - **Code Minifier** - Minify your code for production
 - **JSON Formatter** - Format and validate JSON data
 - **Text Diff Checker** - Compare text differences
+- **Excel Comparator** - Compare two Excel files side-by-side
 
 ### Finance Tools
 - **Discount Calculator** - Calculate discounts and savings
