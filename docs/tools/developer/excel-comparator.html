@@ -76,10 +76,29 @@
         <header class="text-center space-y-2">
             <h1 class="text-3xl font-bold text-slate-900">Excel Compare Tool</h1>
             <p class="text-slate-500">Do Excel files ko browser mein compare karein. Aapka data hamesha secure aur private rahega.</p>
+            <div class="text-xs text-slate-400 mt-2">
+                <span class="font-medium">Keyboard Shortcuts:</span> 
+                <kbd class="px-1 py-0.5 bg-slate-200 rounded text-xs">Ctrl+E</kbd> Export • 
+                <kbd class="px-1 py-0.5 bg-slate-200 rounded text-xs">Ctrl+F</kbd> Search • 
+                <kbd class="px-1 py-0.5 bg-slate-200 rounded text-xs">Ctrl+S</kbd> Statistics • 
+                <kbd class="px-1 py-0.5 bg-slate-200 rounded text-xs">←→</kbd> Navigate Pages • 
+                <kbd class="px-1 py-0.5 bg-slate-200 rounded text-xs">Esc</kbd> Close Panels
+            </div>
         </header>
 
         <!-- Main Configuration Area -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <!-- Progress Indicator -->
+            <div id="progressContainer" class="mb-4 hidden">
+                <div class="flex items-center gap-3">
+                    <div class="flex-1">
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+                            <div id="progressBar" class="bg-teal-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <span id="progressText" class="text-sm text-slate-600">Processing...</span>
+                </div>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
                 <!-- File 1 Section -->
@@ -176,6 +195,19 @@
             <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                 <h2 class="text-xl font-bold text-slate-800">Comparison Results</h2>
                 
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="exportResults()" id="exportBtn" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-download mr-1"></i>Export Results
+                    </button>
+                    <button onclick="toggleSearch()" id="searchBtn" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-search mr-1"></i>Search/Filter
+                    </button>
+                    <button onclick="showStatistics()" id="statsBtn" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-chart-bar mr-1"></i>Statistics
+                    </button>
+                </div>
+                
                 <!-- Legend -->
                 <div class="flex flex-wrap gap-3 text-sm">
                     <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-white border border-slate-300 inline-block"></span> Match</div>
@@ -185,9 +217,45 @@
                 </div>
             </div>
 
-            <!-- Stats -->
-            <div id="statsBox" class="mb-4 text-sm text-slate-600 bg-slate-50 p-3 rounded-md border border-slate-200">
-                <!-- JS se populate hoga -->
+            <!-- Search/Filter Panel (Hidden by default) -->
+            <div id="searchPanel" class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-md hidden">
+                <div class="flex flex-col sm:flex-row gap-4 items-end">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Search in Results</label>
+                        <input type="text" id="searchInput" placeholder="Search for any text in the comparison results..." 
+                               class="w-full border border-slate-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" 
+                               oninput="filterResults()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Filter by Type</label>
+                        <select id="filterType" class="border border-slate-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" onchange="filterResults()">
+                            <option value="all">All Differences</option>
+                            <option value="matches">Only Matches</option>
+                            <option value="added">Only Added (File 2)</option>
+                            <option value="removed">Only Removed (File 1)</option>
+                            <option value="modified">Only Modified</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="clearFilters()" class="px-3 py-2 bg-slate-500 hover:bg-slate-600 text-white text-sm font-medium rounded-md transition-colors">
+                            Clear Filters
+                        </button>
+                        <button onclick="toggleSearch()" class="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white text-sm font-medium rounded-md transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Panel (Hidden by default) -->
+            <div id="statisticsPanel" class="mb-4 p-4 bg-purple-50 border border-purple-200 rounded-md hidden">
+                <h3 class="text-lg font-semibold text-purple-800 mb-3">Detailed Statistics</h3>
+                <div id="detailedStats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Stats will be populated by JavaScript -->
+                </div>
+                <button onclick="showStatistics()" class="mt-3 px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white text-sm font-medium rounded-md transition-colors">
+                    Close Statistics
+                </button>
             </div>
 
             <!-- Table Container -->
@@ -206,6 +274,12 @@
         let sheetHeaders = { 1: [], 2: [] }; // Column headers store karne ke liye
 
         const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB limit
+        
+        // Pagination state
+        let currentPage = 1;
+        const rowsPerPage = 50; // Har page pe 50 rows
+        let totalRows = 0;
+        let comparisonData = null; // Full comparison data store karne ke liye
 
         // File upload handle karein
         function handleFileUpload(event, fileNum) {
@@ -217,9 +291,14 @@
                 return;
             }
 
+            // Show progress
+            showProgress('Reading file...', 10);
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
+                    showProgress('Parsing Excel data...', 30);
+                    
                     const data = new Uint8Array(e.target.result);
                     // Verify it's actually an Excel file by checking magic bytes
                     if (data.length < 8 || 
@@ -227,11 +306,20 @@
                         !(data[0] === 0xD0 && data[1] === 0xCF)) { // XLS signature
                         throw new Error("Invalid file format");
                     }
+                    
+                    showProgress('Processing workbook...', 60);
                     const workbook = XLSX.read(data, {type: 'array'});
                     workbooks[fileNum] = workbook;
+                    
+                    showProgress('Extracting sheet information...', 80);
                     populateSheetDropdown(fileNum);
                     checkReadyState();
+                    
+                    showProgress('Complete!', 100);
+                    setTimeout(() => hideProgress(), 500);
+                    
                 } catch (error) {
+                    hideProgress();
                     let userMessage = "Unknown error occurred";
                     if (error.message.includes("Unsupported file")) {
                         userMessage = "This Excel file format is not supported. Please save as .xlsx or .xls";
@@ -390,6 +478,11 @@
         // Mukhya Comparison Logic
         function compareFiles() {
             try {
+                // Reset pagination state for new comparison
+                currentPage = 1;
+                comparisonData = null;
+                totalRows = 0;
+                
                 const sheet1Name = document.getElementById('sheet1').value;
                 const sheet2Name = document.getElementById('sheet2').value;
                 
@@ -438,7 +531,19 @@
                         return;
                     }
                     
-                    renderMappedComparison(data1, data2, mappings);
+                    // Store full data for pagination
+                    comparisonData = {
+                        type: 'mapped',
+                        data1: data1,
+                        data2: data2,
+                        mappings: mappings,
+                        stats: { matches: 0, added: 0, removed: 0, modified: 0 }
+                    };
+                    
+                    // Calculate total rows for pagination
+                    totalRows = Math.max(data1.length, data2.length);
+                    
+                    renderPaginatedResults();
                     return; // Normal comparison skip karein
                 }
 
@@ -485,7 +590,22 @@
                     }
                 }
 
-                renderComparison(data1, data2, sR, eR, sC, eC);
+                // Store full data for pagination
+                comparisonData = {
+                    type: 'normal',
+                    data1: data1,
+                    data2: data2,
+                    sR: sR,
+                    eR: eR,
+                    sC: sC,
+                    eC: eC,
+                    stats: { matches: 0, added: 0, removed: 0, modified: 0 }
+                };
+                
+                // Calculate total rows for pagination
+                totalRows = eR - sR + 1;
+                
+                renderPaginatedResults();
 
             } catch (err) {
                 console.error(err);
@@ -493,8 +613,8 @@
             }
         }
 
-        // Custom Mapped Columns ke liye UI render karein
-        function renderMappedComparison(d1, d2, mappings) {
+        // Custom Mapped Columns ke liye UI render karein (with pagination support)
+        function renderMappedComparison(d1, d2, mappings, startRow = 0, rowCount = null, stats = null) {
             let tableHtml = `<table class="min-w-full border-collapse text-sm bg-white">`;
             
             tableHtml += `<thead><tr class="bg-slate-100 sticky top-0 z-10 shadow-sm">
@@ -509,11 +629,12 @@
             });
             tableHtml += `</tr></thead><tbody>`;
 
-            let stats = { matches: 0, added: 0, removed: 0, modified: 0 };
-            let maxRows = Math.max(d1.length, d2.length);
+            if (!stats) stats = { matches: 0, added: 0, removed: 0, modified: 0 };
+            const maxRows = rowCount ? Math.min(rowCount, Math.max(d1.length, d2.length) - startRow) : Math.max(d1.length, d2.length);
+            const endRow = startRow + maxRows;
 
             // Mapped columns ka data row-by-row compare karein
-            for (let r = 0; r < maxRows; r++) {
+            for (let r = startRow; r < endRow; r++) {
                 tableHtml += `<tr class="hover:bg-slate-50 transition-colors">
                     <td class="border border-slate-300 p-2 bg-slate-50 text-center font-medium text-slate-500 sticky left-0 z-0 shadow-sm">${r + 1}</td>`;
                 
@@ -551,11 +672,11 @@
             }
             tableHtml += `</tbody></table>`;
             
-            showResults(tableHtml, stats);
+            return tableHtml;
         }
 
-        // Standard/Normal HTML Table render karein (Puri Sheet, Range etc.)
-        function renderComparison(d1, d2, sR, eR, sC, eC) {
+        // Standard/Normal HTML Table render karein (Puri Sheet, Range etc.) with pagination support
+        function renderComparison(d1, d2, sR, eR, sC, eC, stats = null) {
             let tableHtml = `<table class="min-w-full border-collapse text-sm bg-white">`;
             
             tableHtml += `<thead><tr class="bg-slate-100 sticky top-0 z-10 shadow-sm">
@@ -565,7 +686,7 @@
             }
             tableHtml += `</tr></thead><tbody>`;
 
-            let stats = { matches: 0, added: 0, removed: 0, modified: 0 };
+            if (!stats) stats = { matches: 0, added: 0, removed: 0, modified: 0 };
 
             for (let r = sR; r <= eR; r++) {
                 tableHtml += `<tr class="hover:bg-slate-50 transition-colors">
@@ -580,7 +701,7 @@
 
                     if (val1 === val2) {
                         cellClass += "bg-white text-slate-700";
-                        cellContent = val1 || `<span class="text-slate-300 italic text-xs">khali (empty)</span>`;
+                        cellContent = escapeHtml(val1) || `<span class="text-slate-300 italic text-xs">khali (empty)</span>`;
                         if (val1 !== "") stats.matches++;
                     } else if (val1 === "") {
                         cellClass += "bg-emerald-50 text-emerald-800"; 
@@ -605,21 +726,188 @@
             }
             tableHtml += `</tbody></table>`;
 
+            return tableHtml;
+        }
+
+        // Paginated results render karein
+        function renderPaginatedResults() {
+            if (!comparisonData) return;
+            
+            const startRow = (currentPage - 1) * rowsPerPage;
+            const endRow = Math.min(startRow + rowsPerPage, totalRows);
+            
+            let tableHtml = '';
+            let stats = { matches: 0, added: 0, removed: 0, modified: 0 };
+            
+            if (comparisonData.type === 'mapped') {
+                // Mapped comparison ke liye pagination
+                const { data1, data2, mappings } = comparisonData;
+                tableHtml = renderMappedComparison(data1, data2, mappings, startRow, endRow - startRow, stats);
+            } else {
+                // Normal comparison ke liye pagination
+                const { data1, data2, sR, eR, sC, eC } = comparisonData;
+                const actualStartRow = sR + startRow;
+                const actualEndRow = Math.min(sR + endRow - 1, eR);
+                tableHtml = renderComparison(data1, data2, actualStartRow, actualEndRow, sC, eC, stats);
+            }
+            
             showResults(tableHtml, stats);
+        }
+
+        // Pagination controls banayein
+        function createPaginationControls() {
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            if (totalPages <= 1) return '';
+            
+            let controls = '<div class="flex flex-col sm:flex-row items-center justify-between mt-4 px-4 py-3 bg-slate-50 border-t border-slate-200 gap-4">';
+            
+            // Left side - page info and rows per page selector
+            controls += '<div class="flex items-center gap-4">';
+            controls += `<span class="text-sm text-slate-600">Page ${currentPage} of ${totalPages} (${totalRows} total rows)</span>`;
+            
+            // Rows per page selector
+            controls += '<div class="flex items-center gap-2">';
+            controls += '<span class="text-sm text-slate-600">Rows per page:</span>';
+            controls += '<select onchange="changeRowsPerPage(this.value)" class="text-sm border border-slate-300 rounded px-2 py-1">';
+            [25, 50, 100, 200].forEach(num => {
+                const selected = num === rowsPerPage ? 'selected' : '';
+                controls += `<option value="${num}" ${selected}>${num}</option>`;
+            });
+            controls += '</select></div></div>';
+            
+            // Right side - navigation buttons
+            controls += '<div class="flex items-center gap-2">';
+            
+            // First page button
+            if (currentPage > 1) {
+                controls += `<button onclick="changePage(1)" class="px-2 py-1 text-sm bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors" title="First page">««</button>`;
+            }
+            
+            // Previous button
+            if (currentPage > 1) {
+                controls += `<button onclick="changePage(${currentPage - 1})" class="px-3 py-1 text-sm bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors">Previous</button>`;
+            } else {
+                controls += `<button disabled class="px-3 py-1 text-sm bg-slate-100 border border-slate-200 rounded text-slate-400 cursor-not-allowed">Previous</button>`;
+            }
+            
+            // Page numbers (show max 5 pages)
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, startPage + 4);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                if (i === currentPage) {
+                    controls += `<button class="px-3 py-1 text-sm bg-teal-600 text-white border border-teal-600 rounded">${i}</button>`;
+                } else {
+                    controls += `<button onclick="changePage(${i})" class="px-3 py-1 text-sm bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors">${i}</button>`;
+                }
+            }
+            
+            // Next button
+            if (currentPage < totalPages) {
+                controls += `<button onclick="changePage(${currentPage + 1})" class="px-3 py-1 text-sm bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors">Next</button>`;
+            } else {
+                controls += `<button disabled class="px-3 py-1 text-sm bg-slate-100 border border-slate-200 rounded text-slate-400 cursor-not-allowed">Next</button>`;
+            }
+            
+            // Last page button
+            if (currentPage < totalPages) {
+                controls += `<button onclick="changePage(${totalPages})" class="px-2 py-1 text-sm bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors" title="Last page">»»</button>`;
+            }
+            
+            controls += '</div></div>';
+            return controls;
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + E = Export
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                if (!document.getElementById('exportBtn').disabled) {
+                    exportResults();
+                }
+            }
+            
+            // Ctrl/Cmd + F = Search/Filter
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                if (!document.getElementById('searchBtn').disabled) {
+                    toggleSearch();
+                }
+            }
+            
+            // Ctrl/Cmd + S = Statistics
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                if (!document.getElementById('statsBtn').disabled) {
+                    showStatistics();
+                }
+            }
+            
+            // Escape = Close panels
+            if (e.key === 'Escape') {
+                const searchPanel = document.getElementById('searchPanel');
+                const statsPanel = document.getElementById('statisticsPanel');
+                
+                if (!searchPanel.classList.contains('hidden')) {
+                    toggleSearch();
+                }
+                if (!statsPanel.classList.contains('hidden')) {
+                    showStatistics();
+                }
+            }
+            
+            // Page navigation with arrow keys (when search input is not focused)
+            if (!document.activeElement.matches('input, select, textarea')) {
+                if (e.key === 'ArrowLeft' && currentPage > 1) {
+                    e.preventDefault();
+                    changePage(currentPage - 1);
+                }
+                if (e.key === 'ArrowRight' && currentPage < Math.ceil(totalRows / rowsPerPage)) {
+                    e.preventDefault();
+                    changePage(currentPage + 1);
+                }
+            }
+        });
+
+        // Page change karne ka function
+        function changePage(pageNum) {
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+            if (pageNum < 1 || pageNum > totalPages) return;
+            
+            currentPage = pageNum;
+            renderPaginatedResults();
         }
 
         // Dono modes ke liye Results UI pe show karne ka helper function
         function showResults(tableHtml, stats) {
-            document.getElementById('tableRenderArea').innerHTML = tableHtml;
+            const paginationControls = createPaginationControls();
+            
+            document.getElementById('tableRenderArea').innerHTML = tableHtml + paginationControls;
             
             const totalDiffs = stats.added + stats.removed + stats.modified;
+            const startRow = (currentPage - 1) * rowsPerPage + 1;
+            const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+            
             document.getElementById('statsBox').innerHTML = `
-                <strong>Analysis Pura Hua:</strong> Check kiye gaye data mein <span class="font-semibold text-slate-900">${totalDiffs} antar (differences)</span> mile. 
-                (${stats.added} add hue, ${stats.removed} hataye gaye, ${stats.modified} change hue, aur ${stats.matches} cells match hue).
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div>
+                        <strong>Analysis Pura Hua:</strong> Check kiye gaye data mein <span class="font-semibold text-slate-900">${totalDiffs} antar (differences)</span> mile. 
+                        (${stats.added} add hue, ${stats.removed} hataye gaye, ${stats.modified} change hue, aur ${stats.matches} cells match hue).
+                    </div>
+                    <div class="text-sm text-slate-500">
+                        Showing rows ${startRow}-${endRow} of ${totalRows} (${Math.ceil(totalRows / rowsPerPage)} pages)
+                    </div>
+                </div>
             `;
 
             document.getElementById('resultsContainer').classList.remove('hidden');
             document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Enable action buttons
+            document.getElementById('exportBtn').disabled = false;
+            document.getElementById('searchBtn').disabled = false;
+            document.getElementById('statsBtn').disabled = false;
         }
 
         // HTML characters escape karein taaki rendering issues na aayein
@@ -629,6 +917,210 @@
                  .replace(/>/g, "&gt;")
                  .replace(/"/g, "&quot;")
                  .replace(/'/g, "&#039;");
+        }
+
+        // Export Results to Excel
+        function exportResults() {
+            if (!comparisonData) return;
+            
+            try {
+                const wb = XLSX.utils.book_new();
+                
+                // Create summary sheet
+                const summaryData = [
+                    ['Excel Comparison Report'],
+                    ['Generated on', new Date().toLocaleString()],
+                    [''],
+                    ['Summary Statistics'],
+                    ['Total Rows Compared', totalRows],
+                    ['Matching Cells', comparisonData.stats.matches],
+                    ['Added in File 2', comparisonData.stats.added],
+                    ['Removed from File 1', comparisonData.stats.removed],
+                    ['Modified Values', comparisonData.stats.modified],
+                    ['Total Differences', comparisonData.stats.added + comparisonData.stats.removed + comparisonData.stats.modified],
+                    [''],
+                    ['Legend'],
+                    ['White cells = Matching values'],
+                    ['Green cells = Added in File 2'],
+                    ['Red cells = Removed from File 1'],
+                    ['Yellow cells = Modified values']
+                ];
+                
+                const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+                XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
+                
+                // Create detailed results sheet
+                let detailedData = [];
+                
+                if (comparisonData.type === 'mapped') {
+                    // Header row for mapped comparison
+                    const headerRow = ['Row #'];
+                    comparisonData.mappings.forEach(m => {
+                        headerRow.push(`${m.name1} (File 1)`, `${m.name2} (File 2)`, 'Status');
+                    });
+                    detailedData.push(headerRow);
+                    
+                    // Data rows
+                    for (let r = 0; r < Math.max(comparisonData.data1.length, comparisonData.data2.length); r++) {
+                        const row = [r + 1];
+                        comparisonData.mappings.forEach(m => {
+                            const val1 = comparisonData.data1[r]?.[m.c1] || '';
+                            const val2 = comparisonData.data2[r]?.[m.c2] || '';
+                            row.push(val1, val2, val1 === val2 ? 'Match' : val1 === '' ? 'Added' : val2 === '' ? 'Removed' : 'Modified');
+                        });
+                        detailedData.push(row);
+                    }
+                } else {
+                    // Header row for normal comparison
+                    const headerRow = ['Row #'];
+                    for (let c = comparisonData.sC; c <= comparisonData.eC; c++) {
+                        headerRow.push(`${XLSX.utils.encode_col(c)} (File 1)`, `${XLSX.utils.encode_col(c)} (File 2)`, 'Status');
+                    }
+                    detailedData.push(headerRow);
+                    
+                    // Data rows
+                    for (let r = comparisonData.sR; r <= comparisonData.eR; r++) {
+                        const row = [r + 1];
+                        for (let c = comparisonData.sC; c <= comparisonData.eC; c++) {
+                            const val1 = comparisonData.data1[r]?.[c] || '';
+                            const val2 = comparisonData.data2[r]?.[c] || '';
+                            row.push(val1, val2, val1 === val2 ? 'Match' : val1 === '' ? 'Added' : val2 === '' ? 'Removed' : 'Modified');
+                        }
+                        detailedData.push(row);
+                    }
+                }
+                
+                const detailedSheet = XLSX.utils.aoa_to_sheet(detailedData);
+                XLSX.utils.book_append_sheet(wb, detailedSheet, 'Detailed Results');
+                
+                // Download the file
+                XLSX.writeFile(wb, `excel_comparison_${new Date().toISOString().split('T')[0]}.xlsx`);
+                
+                alert('Results exported successfully!');
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Export mein error aayi. Console check karein.');
+            }
+        }
+
+        // Toggle Search/Filter Panel
+        function toggleSearch() {
+            const panel = document.getElementById('searchPanel');
+            const btn = document.getElementById('searchBtn');
+            
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                btn.innerHTML = '<i class="fas fa-times mr-1"></i>Hide Search';
+                document.getElementById('searchInput').focus();
+            } else {
+                panel.classList.add('hidden');
+                btn.innerHTML = '<i class="fas fa-search mr-1"></i>Search/Filter';
+                clearFilters();
+            }
+        }
+
+        // Filter Results
+        function filterResults() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterType = document.getElementById('filterType').value;
+            const table = document.querySelector('#tableRenderArea table');
+            
+            if (!table) return;
+            
+            const rows = table.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                let showRow = true;
+                
+                // Text search
+                if (searchTerm) {
+                    const textContent = row.textContent.toLowerCase();
+                    showRow = showRow && textContent.includes(searchTerm);
+                }
+                
+                // Type filter
+                if (filterType !== 'all') {
+                    const cells = row.querySelectorAll('td');
+                    let hasMatchingType = false;
+                    
+                    cells.forEach(cell => {
+                        if (filterType === 'matches' && cell.classList.contains('bg-white')) {
+                            hasMatchingType = true;
+                        } else if (filterType === 'added' && cell.classList.contains('bg-emerald-50')) {
+                            hasMatchingType = true;
+                        } else if (filterType === 'removed' && cell.classList.contains('bg-rose-50')) {
+                            hasMatchingType = true;
+                        } else if (filterType === 'modified' && cell.classList.contains('bg-amber-50')) {
+                            hasMatchingType = true;
+                        }
+                    });
+                    
+                    showRow = showRow && hasMatchingType;
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        // Clear Filters
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterType').value = 'all';
+            filterResults();
+        }
+
+        // Show Detailed Statistics
+        function showStatistics() {
+            const panel = document.getElementById('statisticsPanel');
+            const btn = document.getElementById('statsBtn');
+            
+            if (!comparisonData) return;
+            
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
+                btn.innerHTML = '<i class="fas fa-times mr-1"></i>Hide Statistics';
+                
+                const stats = comparisonData.stats;
+                const totalCells = stats.matches + stats.added + stats.removed + stats.modified;
+                
+                document.getElementById('detailedStats').innerHTML = `
+                    <div class="bg-white p-3 rounded border">
+                        <div class="text-2xl font-bold text-slate-800">${totalCells.toLocaleString()}</div>
+                        <div class="text-sm text-slate-600">Total Cells Compared</div>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded border border-green-200">
+                        <div class="text-2xl font-bold text-green-800">${stats.matches.toLocaleString()}</div>
+                        <div class="text-sm text-green-600">Matching Cells (${((stats.matches/totalCells)*100).toFixed(1)}%)</div>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded border border-blue-200">
+                        <div class="text-2xl font-bold text-blue-800">${stats.added.toLocaleString()}</div>
+                        <div class="text-sm text-blue-600">Added in File 2</div>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded border border-red-200">
+                        <div class="text-2xl font-bold text-red-800">${stats.removed.toLocaleString()}</div>
+                        <div class="text-sm text-red-600">Removed from File 1</div>
+                    </div>
+                    <div class="bg-yellow-50 p-3 rounded border border-yellow-200">
+                        <div class="text-2xl font-bold text-yellow-800">${stats.modified.toLocaleString()}</div>
+                        <div class="text-sm text-yellow-600">Modified Values</div>
+                    </div>
+                    <div class="bg-purple-50 p-3 rounded border border-purple-200">
+                        <div class="text-2xl font-bold text-purple-800">${(stats.added + stats.removed + stats.modified).toLocaleString()}</div>
+                        <div class="text-sm text-purple-600">Total Differences</div>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded border border-indigo-200">
+                        <div class="text-2xl font-bold text-indigo-800">${totalRows.toLocaleString()}</div>
+                        <div class="text-sm text-indigo-600">Total Rows</div>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                        <div class="text-2xl font-bold text-gray-800">${Math.ceil(totalRows / rowsPerPage)}</div>
+                        <div class="text-sm text-gray-600">Pages (${rowsPerPage} rows/page)</div>
+                    </div>
+                `;
+            } else {
+                panel.classList.add('hidden');
+                btn.innerHTML = '<i class="fas fa-chart-bar mr-1"></i>Statistics';
+            }
         }
     </script>
 
