@@ -272,92 +272,107 @@
     </main>
 
 
-   <footer class="relative bg-[#0a0c10] pt-20 pb-10 overflow-hidden">
-    <!-- 1. Background Decor (Subtle Grid & Glow) -->
-    <div class="absolute inset-0 z-0 opacity-30">
-        <!-- Dot Grid Pattern -->
-        <div class="absolute inset-0" style="background-image: radial-gradient(#334155 1px, transparent 1px); background-size: 24px 24px;"></div>
-        <!-- Colorful Glows -->
-        <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px]"></div>
-    </div>
+    <footer class="relative bg-[#0a0c10] pt-20 pb-10 overflow-hidden">
+        <!-- 1. Background Decor (Subtle Grid & Glow) -->
+        <div class="absolute inset-0 z-0 opacity-30">
+            <!-- Dot Grid Pattern -->
+            <div class="absolute inset-0"
+                style="background-image: radial-gradient(#334155 1px, transparent 1px); background-size: 24px 24px;">
+            </div>
+            <!-- Colorful Glows -->
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px]"></div>
+        </div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
-            
-            <!-- Brand Section (Wide) -->
-            <div class="md:col-span-5">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                        <i class="fa-solid fa-screwdriver-wrench text-white text-lg"></i>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+
+                <!-- Brand Section (Wide) -->
+                <div class="md:col-span-5">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                            <i class="fa-solid fa-screwdriver-wrench text-white text-lg"></i>
+                        </div>
+                        <span class="font-bold text-2xl text-white tracking-tight">DailyTools</span>
                     </div>
-                    <span class="font-bold text-2xl text-white tracking-tight">DailyTools</span>
+                    <p class="text-gray-400 text-base leading-relaxed max-w-md">
+                        Helping developers and designers speed up their daily workflow with 30+ lightweight,
+                        privacy-focused web utilities.
+                    </p>
+                    <div class="flex space-x-5 mt-8">
+                        <a href="https://github.com/nkd2000" class="group transition-all">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                <i class="fa-brands fa-github text-lg"></i>
+                            </div>
+                        </a>
+                        <a href="#" class="group transition-all">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:bg-blue-400 group-hover:text-white transition-all">
+                                <i class="fa-brands fa-twitter text-lg"></i>
+                            </div>
+                        </a>
+                    </div>
                 </div>
-                <p class="text-gray-400 text-base leading-relaxed max-w-md">
-                    Helping developers and designers speed up their daily workflow with 30+ lightweight, privacy-focused web utilities.
-                </p>
-                <div class="flex space-x-5 mt-8">
-                    <a href="https://github.com/nkd2000" class="group transition-all">
-                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                            <i class="fa-brands fa-github text-lg"></i>
-                        </div>
-                    </a>
-                    <a href="#" class="group transition-all">
-                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:bg-blue-400 group-hover:text-white transition-all">
-                            <i class="fa-brands fa-twitter text-lg"></i>
-                        </div>
-                    </a>
+
+                <!-- Links Sections -->
+                <div class="md:col-span-2">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-[0.2em] mb-6">Explore</h4>
+                    <ul class="space-y-4">
+                        <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">Popular Tools</a>
+                        </li>
+                        <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">New Releases</a>
+                        </li>
+                        <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">Categories</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="md:col-span-2">
+                    <h4 class="text-sm font-bold text-white uppercase tracking-[0.2em] mb-6">Legal</h4>
+                    <ul class="space-y-4">
+                        <li><a href="pages/privacy.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors">Privacy Policy</a></li>
+                        <li><a href="pages/contact.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors">Terms of Use</a></li>
+                        <li><a href="pages/contact.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter/CTA -->
+                <div class="md:col-span-3">
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                        <h4 class="text-white font-bold mb-2">Want new tools?</h4>
+                        <p class="text-gray-400 text-sm mb-4">Suggest a tool or report an issue on GitHub.</p>
+                        <a href="https://github.com/nkd2000/Daily_tools/issues"
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all shadow-lg shadow-indigo-600/20">
+                            Suggest Feature
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <!-- Links Sections -->
-            <div class="md:col-span-2">
-                <h4 class="text-sm font-bold text-white uppercase tracking-[0.2em] mb-6">Explore</h4>
-                <ul class="space-y-4">
-                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">Popular Tools</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">New Releases</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">Categories</a></li>
-                </ul>
-            </div>
+            <!-- Bottom Line -->
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-gray-500 text-sm">
+                    &copy; <span id="currentYear"></span> <span class="text-gray-300 font-medium">DailyTools</span>.
+                    Made with <i class="fa-solid fa-heart text-indigo-500 animate-pulse"></i> by <a href="#"
+                        class="hover:text-white transition-colors">Nkd2000</a>
+                </div>
 
-            <div class="md:col-span-2">
-                <h4 class="text-sm font-bold text-white uppercase tracking-[0.2em] mb-6">Legal</h4>
-                <ul class="space-y-4">
-                    <li><a href="pages/privacy.html" class="text-gray-400 hover:text-indigo-400 transition-colors">Privacy Policy</a></li>
-                    <li><a href="pages/contact.html" class="text-gray-400 hover:text-indigo-400 transition-colors">Terms of Use</a></li>
-                    <li><a href="pages/contact.html" class="text-gray-400 hover:text-indigo-400 transition-colors">Contact</a></li>
-                </ul>
-            </div>
-
-            <!-- Newsletter/CTA -->
-            <div class="md:col-span-3">
-                <div class="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                    <h4 class="text-white font-bold mb-2">Want new tools?</h4>
-                    <p class="text-gray-400 text-sm mb-4">Suggest a tool or report an issue on GitHub.</p>
-                    <a href="https://github.com/nkd2000/Daily_tools/issues" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all shadow-lg shadow-indigo-600/20">
-                        Suggest Feature
-                    </a>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span class="text-xs text-gray-500 uppercase tracking-widest font-medium">Systems Nominal</span>
+                    </div>
+                    <div class="h-4 w-[1px] bg-white/10"></div>
+                    <div class="text-xs text-gray-500 font-mono">v2.0.4</div>
                 </div>
             </div>
         </div>
-
-        <!-- Bottom Line -->
-        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="text-gray-500 text-sm">
-                &copy; <span id="currentYear"></span> <span class="text-gray-300 font-medium">DailyTools</span>. Made with <i class="fa-solid fa-heart text-indigo-500 animate-pulse"></i> by <a href="#" class="hover:text-white transition-colors">Nkd2000</a>
-            </div>
-            
-            <div class="flex items-center gap-6">
-                <div class="flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                    <span class="text-xs text-gray-500 uppercase tracking-widest font-medium">Systems Nominal</span>
-                </div>
-                <div class="h-4 w-[1px] bg-white/10"></div>
-                <div class="text-xs text-gray-500 font-mono">v2.0.4</div>
-            </div>
-        </div>
-    </div>
-</footer>
+    </footer>
 
     <script>
         // Automatically update year
@@ -697,10 +712,18 @@
         const searchInput = document.getElementById('searchInput');
         const categoryBtns = document.querySelectorAll('.cat-btn');
 
+        const catConfig = {
+            'Image': { title: 'Image & Media Tools', subtitle: 'Compress, convert, and edit images instantly.', icon: 'fa-solid fa-wand-magic-sparkles', color: 'blue', gradient: 'from-blue-600 to-cyan-500' },
+            'PDF': { title: 'PDF & Document Tools', subtitle: 'Manage your documents with powerful PDF utilities.', icon: 'fa-solid fa-file-pdf', color: 'rose', gradient: 'from-rose-600 to-orange-500' },
+            'Calc': { title: 'Calculators & Finance', subtitle: 'Quick calculations for finance, health, and math.', icon: 'fa-solid fa-calculator', color: 'emerald', gradient: 'from-emerald-600 to-teal-500' },
+            'Dev': { title: 'Developer Utilities', subtitle: 'Essential tools for coding, formatting, and debugging.', icon: 'fa-solid fa-code', color: 'indigo', gradient: 'from-indigo-600 to-purple-500' },
+            'Utility': { title: 'General Utilities', subtitle: 'Handy everyday tools to boost your productivity.', icon: 'fa-solid fa-bolt-lightning', color: 'amber', gradient: 'from-amber-500 to-yellow-400' }
+        };
+
         function renderTools(filterCat = 'all', query = '') {
             container.innerHTML = '';
 
-            // Filter Data
+            // Filter Logic
             const filtered = toolsData.filter(tool => {
                 const matchesCat = filterCat === 'all' || tool.cat === filterCat;
                 const matchesSearch = tool.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -708,26 +731,49 @@
                 return matchesCat && matchesSearch;
             });
 
-            // Group by Category if viewing 'All'
-            if (filterCat === 'all' && query === '') {
-                const categories = ['Image', 'PDF', 'Calc', 'Dev', 'Utility'];
-                const catNames = {
-                    'Image': '🎨 Image & Media Tools',
-                    'PDF': '📄 PDF & Document Tools',
-                    'Calc': '🧮 Calculators & Finance',
-                    'Dev': '👨‍💻 Developer Tools',
-                    'Utility': '🛠️ Utility & Productivity'
-                };
+            // 2. Not Found State (Improved UX)
+            if (filtered.length === 0) {
+                container.innerHTML = `
+            <div class="text-center py-24 fade-in-up">
+                <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fa-regular fa-face-frown-open text-4xl text-gray-300"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">No tools found</h3>
+                <p class="text-gray-500 max-w-xs mx-auto">We couldn't find anything matching "${query}". Try different keywords.</p>
+                <button onclick="document.getElementById('searchInput').value=''; renderTools('all', '')" 
+                    class="mt-6 text-indigo-600 font-semibold hover:underline">Clear all filters</button>
+            </div>`;
+                return;
+            }
 
-                categories.forEach(cat => {
+            // 3. Grouped View (When "All Tools" is selected and no search query)
+            if (filterCat === 'all' && query === '') {
+                Object.keys(catConfig).forEach((cat, index) => {
                     const catTools = filtered.filter(t => t.cat === cat);
                     if (catTools.length > 0) {
-                        // Section Header
-                        const section = document.createElement('div');
-                        section.className = "mb-10";
-                        section.innerHTML = `<h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">${catNames[cat]}</h2>`;
+                        const config = catConfig[cat];
 
-                        // Grid
+                        const section = document.createElement('section');
+                        section.className = "mb-16 fade-in-up";
+                        section.style.animationDelay = `${index * 0.1}s`;
+
+                        // Premium Section Header
+                        section.innerHTML = `
+                    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-indigo-600">
+                                <i class="${config.icon} text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900 tracking-tight">${config.title}</h2>
+                                <p class="text-gray-500 text-sm">${config.subtitle}</p>
+                            </div>
+                        </div>
+                        <div class="hidden md:block h-[1px] flex-grow mx-8 bg-gray-100"></div>
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">${catTools.length} Tools</span>
+                    </div>
+                `;
+
                         const grid = document.createElement('div');
                         grid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6";
 
@@ -737,23 +783,20 @@
                     }
                 });
             } else {
-                // Flat Grid for Search/Category Filter
-                if (filtered.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center py-20 text-gray-500">
-                            <i class="fa-regular fa-face-frown-open text-4xl mb-4"></i>
-                            <p>No tools found matching your criteria.</p>
-                        </div>`;
-                    return;
-                }
-
+                // 4. Flat Grid View (For Search results or Category filtering)
                 const grid = document.createElement('div');
                 grid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up";
+
+                // Add a small result counter for UX
+                const resultsCount = document.createElement('div');
+                resultsCount.className = "col-span-full mb-6 text-gray-500 text-sm";
+                resultsCount.innerHTML = `Showing <b>${filtered.length}</b> tools ${query ? `for "<b>${query}</b>"` : ''}`;
+                container.appendChild(resultsCount);
+
                 filtered.forEach(tool => grid.appendChild(createCard(tool)));
                 container.appendChild(grid);
             }
         }
-
 
 
         function createCard(tool) {
