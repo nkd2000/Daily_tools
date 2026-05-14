@@ -72,6 +72,81 @@
             border-color: #4f46e5;
         }
     </style>
+
+    <style>
+        /* Custom Animations */
+        @keyframes blob {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            100% {
+                transform: translate(0px, 0px) scale(1);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        @keyframes float-slow {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(15px) rotate(-5deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite alternate;
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-float-slow {
+            animation: float-slow 8s ease-in-out infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+
+        /* Blur smooth support for safari */
+        .backdrop-blur-md {
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+        }
+    </style>
 </head>
 
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
@@ -96,24 +171,65 @@
         </div>
     </nav>
 
-    <!-- Hero Section with Search -->
-    <header class="bg-white border-b border-gray-200 pt-16 pb-10 sm:pt-20 sm:pb-14">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight mb-4 fade-in-up">
+    <!-- Hero Section with Modern Background -->
+    <header class="relative bg-white border-b border-gray-200 pt-20 pb-16 sm:pt-28 sm:pb-20 overflow-hidden">
+
+        <!-- 1. Mesh Gradient Elements (Background) -->
+        <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+            <div
+                class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-100 rounded-full blur-[120px] opacity-60 animate-blob">
+            </div>
+            <div
+                class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-100 rounded-full blur-[120px] opacity-60 animate-blob animation-delay-2000">
+            </div>
+            <div
+                class="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-purple-100 rounded-full blur-[100px] opacity-40 animate-blob animation-delay-4000">
+            </div>
+        </div>
+
+        <!-- 2. Floating Icons (Decorative) -->
+        <div class="absolute inset-0 z-0 pointer-events-none hidden sm:block">
+            <i
+                class="fa-solid fa-file-pdf absolute text-indigo-200 text-4xl top-20 left-[15%] animate-float opacity-40"></i>
+            <i
+                class="fa-solid fa-code absolute text-blue-200 text-3xl top-40 right-[15%] animate-float-slow opacity-40"></i>
+            <i
+                class="fa-solid fa-image absolute text-purple-200 text-4xl bottom-20 left-[20%] animate-float-slow opacity-40"></i>
+            <i
+                class="fa-solid fa-scissors absolute text-indigo-200 text-2xl bottom-40 right-[20%] animate-float opacity-40"></i>
+        </div>
+
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <!-- Badge -->
+            <div
+                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700 mb-6 border border-indigo-100 fade-in-up">
+                <span class="flex h-2 w-2 rounded-full bg-indigo-600 mr-2 animate-pulse"></span>
+                30+ Productivity Tools for Everyone
+            </div>
+
+            <h1 class="text-5xl sm:text-6xl font-extrabold text-gray-900 tracking-tight mb-6 fade-in-up">
                 All your tools in <span class="text-indigo-600">one place.</span>
             </h1>
-            <p class="mt-4 text-xl text-gray-500 fade-in-up delay-100 mb-8">
-                30+ free utilities for developers, designers, and everyone else.
+            <p class="mt-4 text-xl text-gray-500 fade-in-up delay-100 mb-10 max-w-2xl mx-auto">
+                Experience a faster workflow with our collection of free, lightweight web utilities.
             </p>
 
-            <!-- Search Bar -->
-            <div class="relative max-w-lg mx-auto fade-in-up delay-200 group">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i class="fa-solid fa-search text-gray-400 group-hover:text-indigo-500 transition"></i>
+            <!-- Search Bar with Glassmorphism -->
+            <div class="relative max-w-2xl mx-auto fade-in-up delay-200 group">
+                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                    <i
+                        class="fa-solid fa-magnifying-glass text-gray-400 group-hover:text-indigo-500 transition-colors"></i>
                 </div>
                 <input type="text" id="searchInput"
-                    class="block w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-xl leading-5 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition shadow-sm"
-                    placeholder="Search for tools (e.g. PDF, Image, Age)...">
+                    class="block w-full pl-12 pr-20 py-5 bg-white/70 backdrop-blur-md border border-gray-200 rounded-2xl leading-5 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-xl shadow-indigo-100/50"
+                    placeholder="Search tools (e.g. PDF, Image, SQL)...">
+
+                <!-- Shortcut Badge (Desktop only) -->
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none hidden sm:flex">
+                    <kbd
+                        class="px-2 py-1 text-xs font-semibold text-gray-400 bg-gray-100 border border-gray-200 rounded-md">Ctrl
+                        + K</kbd>
+                </div>
             </div>
         </div>
     </header>
@@ -155,23 +271,98 @@
         <!-- Tools will be injected here via JS -->
     </main>
 
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0">
-                    <span class="font-bold text-lg text-gray-900">FreeTools</span>
-                    <p class="text-sm text-gray-500 mt-1">Simple tools for everyday tasks.</p>
+
+   <footer class="relative bg-[#0a0c10] pt-20 pb-10 overflow-hidden">
+    <!-- 1. Background Decor (Subtle Grid & Glow) -->
+    <div class="absolute inset-0 z-0 opacity-30">
+        <!-- Dot Grid Pattern -->
+        <div class="absolute inset-0" style="background-image: radial-gradient(#334155 1px, transparent 1px); background-size: 24px 24px;"></div>
+        <!-- Colorful Glows -->
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+            
+            <!-- Brand Section (Wide) -->
+            <div class="md:col-span-5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                        <i class="fa-solid fa-screwdriver-wrench text-white text-lg"></i>
+                    </div>
+                    <span class="font-bold text-2xl text-white tracking-tight">DailyTools</span>
                 </div>
-                <div class="flex space-x-6">
-                    <a href="pages/privacy.html" class="text-gray-400 hover:text-gray-500 text-sm">Privacy Policy</a>
-                    <a href="pages/contact.html" class="text-gray-400 hover:text-gray-500 text-sm">Contact</a>
+                <p class="text-gray-400 text-base leading-relaxed max-w-md">
+                    Helping developers and designers speed up their daily workflow with 30+ lightweight, privacy-focused web utilities.
+                </p>
+                <div class="flex space-x-5 mt-8">
+                    <a href="https://github.com/nkd2000" class="group transition-all">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                            <i class="fa-brands fa-github text-lg"></i>
+                        </div>
+                    </a>
+                    <a href="#" class="group transition-all">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:bg-blue-400 group-hover:text-white transition-all">
+                            <i class="fa-brands fa-twitter text-lg"></i>
+                        </div>
+                    </a>
                 </div>
             </div>
-            <div class="mt-8 border-t border-gray-100 pt-8 text-center text-sm text-gray-400">
-                &copy; 2023 Free Online Tools. All rights reserved.
+
+            <!-- Links Sections -->
+            <div class="md:col-span-2">
+                <h4 class="text-sm font-bold text-white uppercase tracking-[0.2em] mb-6">Explore</h4>
+                <ul class="space-y-4">
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">Popular Tools</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">New Releases</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">Categories</a></li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-2">
+                <h4 class="text-sm font-bold text-white uppercase tracking-[0.2em] mb-6">Legal</h4>
+                <ul class="space-y-4">
+                    <li><a href="pages/privacy.html" class="text-gray-400 hover:text-indigo-400 transition-colors">Privacy Policy</a></li>
+                    <li><a href="pages/contact.html" class="text-gray-400 hover:text-indigo-400 transition-colors">Terms of Use</a></li>
+                    <li><a href="pages/contact.html" class="text-gray-400 hover:text-indigo-400 transition-colors">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter/CTA -->
+            <div class="md:col-span-3">
+                <div class="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                    <h4 class="text-white font-bold mb-2">Want new tools?</h4>
+                    <p class="text-gray-400 text-sm mb-4">Suggest a tool or report an issue on GitHub.</p>
+                    <a href="https://github.com/nkd2000/Daily_tools/issues" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all shadow-lg shadow-indigo-600/20">
+                        Suggest Feature
+                    </a>
+                </div>
             </div>
         </div>
-    </footer>
+
+        <!-- Bottom Line -->
+        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-gray-500 text-sm">
+                &copy; <span id="currentYear"></span> <span class="text-gray-300 font-medium">DailyTools</span>. Made with <i class="fa-solid fa-heart text-indigo-500 animate-pulse"></i> by <a href="#" class="hover:text-white transition-colors">Nkd2000</a>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span class="text-xs text-gray-500 uppercase tracking-widest font-medium">Systems Nominal</span>
+                </div>
+                <div class="h-4 w-[1px] bg-white/10"></div>
+                <div class="text-xs text-gray-500 font-mono">v2.0.4</div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+    <script>
+        // Automatically update year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
 
     <!-- Tools Data & Script -->
     <script>
@@ -563,24 +754,50 @@
             }
         }
 
+
+
         function createCard(tool) {
             const a = document.createElement('a');
             a.href = tool.url;
-            a.className = "group bg-white rounded-xl border border-gray-200 p-6 transition-all duration-300 tool-card-hover flex flex-col h-full";
 
-            // Determine colors based on tool config or default to blue
-            const c = tool.color || 'blue';
+            // Modern Classes: Soft borders, deeper shadows on hover, and smooth scaling
+            a.className = "group bg-white rounded-2xl border border-gray-100 p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(79,70,229,0.1)] flex flex-col h-full relative overflow-hidden fade-in-up";
+
+            // Color logic: Mapping subtle colors for a premium look
+            const colors = {
+                blue: { bg: 'bg-blue-50', text: 'text-blue-600', hoverBg: 'group-hover:bg-blue-600' },
+                indigo: { bg: 'bg-indigo-50', text: 'text-indigo-600', hoverBg: 'group-hover:bg-indigo-600' },
+                purple: { bg: 'bg-purple-50', text: 'text-purple-600', hoverBg: 'group-hover:bg-purple-600' },
+                rose: { bg: 'bg-rose-50', text: 'text-rose-600', hoverBg: 'group-hover:bg-rose-600' },
+                emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', hoverBg: 'group-hover:bg-emerald-600' },
+                amber: { bg: 'bg-amber-50', text: 'text-amber-600', hoverBg: 'group-hover:bg-amber-600' }
+            };
+
+            const c = colors[tool.color] || colors.indigo;
 
             a.innerHTML = `
-                <div class="w-12 h-12 bg-${c}-50 rounded-lg flex items-center justify-center text-${c}-600 mb-4 group-hover:bg-${c}-600 group-hover:text-white transition-colors">
-                    <i class="${tool.icon} text-xl"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">${tool.title}</h3>
-                <p class="text-gray-500 text-sm flex-grow">${tool.desc}</p>
-                <div class="mt-4 flex items-center text-${c}-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    Open Tool <i class="fa-solid fa-arrow-right ml-2"></i>
-                </div>
-            `;
+        <!-- Background Decorative Gradient (Visible on hover) -->
+        <div class="absolute -right-10 -top-10 w-32 h-32 bg-gray-50 rounded-full transition-all duration-500 group-hover:bg-indigo-50/50 group-hover:scale-150 z-0"></div>
+
+        <div class="relative z-10 flex flex-col h-full">
+            <!-- Icon Container with glass effect on hover -->
+            <div class="w-14 h-14 ${c.bg} rounded-xl flex items-center justify-center ${c.text} mb-5 ${c.hoverBg} group-hover:text-white group-hover:shadow-lg transition-all duration-300">
+                <i class="${tool.icon} text-2xl transition-transform duration-300 group-hover:scale-110"></i>
+            </div>
+
+            <!-- Content -->
+            <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">${tool.title}</h3>
+            <p class="text-gray-500 text-sm leading-relaxed flex-grow">
+                ${tool.desc}
+            </p>
+
+            <!-- Interactive Footer -->
+            <div class="mt-6 flex items-center ${c.text} text-sm font-bold tracking-wide uppercase">
+                <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">Open Tool</span>
+                <i class="fa-solid fa-chevron-right ml-2 text-xs transition-transform duration-300 group-hover:translate-x-2"></i>
+            </div>
+        </div>
+    `;
             return a;
         }
 
@@ -605,6 +822,86 @@
         // Initial Render
         renderTools();
 
+    </script>
+
+    <script>
+        const canvas = document.getElementById('techCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        const particleCount = 60; // Kitne dots chahiye
+        const connectionDistance = 120; // Kitni door tak line connect hogi
+
+        // Resize canvas to fit header
+        function resize() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5; // Speed X
+                this.vy = (Math.random() - 0.5) * 0.5; // Speed Y
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce from edges
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(79, 70, 229, 0.3)'; // Indigo color with transparency
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < particles.length; i++) {
+                const p1 = particles[i];
+                p1.update();
+                p1.draw();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < connectionDistance) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(79, 70, 229, ${0.15 * (1 - dist / connectionDistance)})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
     </script>
 </body>
 
