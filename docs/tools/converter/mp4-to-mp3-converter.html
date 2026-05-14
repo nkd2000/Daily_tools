@@ -143,20 +143,36 @@
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar">
-        <div class="nav-brand">
-            <div class="logo-icon"><i class="fa-solid fa-microphone-lines"></i></div>
-            <div style="display:flex; align-items:center; gap:8px;">
-                <span class="nav-title">Audio Studio</span>
-                <span class="badge">MAX</span>
+    
+<!-- Universal Glass Header -->
+<nav class="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-xl saturate-150 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Left: Logo -->
+            <div class="flex items-center gap-3">
+                <a href="../../index.html" class="flex items-center gap-3 group">
+                    <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-inherit dark:text-white">DailyTools</span>
+                </a>
+            </div>
+
+            <!-- Right: Navigation -->
+            <div class="flex items-center gap-6 text-sm font-semibold">
+                <a href="../../index.html" class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Home</a>
+                <a href="../../pages/contact.html" class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Contact</a>
+                
+                <!-- Github Icon with subtle border -->
+                <div class="h-6 w-[1px] bg-gray-300/20 mx-2"></div>
+                <a href="https://github.com/nkd2000" class="text-inherit opacity-70 hover:opacity-100 transition-all dark:text-white text-lg">
+                    <i class="fa-brands fa-github"></i>
+                </a>
             </div>
         </div>
-        <div style="display: flex; gap: 8px;">
-            <button id="navHistoryBtn" class="btn btn-history hidden">
-                <i class="fa-solid fa-clock-rotate-left"></i> History Panel
-            </button>
-        </div>
-    </nav>
+    </div>
+</nav>
+
 
     <!-- Main Content -->
     <main class="main-container">
