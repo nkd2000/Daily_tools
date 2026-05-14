@@ -272,73 +272,97 @@
     </main>
 
 
-    <footer class="relative bg-white border-t border-gray-100 mt-20 overflow-hidden">
-    <!-- Subtle Background Element (Matches Header) -->
-    <div class="absolute bottom-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-[100px] opacity-40 -z-10 translate-x-1/2 translate-y-1/2"></div>
+   <footer class="relative bg-[#0a0c10] pt-20 pb-10 overflow-hidden">
+    <!-- 1. Background Decor (Subtle Grid & Glow) -->
+    <div class="absolute inset-0 z-0 opacity-30">
+        <!-- Dot Grid Pattern -->
+        <div class="absolute inset-0" style="background-image: radial-gradient(#334155 1px, transparent 1px); background-size: 24px 24px;"></div>
+        <!-- Colorful Glows -->
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px]"></div>
+    </div>
 
-    <div class="max-w-7xl mx-auto pt-16 pb-8 px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-            <!-- Brand Section -->
-            <div class="col-span-1 md:col-span-2">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                        <i class="fa-solid fa-screwdriver-wrench text-white text-sm"></i>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+            
+            <!-- Brand Section (Wide) -->
+            <div class="md:col-span-5">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                        <i class="fa-solid fa-screwdriver-wrench text-white text-lg"></i>
                     </div>
-                    <span class="font-bold text-xl text-gray-900 tracking-tight">DailyTools</span>
+                    <span class="font-bold text-2xl text-white tracking-tight">DailyTools</span>
                 </div>
-                <p class="text-gray-500 text-sm max-w-xs leading-relaxed">
-                    30+ free, high-quality utilities for developers, designers, and students. No signup, no fees, just tools.
+                <p class="text-gray-400 text-base leading-relaxed max-w-md">
+                    Helping developers and designers speed up their daily workflow with 30+ lightweight, privacy-focused web utilities.
                 </p>
-                <!-- Social Icons -->
-                <div class="flex space-x-4 mt-6">
-                    <a href="https://github.com/nkd2000" class="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all">
-                        <i class="fa-brands fa-github"></i>
+                <div class="flex space-x-5 mt-8">
+                    <a href="https://github.com/nkd2000" class="group transition-all">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                            <i class="fa-brands fa-github text-lg"></i>
+                        </div>
                     </a>
-                    <a href="#" class="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all">
-                        <i class="fa-brands fa-twitter"></i>
+                    <a href="#" class="group transition-all">
+                        <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:bg-blue-400 group-hover:text-white transition-all">
+                            <i class="fa-brands fa-twitter text-lg"></i>
+                        </div>
                     </a>
                 </div>
             </div>
 
-            <!-- Quick Links -->
-            <div>
-                <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Company</h4>
-                <ul class="space-y-2">
-                    <li><a href="pages/privacy.html" class="text-gray-500 hover:text-indigo-600 text-sm transition-colors">Privacy Policy</a></li>
-                    <li><a href="pages/contact.html" class="text-gray-500 hover:text-indigo-600 text-sm transition-colors">Contact Us</a></li>
-                    <li><a href="#" class="text-gray-500 hover:text-indigo-600 text-sm transition-colors">Terms of Service</a></li>
+            <!-- Links Sections -->
+            <div class="md:col-span-2">
+                <h4 class="text-sm font-bold text-white uppercase tracking-[0.2em] mb-6">Explore</h4>
+                <ul class="space-y-4">
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">Popular Tools</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">New Releases</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 transition-colors">Categories</a></li>
                 </ul>
             </div>
 
-            <!-- Support Section -->
-            <div>
-                <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Support</h4>
-                <p class="text-sm text-gray-500 mb-4">Found a bug or want a new tool?</p>
-                <a href="https://github.com/nkd2000/Daily_tools/issues" class="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors">
-                    Request a Feature <i class="fa-solid fa-arrow-right text-xs"></i>
-                </a>
+            <div class="md:col-span-2">
+                <h4 class="text-sm font-bold text-white uppercase tracking-[0.2em] mb-6">Legal</h4>
+                <ul class="space-y-4">
+                    <li><a href="pages/privacy.html" class="text-gray-400 hover:text-indigo-400 transition-colors">Privacy Policy</a></li>
+                    <li><a href="pages/contact.html" class="text-gray-400 hover:text-indigo-400 transition-colors">Terms of Use</a></li>
+                    <li><a href="pages/contact.html" class="text-gray-400 hover:text-indigo-400 transition-colors">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter/CTA -->
+            <div class="md:col-span-3">
+                <div class="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                    <h4 class="text-white font-bold mb-2">Want new tools?</h4>
+                    <p class="text-gray-400 text-sm mb-4">Suggest a tool or report an issue on GitHub.</p>
+                    <a href="https://github.com/nkd2000/Daily_tools/issues" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all shadow-lg shadow-indigo-600/20">
+                        Suggest Feature
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- Bottom Bar -->
-        <div class="pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-sm text-gray-400">
-                &copy; <span id="currentYear"></span> DailyTools. Built with <i class="fa-solid fa-heart text-rose-500 mx-1"></i> for the community.
-            </p>
+        <!-- Bottom Line -->
+        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-gray-500 text-sm">
+                &copy; <span id="currentYear"></span> <span class="text-gray-300 font-medium">DailyTools</span>. Made with <i class="fa-solid fa-heart text-indigo-500 animate-pulse"></i> by <a href="#" class="hover:text-white transition-colors">Nkd2000</a>
+            </div>
+            
             <div class="flex items-center gap-6">
-                <span class="flex items-center gap-2 text-xs text-gray-400">
-                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                    All systems operational
-                </span>
+                <div class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span class="text-xs text-gray-500 uppercase tracking-widest font-medium">Systems Nominal</span>
+                </div>
+                <div class="h-4 w-[1px] bg-white/10"></div>
+                <div class="text-xs text-gray-500 font-mono">v2.0.4</div>
             </div>
         </div>
     </div>
 </footer>
 
-<script>
-    // Automatically update year
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
-</script>
+    <script>
+        // Automatically update year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
 
     <!-- Tools Data & Script -->
     <script>
