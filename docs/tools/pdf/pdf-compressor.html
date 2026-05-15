@@ -1,56 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    
+
     <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https: data:;">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://fonts.googleapis.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; connect-src 'self' https: data:;">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
     <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
-    
+
     <title>Advanced PDF Compressor | Free Online Tools</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Compress PDF files online while maintaining text readability. Choose compression levels (Screen, Ebook, Print). Supports Grayscale and Password Protected PDFs.">
-    <meta name="keywords" content="pdf compressor, compress pdf online, reduce pdf size, grayscale pdf, password protected pdf compressor, free pdf tool">
+    <meta name="description"
+        content="Compress PDF files online while maintaining text readability. Choose compression levels (Screen, Ebook, Print). Supports Grayscale and Password Protected PDFs.">
+    <meta name="keywords"
+        content="pdf compressor, compress pdf online, reduce pdf size, grayscale pdf, password protected pdf compressor, free pdf tool">
     <meta name="author" content="Free Online Tools">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 
     <!-- PDF Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/downloadjs/1.4.8/download.min.js"></script>
 
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
         /* Custom Range Slider */
         input[type=range] {
             -webkit-appearance: none;
             background: transparent;
         }
+
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 18px; width: 18px;
+            height: 18px;
+            width: 18px;
             border-radius: 50%;
             background: #ef4444;
             margin-top: -7px;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
+
         input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px;
+            width: 100%;
+            height: 4px;
             background: #e2e8f0;
             border-radius: 2px;
         }
@@ -60,7 +77,7 @@
             background-color: #fef2f2;
             color: #b91c1c;
         }
-        
+
         /* Checkered Background for Transparency/Preview */
         .bg-checkered {
             background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
@@ -69,326 +86,450 @@
         }
     </style>
 </head>
+
 <body class="flex flex-col min-h-screen text-slate-800">
 
     <!-- Navigation -->
-    
-<!-- Universal Glass Header -->
-<nav class="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-xl saturate-150 no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <!-- Left: Logo -->
-            <div class="flex items-center gap-3">
-                <a href="../../index.html" class="flex items-center gap-3 group">
-                    <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-screwdriver-wrench"></i>
-                    </div>
-                    <span class="font-bold text-xl tracking-tight text-inherit dark:text-white">DailyTools</span>
-                </a>
-            </div>
 
-            <!-- Right: Navigation -->
-            <div class="flex items-center gap-6 text-sm font-semibold">
-                <a href="../../index.html" class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Home</a>
-                <a href="../../pages/contact.html" class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Contact</a>
-                
-                <!-- Github Icon with subtle border -->
-                <div class="h-6 w-[1px] bg-gray-300/20 mx-2"></div>
-                <a href="https://github.com/nkd2000" class="text-inherit opacity-70 hover:opacity-100 transition-all dark:text-white text-lg">
-                    <i class="fa-brands fa-github"></i>
-                </a>
+    <!-- Universal Glass Header -->
+    <nav class="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-xl saturate-150 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Left: Logo -->
+                <div class="flex items-center gap-3">
+                    <a href="../../index.html" class="flex items-center gap-3 group">
+                        <div
+                            class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                        </div>
+                        <span class="font-bold text-xl tracking-tight text-inherit dark:text-white">DailyTools</span>
+                    </a>
+                </div>
+
+                <!-- Right: Navigation -->
+                <div class="flex items-center gap-6 text-sm font-semibold">
+                    <a href="../../index.html"
+                        class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Home</a>
+                    <a href="../../pages/contact.html"
+                        class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Contact</a>
+
+                    <!-- Github Icon with subtle border -->
+                    <div class="h-6 w-[1px] bg-gray-300/20 mx-2"></div>
+                    <a href="https://github.com/nkd2000"
+                        class="text-inherit opacity-70 hover:opacity-100 transition-all dark:text-white text-lg">
+                        <i class="fa-brands fa-github"></i>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-5xl mx-auto px-4 py-12 sm:px-6 w-full">
-        
-        <div class="text-center mb-10">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-3">
-                Smart PDF Compressor
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-12 sm:px-6 w-full">
+
+        <!-- 1. Header Section -->
+        <div class="text-center mb-12">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 mb-6 shadow-sm">
+                <span class="relative flex h-2 w-2">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+                </span>
+                <span class="text-[10px] font-black text-indigo-700 uppercase tracking-[0.2em]">Smart Optimization
+                    Active</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
+                Compress <span class="text-red-600 italic">PDF</span> Smarter.
             </h1>
-            <p class="text-slate-500 text-lg max-w-2xl mx-auto">
-                Reduce PDF file size while keeping text sharp. Now with Grayscale mode.
+            <p class="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">
+                Reduce file size for emails, government portals, and web applications without losing clarity.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- Left: Settings -->
-            <div class="lg:col-span-5 space-y-6">
-                
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-red-500"></i> Settings
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+
+            <!-- LEFT COLUMN: SETTINGS -->
+            <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-24 z-10 mb-8 lg:mb-0">
+
+                <!-- STEP 1: Compression Presets -->
+                <div
+                    class="bg-white rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100 p-8 overflow-hidden relative">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-gray-50 rounded-bl-full -mr-8 -mt-8 opacity-40">
+                    </div>
+
+                    <h3 class="font-black text-slate-800 mb-6 flex items-center gap-3">
+                        <span
+                            class="flex items-center justify-center w-7 h-7 bg-red-500 text-white rounded-lg text-xs shadow-lg shadow-red-200">1</span>
+                        Choose Quality
                     </h3>
-                    
-                    <!-- Preset Options -->
-                    <div class="grid grid-cols-1 gap-3 mb-6">
-                        <div class="option-card border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-red-300 transition" onclick="setMode('screen')">
-                            <div class="flex items-center justify-between">
-                                <span class="font-bold text-sm">Extreme (Low Quality)</span>
-                                <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Max Savings</span>
+
+                    <div class="space-y-3">
+                        <!-- Recommended -->
+                        <div id="mode-ebook" onclick="setMode('ebook')"
+                            class="mode-card group border-2 border-red-500 bg-red-50/30 rounded-2xl p-4 cursor-pointer transition-all">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center text-white shadow-lg">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-bold text-slate-800">Balanced (Recommended)</span>
+                                    <p class="text-[11px] text-slate-500 font-medium italic">Perfect for Reading &
+                                        Printing</p>
+                                </div>
                             </div>
-                            <p class="text-xs text-slate-500 mt-1">72 DPI. Best for email/web.</p>
-                        </div>
-                        
-                        <div class="option-card border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-red-300 transition active" onclick="setMode('ebook')">
-                            <div class="flex items-center justify-between">
-                                <span class="font-bold text-sm">Recommended (Medium)</span>
-                                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">Balanced</span>
-                            </div>
-                            <p class="text-xs text-slate-500 mt-1">100 DPI. Good for reading on screens.</p>
                         </div>
 
-                        <div class="option-card border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-red-300 transition" onclick="setMode('print')">
-                            <div class="flex items-center justify-between">
-                                <span class="font-bold text-sm">Print (High Quality)</span>
-                                <span class="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded">Clear Text</span>
+                        <!-- Extreme -->
+                        <div id="mode-screen" onclick="setMode('screen')"
+                            class="mode-card group border-2 border-gray-100 hover:border-red-200 rounded-2xl p-4 cursor-pointer transition-all">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-red-50 group-hover:text-red-500 transition-colors">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                                <div>
+                                    <span class="block font-bold text-slate-800">Extreme Compression</span>
+                                    <p class="text-[11px] text-slate-500">Fast sharing, Lower quality</p>
+                                </div>
                             </div>
-                            <p class="text-xs text-slate-500 mt-1">150 DPI. Larger size, better quality.</p>
                         </div>
                     </div>
-
-                    <!-- Fine Tune -->
-                    <div class="mb-4">
-                        <div class="flex justify-between mb-2">
-                            <label class="text-xs font-bold text-slate-500 uppercase">Image Quality</label>
-                            <span class="text-xs font-bold text-red-600" id="qualityVal">60%</span>
-                        </div>
-                        <input type="range" id="qualityRange" min="10" max="100" value="60" class="w-full">
-                    </div>
-
-                    <!-- Grayscale Toggle -->
-                    <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                        <input type="checkbox" id="grayscaleCheck" class="w-5 h-5 text-red-600 rounded focus:ring-red-500">
-                        <div>
-                            <label for="grayscaleCheck" class="text-sm font-bold text-slate-700 cursor-pointer select-none">Convert to Grayscale</label>
-                            <p class="text-xs text-slate-400">Makes file even smaller (Black & White).</p>
-                        </div>
-                    </div>
-
-                </div>
-                
-                <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-4 flex gap-3 text-sm text-yellow-700">
-                    <i class="fa-solid fa-triangle-exclamation mt-0.5"></i>
-                    <p><strong>Note:</strong> If your PDF is already text-based, compression might increase file size. This tool works best on <strong>Scanned Documents & Images</strong>.</p>
                 </div>
 
+                <!-- STEP 2: Target Size Input (THE NEW FEATURE) -->
+                <!-- STEP 2: Target Size Input (Enhanced with Unit Selector) -->
+                <div class="bg-indigo-900 rounded-3xl shadow-2xl p-8 text-white relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl"></div>
+
+                    <h3 class="font-black mb-6 flex items-center gap-3 relative z-10">
+                        <span
+                            class="flex items-center justify-center w-7 h-7 bg-white text-indigo-900 rounded-lg text-xs font-black">2</span>
+                        Set Target Size <span
+                            class="text-[9px] bg-white/20 px-2 py-0.5 rounded ml-auto tracking-widest opacity-80 uppercase">Smart-Mode</span>
+                    </h3>
+
+                    <div class="relative z-10">
+                        <div class="relative group flex items-center">
+                            <!-- Number Input -->
+                            <input type="number" id="targetSizeInput" placeholder="e.g. 2"
+                                class="w-full pl-6 pr-28 py-4 bg-white/10 border-2 border-white/10 rounded-2xl focus:border-white focus:bg-white/20 outline-none transition-all font-black text-xl placeholder:text-white/30">
+
+                            <!-- Unit Selector Dropdown -->
+                            <div class="absolute right-2">
+                                <select id="targetSizeUnit"
+                                    class="bg-indigo-700 text-white font-bold text-sm py-2 px-3 rounded-xl border border-white/20 outline-none focus:ring-2 focus:ring-white/50 cursor-pointer transition-all hover:bg-indigo-600">
+                                    <option value="KB">KB</option>
+                                    <option value="MB" selected>MB</option>
+                                    <option value="GB">GB</option>
+                                </select>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-indigo-200/70 mt-4 leading-relaxed">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Perfect for portals with strict limits (e.g.
+                            500KB or 2MB).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Advanced (Grayscale) -->
+                <div class="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+                    <label class="flex items-center justify-between cursor-pointer group">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-slate-600 transition-colors">
+                                <i class="fa-solid fa-droplet-slash"></i>
+                            </div>
+                            <div>
+                                <span class="block font-bold text-slate-700">Grayscale Mode</span>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Save an
+                                    extra ~15%</span>
+                            </div>
+                        </div>
+                        <div class="relative inline-block w-12 h-6">
+                            <input type="checkbox" id="grayscaleCheck" class="sr-only peer">
+                            <div
+                                class="w-12 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600">
+                            </div>
+                        </div>
+                    </label>
+                </div>
             </div>
 
-            <!-- Right: Upload & Process -->
+            <!-- RIGHT COLUMN: ACTION AREA -->
             <div class="lg:col-span-7">
-                
-                <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 text-center" id="dropZone">
-                    
-                    <div id="uploadUI">
-                        <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce-slow">
-                            <i class="fa-solid fa-file-pdf text-3xl"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">Upload PDF File</h3>
-                        <p class="text-slate-400 text-sm mb-6">Max file size 50MB</p>
-                        
-                        <label class="inline-flex cursor-pointer bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-red-200 transition transform hover:-translate-y-1">
-                            <i class="fa-solid fa-upload mr-2 mt-0.5"></i> Select PDF
-                            <input type="file" id="fileInput" accept=".pdf" class="hidden">
-                        </label>
-                    </div>
 
-                    <!-- Processing UI -->
-                    <div id="processingUI" class="hidden">
-                        <div class="w-16 h-16 border-4 border-red-100 border-t-red-600 rounded-full animate-spin mx-auto mb-4"></div>
-                        <h3 class="text-lg font-bold text-slate-800 mb-1">Compressing PDF...</h3>
-                        <p class="text-slate-500 text-xs mb-4" id="statusText">Processing Page 1...</p>
-                        
-                        <!-- Progress Bar -->
-                        <div class="w-full bg-gray-100 rounded-full h-2 mb-2 overflow-hidden">
-                            <div class="bg-red-600 h-2 rounded-full transition-all duration-300" style="width: 0%" id="progressBar"></div>
-                        </div>
-                    </div>
+                <div
+                    class="bg-white rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-gray-100 p-4 h-full min-h-[500px]">
 
-                    <!-- Result UI -->
-                    <div id="resultUI" class="hidden">
-                        <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fa-solid fa-check text-2xl"></i>
+                    <div id="dropZone"
+                        class="h-full border-4 border-dashed border-gray-100 rounded-[2.5rem] flex flex-col items-center justify-center p-8 transition-all hover:bg-slate-50 hover:border-indigo-200 group relative overflow-hidden">
+
+                        <!-- UPLOAD UI -->
+                        <div id="uploadUI" class="text-center py-10">
+                            <div class="relative mb-10 mx-auto w-32 h-32">
+                                <div
+                                    class="absolute inset-0 bg-indigo-50 rounded-[2rem] rotate-6 group-hover:rotate-12 transition-transform opacity-50">
+                                </div>
+                                <div
+                                    class="absolute inset-0 bg-white border-2 border-indigo-100 rounded-[2rem] flex items-center justify-center shadow-xl shadow-indigo-100/20">
+                                    <i
+                                        class="fa-solid fa-cloud-arrow-up text-5xl text-indigo-600 group-hover:animate-bounce transition-all"></i>
+                                </div>
+                            </div>
+
+                            <h3 class="text-3xl font-black text-slate-800 mb-3 tracking-tight tracking-tight">Drop PDF
+                                here.</h3>
+                            <p class="text-slate-400 font-medium mb-10">Simple. Secure. In-browser compression.</p>
+
+                            <label
+                                class="inline-flex items-center gap-4 cursor-pointer bg-slate-900 hover:bg-indigo-600 text-white font-black py-5 px-12 rounded-[1.5rem] transition-all shadow-2xl shadow-slate-300 hover:shadow-indigo-300 active:scale-95 text-lg">
+                                Select PDF File
+                                <input type="file" id="fileInput" accept=".pdf" class="hidden">
+                            </label>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">Compression Complete!</h3>
-                        
-                        <div class="flex justify-center gap-8 text-sm text-slate-600 mb-6 font-mono bg-slate-50 p-3 rounded-lg border border-slate-200 inline-flex">
-                            <div class="text-center">
-                                <p class="text-xs text-slate-400 uppercase">Original</p>
-                                <p class="font-bold text-slate-800" id="oldSize">0 MB</p>
+
+                        <!-- PROCESSING UI -->
+                        <div id="processingUI" class="hidden text-center w-full max-w-sm">
+                            <div class="relative w-24 h-24 mx-auto mb-10">
+                                <div class="absolute inset-0 border-8 border-indigo-50 rounded-full"></div>
+                                <div
+                                    class="absolute inset-0 border-8 border-indigo-600 rounded-full border-t-transparent animate-spin">
+                                </div>
                             </div>
-                            <div class="self-center text-gray-300"><i class="fa-solid fa-arrow-right"></i></div>
-                            <div class="text-center">
-                                <p class="text-xs text-slate-400 uppercase">Compressed</p>
-                                <p class="font-bold text-green-600" id="newSize">0 MB</p>
-                            </div>
-                            <div class="self-center border-l border-gray-300 h-8 mx-2"></div>
-                            <div class="text-center">
-                                <p class="text-xs text-slate-400 uppercase">Saved</p>
-                                <p class="font-bold text-indigo-600" id="savedPercent">0%</p>
+                            <h3 class="text-2xl font-black text-slate-800 mb-2">Analyzing Pixels...</h3>
+                            <p class="text-slate-400 text-sm mb-8 font-medium">Almost there, making it light.</p>
+                            <p id="statusText" class="text-slate-500 text-xs mb-4">Ready</p>
+
+                            <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden shadow-inner">
+                                <div class="bg-gradient-to-r from-indigo-500 to-indigo-700 h-full w-0 transition-all duration-300"
+                                    id="progressBar"></div>
                             </div>
                         </div>
 
-                        <div class="flex flex-col gap-3">
-                             <button onclick="showComparison()" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold py-2 px-6 rounded-lg transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-eye"></i> Compare Quality
-                            </button>
-                            <div class="flex gap-3 justify-center">
-                                 <button id="downloadBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-                                    <i class="fa-solid fa-download"></i> Download PDF
+                        <!-- RESULT UI -->
+                        <div id="resultUI" class="hidden w-full max-w-md mx-auto text-center">
+                            <div
+                                class="w-24 h-24 bg-emerald-500 text-white rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-emerald-200 rotate-3">
+                                <i class="fa-solid fa-check-double text-4xl"></i>
+                            </div>
+
+                            <h3 class="text-3xl font-black text-slate-800 mb-8 tracking-tight">Done! It's Lighter.</h3>
+
+                            <div
+                                class="grid grid-cols-2 gap-4 mb-10 bg-slate-50 rounded-[2rem] p-8 border border-slate-100 relative">
+                                <!-- Efficiency Score -->
+                                <div
+                                    class="absolute -top-4 left-1/2 -translate-x-1/2 bg-white border border-indigo-100 px-4 py-1 rounded-full shadow-sm">
+                                    <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest"
+                                        id="savedPercent">Efficiency: 0%</span>
+                                </div>
+
+                                <div class="text-left">
+                                    <span
+                                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Before</span>
+                                    <span class="text-2xl font-black text-slate-700" id="oldSize">12MB</span>
+                                </div>
+                                <div class="text-right">
+                                    <span
+                                        class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">After</span>
+                                    <span class="text-2xl font-black text-emerald-600" id="newSize">4.2MB</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-4">
+                                <button id="downloadBtn"
+                                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-5 px-8 rounded-2xl shadow-xl shadow-indigo-200 transition-all flex items-center justify-center gap-3 text-lg">
+                                    <i class="fa-solid fa-download"></i> DOWNLOAD PDF
                                 </button>
-                                <button onclick="resetApp()" class="bg-white border border-gray-300 text-slate-600 hover:bg-gray-50 font-bold py-3 px-4 rounded-xl transition" title="Start Over">
-                                    <i class="fa-solid fa-rotate-right"></i>
+                                <button onclick="resetApp()"
+                                    class="text-slate-400 hover:text-indigo-600 text-sm font-bold transition-all py-2">
+                                    <i class="fa-solid fa-rotate-right mr-2"></i> Start New Project
                                 </button>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
         </div>
-
     </main>
-    
+
     <!-- Comparison Modal -->
-    <div id="compareModal" class="fixed inset-0 bg-slate-900/95 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+    <div id="compareModal"
+        class="fixed inset-0 bg-slate-900/95 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl w-full max-w-6xl h-[90vh] flex flex-col shadow-2xl relative overflow-hidden">
-             <!-- Modal Header -->
-             <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-                 <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                     <i class="fa-solid fa-magnifying-glass-chart text-indigo-500"></i> Quality Comparison (Page 1)
-                 </h3>
-                 <div class="flex items-center gap-3">
-                     <span class="text-xs text-gray-500 bg-white border px-2 py-1 rounded">Scroll/Pinch to Zoom</span>
-                     <button onclick="closeComparison()" class="text-gray-400 hover:text-red-500 text-2xl transition"><i class="fa-solid fa-times"></i></button>
-                 </div>
-             </div>
-             
-             <!-- Comparison View -->
-             <div class="flex-grow flex flex-col md:flex-row h-full overflow-hidden bg-checkered relative">
-                 
-                 <!-- Original -->
-                 <div class="flex-1 border-r border-gray-300 flex flex-col relative overflow-hidden group">
-                     <div class="absolute top-2 left-2 z-10 bg-slate-800/80 text-white text-xs font-bold px-3 py-1 rounded-full backdrop-blur">Original</div>
-                     <div class="flex-grow overflow-auto p-4 flex items-center justify-center pan-container">
-                         <img id="previewOriginal" class="max-w-full shadow-lg transition-transform origin-top-left" style="transform: scale(1)">
-                     </div>
-                 </div>
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass-chart text-indigo-500"></i> Quality Comparison (Page 1)
+                </h3>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-gray-500 bg-white border px-2 py-1 rounded">Scroll/Pinch to Zoom</span>
+                    <button onclick="closeComparison()" class="text-gray-400 hover:text-red-500 text-2xl transition"><i
+                            class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
 
-                 <!-- Compressed -->
-                 <div class="flex-1 flex flex-col relative overflow-hidden group">
-                     <div class="absolute top-2 left-2 z-10 bg-green-600/90 text-white text-xs font-bold px-3 py-1 rounded-full backdrop-blur">Compressed</div>
-                     <div class="flex-grow overflow-auto p-4 flex items-center justify-center pan-container">
-                         <img id="previewCompressed" class="max-w-full shadow-lg transition-transform origin-top-left" style="transform: scale(1)">
-                     </div>
-                 </div>
-                 
-             </div>
-             
-             <!-- Zoom Controls -->
-             <div class="p-3 bg-white border-t border-gray-200 flex justify-center items-center gap-4">
-                 <button onclick="adjustZoom(-0.2)" class="p-2 rounded hover:bg-gray-100 text-slate-600"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-                 <span id="zoomLevel" class="text-xs font-mono font-bold w-12 text-center">100%</span>
-                 <button onclick="adjustZoom(0.2)" class="p-2 rounded hover:bg-gray-100 text-slate-600"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-             </div>
-        </div>
-    </div>
+            <!-- Comparison View -->
+            <div class="flex-grow flex flex-col md:flex-row h-full overflow-hidden bg-checkered relative">
 
-    
-<footer class="relative bg-[#0f172a] text-gray-300 pt-20 pb-10 overflow-hidden no-print">
-    <!-- Background Decoration: Subtle Dot Grid & Glow -->
-    <div class="absolute inset-0 z-0">
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0); background-size: 40px 40px;"></div>
-        <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px]"></div>
-        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]"></div>
-    </div>
-
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
-            
-            <!-- Column 1: Brand & Bio -->
-            <div class="md:col-span-5">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/20">
-                        <i class="fa-solid fa-screwdriver-wrench text-white text-xl"></i>
+                <!-- Original -->
+                <div class="flex-1 border-r border-gray-300 flex flex-col relative overflow-hidden group">
+                    <div
+                        class="absolute top-2 left-2 z-10 bg-slate-800/80 text-white text-xs font-bold px-3 py-1 rounded-full backdrop-blur">
+                        Original</div>
+                    <div class="flex-grow overflow-auto p-4 flex items-center justify-center pan-container">
+                        <img id="previewOriginal" class="max-w-full shadow-lg transition-transform origin-top-left"
+                            style="transform: scale(1)">
                     </div>
-                    <span class="font-extrabold text-2xl text-white tracking-tight">DailyTools<span class="text-indigo-500">.</span></span>
                 </div>
-                <p class="text-gray-400 text-base leading-relaxed max-w-md">
-                    The ultimate destination for free, privacy-first web utilities. Helping you simplify complex digital tasks since 2023.
-                </p>
-                <!-- Social Buttons -->
-                <div class="flex gap-4 mt-8">
-                    <a href="https://github.com/nkd2000" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-indigo-600 hover:border-indigo-600 transition-all duration-300 group">
-                        <i class="fa-brands fa-github text-white group-hover:scale-110 transition-transform"></i>
-                    </a>
-                    <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-400 hover:border-blue-400 transition-all duration-300 group">
-                        <i class="fa-brands fa-x-twitter text-white group-hover:scale-110 transition-transform"></i>
-                    </a>
+
+                <!-- Compressed -->
+                <div class="flex-1 flex flex-col relative overflow-hidden group">
+                    <div
+                        class="absolute top-2 left-2 z-10 bg-green-600/90 text-white text-xs font-bold px-3 py-1 rounded-full backdrop-blur">
+                        Compressed</div>
+                    <div class="flex-grow overflow-auto p-4 flex items-center justify-center pan-container">
+                        <img id="previewCompressed" class="max-w-full shadow-lg transition-transform origin-top-left"
+                            style="transform: scale(1)">
+                    </div>
                 </div>
+
             </div>
 
-            <!-- Column 2: Navigation -->
-            <div class="md:col-span-2 md:col-start-7">
-                <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Platform</h4>
-                <ul class="space-y-4 text-sm">
-                    <li><a href="../../index.html" class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px]"></i> All Tools</a></li>
-                    <li><a href="../../pages/contact.html" class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px]"></i> Contact Us</a></li>
-                    <li><a href="../../pages/privacy.html" class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px]"></i> Privacy</a></li>
-                </ul>
-            </div>
-
-            <!-- Column 3: Suggest Tool CTA -->
-            <div class="md:col-span-4">
-                <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Contribute</h4>
-                <div class="p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 backdrop-blur-md">
-                    <p class="text-gray-400 text-sm mb-5">Have an idea for a new tool? Submit your request on GitHub.</p>
-                    <a href="https://github.com/nkd2000/Daily_tools/issues" class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-all shadow-lg shadow-indigo-600/30">
-                        <i class="fa-brands fa-github-alt"></i> Request Feature
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Bar -->
-        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
-                <p class="text-gray-500 text-sm">&copy; 2025 <span class="text-white font-semibold">DailyTools Pro</span>.</p>
-                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
-                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems Operational</span>
-                </div>
-            </div>
-            
-            <div class="text-gray-500 text-sm font-medium">
-                Made with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i> by <span class="text-gray-200">Nkd2000</span>
+            <!-- Zoom Controls -->
+            <div class="p-3 bg-white border-t border-gray-200 flex justify-center items-center gap-4">
+                <button onclick="adjustZoom(-0.2)" class="p-2 rounded hover:bg-gray-100 text-slate-600"><i
+                        class="fa-solid fa-magnifying-glass-minus"></i></button>
+                <span id="zoomLevel" class="text-xs font-mono font-bold w-12 text-center">100%</span>
+                <button onclick="adjustZoom(0.2)" class="p-2 rounded hover:bg-gray-100 text-slate-600"><i
+                        class="fa-solid fa-magnifying-glass-plus"></i></button>
             </div>
         </div>
     </div>
-</footer>
-<style>
-/* Header text adaptive color logic */
-nav .text-inherit {
-    color: currentColor; /* Ye apne parent ka color lega */
-}
-
-/* Agar tool dark hai toh text white ho jayega automatically */
-.dark-theme nav { color: white; border-bottom-color: rgba(255,255,255,0.1); }
-.light-theme nav { color: #1e293b; border-bottom-color: rgba(0,0,0,0.05); }
-
-/* Strong blur effect */
-.backdrop-blur-xl {
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    backdrop-filter: blur(24px) saturate(150%);
-}
-</style>
 
 
-    <script>
+    <footer class="relative bg-[#0f172a] text-gray-300 pt-20 pb-10 overflow-hidden no-print">
+        <!-- Background Decoration: Subtle Dot Grid & Glow -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 opacity-[0.03]"
+                style="background-image: radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0); background-size: 40px 40px;">
+            </div>
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px]"></div>
+            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+
+                <!-- Column 1: Brand & Bio -->
+                <div class="md:col-span-5">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/20">
+                            <i class="fa-solid fa-screwdriver-wrench text-white text-xl"></i>
+                        </div>
+                        <span class="font-extrabold text-2xl text-white tracking-tight">DailyTools<span
+                                class="text-indigo-500">.</span></span>
+                    </div>
+                    <p class="text-gray-400 text-base leading-relaxed max-w-md">
+                        The ultimate destination for free, privacy-first web utilities. Helping you simplify complex
+                        digital tasks since 2023.
+                    </p>
+                    <!-- Social Buttons -->
+                    <div class="flex gap-4 mt-8">
+                        <a href="https://github.com/nkd2000"
+                            class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-indigo-600 hover:border-indigo-600 transition-all duration-300 group">
+                            <i class="fa-brands fa-github text-white group-hover:scale-110 transition-transform"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-400 hover:border-blue-400 transition-all duration-300 group">
+                            <i class="fa-brands fa-x-twitter text-white group-hover:scale-110 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Navigation -->
+                <div class="md:col-span-2 md:col-start-7">
+                    <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Platform</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li><a href="../../index.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i
+                                    class="fa-solid fa-chevron-right text-[10px]"></i> All Tools</a></li>
+                        <li><a href="../../pages/contact.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i
+                                    class="fa-solid fa-chevron-right text-[10px]"></i> Contact Us</a></li>
+                        <li><a href="../../pages/privacy.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i
+                                    class="fa-solid fa-chevron-right text-[10px]"></i> Privacy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Suggest Tool CTA -->
+                <div class="md:col-span-4">
+                    <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Contribute</h4>
+                    <div
+                        class="p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 backdrop-blur-md">
+                        <p class="text-gray-400 text-sm mb-5">Have an idea for a new tool? Submit your request on
+                            GitHub.</p>
+                        <a href="https://github.com/nkd2000/Daily_tools/issues"
+                            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-all shadow-lg shadow-indigo-600/30">
+                            <i class="fa-brands fa-github-alt"></i> Request Feature
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                    <p class="text-gray-500 text-sm">&copy; 2025 <span class="text-white font-semibold">DailyTools
+                            Pro</span>.</p>
+                    <div
+                        class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems
+                            Operational</span>
+                    </div>
+                </div>
+
+                <div class="text-gray-500 text-sm font-medium">
+                    Made with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i> by <span
+                        class="text-gray-200">Nkd2000</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <style>
+        /* Header text adaptive color logic */
+        nav .text-inherit {
+            color: currentColor;
+            /* Ye apne parent ka color lega */
+        }
+
+        /* Agar tool dark hai toh text white ho jayega automatically */
+        .dark-theme nav {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .light-theme nav {
+            color: #1e293b;
+            border-bottom-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Strong blur effect */
+        .backdrop-blur-xl {
+            -webkit-backdrop-filter: blur(24px) saturate(150%);
+            backdrop-filter: blur(24px) saturate(150%);
+        }
+    </style>
+
+
+    <!-- <script>
         // ============================================================
         // SECURITY: HTTPS ENFORCEMENT
         // ============================================================
@@ -602,6 +743,18 @@ nav .text-inherit {
             };
         }
 
+        async function getCompressedImageData(canvas, quality) {
+    return new Promise((resolve) => {
+        canvas.toBlob((blob) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(new Uint8Array(reader.result));
+            reader.readAsArrayBuffer(blob);
+        }, 'image/jpeg', quality);
+    });
+}
+
+const yieldToUI = () => new Promise(resolve => setTimeout(resolve, 0));
+
         /**
          * Show error modal
          * @param {string} title
@@ -745,99 +898,60 @@ nav .text-inherit {
                 const totalPages = pdf.numPages;
                 const isGrayscale = grayscaleCheck.checked;
 
+                const canvas = document.createElement('canvas');
+const context = canvas.getContext('2d', { alpha: false });
+
                 // ============================================================
                 // MAIN COMPRESSION LOOP WITH MEMORY MANAGEMENT
                 // ============================================================
-                for (let i = 1; i <= totalPages; i++) {
-                    // Check if compression was aborted
-                    if (compressionAborted) {
-                        throw new Error('Compression cancelled by user');
-                    }
+               
+for (let i = 1; i <= totalPages; i++) {
+    if (compressionAborted) break;
 
-                    // Update Status with debounce
-                    const updateStatus = debounce(() => {
-                        statusText.innerText = `Processing Page ${i} of ${totalPages}...`;
-                        progressBar.style.width = `${(i / totalPages) * 100}%`;
-                    }, 50);
-                    updateStatus();
+    // UI Update
+    statusText.innerText = `Processing Page ${i} of ${totalPages}...`;
+    progressBar.style.width = `${(i / totalPages) * 100}%`;
 
-                    try {
-                        // 1. Render Page to Canvas
-                        const page = await pdf.getPage(i);
-                        const viewport = page.getViewport({ scale: scale });
-                        
-                        const canvas = document.createElement('canvas');
-                        canvases.push(canvas); // Track for cleanup
-                        
-                        const context = canvas.getContext('2d');
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({ scale: scale });
+    
+    // Canvas update (Purana canvas reuse ho raha hai)
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
 
-                        await withTimeout(
-                            page.render({ canvasContext: context, viewport: viewport }).promise,
-                            30000 // 30s per page
-                        );
-                        
-                        // Apply Grayscale Filter (if enabled)
-                        if (isGrayscale) {
-                            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                            const data = imageData.data;
-                            for (let j = 0; j < data.length; j += 4) {
-                                const avg = (data[j] + data[j + 1] + data[j + 2]) / 3;
-                                data[j] = avg;
-                                data[j + 1] = avg;
-                                data[j + 2] = avg;
-                            }
-                            context.putImageData(imageData, 0, 0);
-                        }
-                        
-                        // Capture Original for Preview (Page 1 Only)
-                        if(i === 1) {
-                             const origViewport = page.getViewport({ scale: 1.0 });
-                             const origCanvas = document.createElement('canvas');
-                             canvases.push(origCanvas);
-                             const origCtx = origCanvas.getContext('2d');
-                             origCanvas.height = origViewport.height;
-                             origCanvas.width = origViewport.width;
-                             await page.render({ canvasContext: origCtx, viewport: origViewport }).promise;
-                             originalPageData = origCanvas.toDataURL('image/png');
-                        }
+    // 1. Render Page
+    await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-                        // 2. Compress as JPEG
-                        const imgDataUrl = canvas.toDataURL('image/jpeg', quality);
-                        
-                        // Capture Compressed for Preview (Page 1 Only)
-                        if(i === 1) {
-                             compressedPageData = imgDataUrl;
-                        }
-                        
-                        // 3. Add to new PDF
-                        const imgBytes = await fetch(imgDataUrl).then(res => res.arrayBuffer());
-                        const jpgImage = await newPdf.embedJpg(imgBytes);
-                        
-                        // Maintain original aspect ratio
-                        const pdfPage = newPdf.addPage([viewport.width / scale, viewport.height / scale]); 
-                        pdfPage.drawImage(jpgImage, {
-                            x: 0,
-                            y: 0,
-                            width: pdfPage.getWidth(),
-                            height: pdfPage.getHeight(),
-                        });
-                        
-                        // Immediate cleanup of current canvas
-                        if (canvases.length > 2) {
-                            const oldCanvas = canvases.shift();
-                            setTimeout(() => cleanupCanvas(oldCanvas), CANVAS_CLEANUP_DELAY);
-                        }
-                        
-                    } catch (pageError) {
-                        if (pageError.message.includes('timed out')) {
-                            throw new Error(`Page ${i} processing timed out`);
-                        }
-                        console.warn(`Error processing page ${i}:`, pageError);
-                        // Continue with next page on non-critical errors
-                    }
-                }
+    // 2. Naya Fast Grayscale (Purana lamba pixel loop hata diya)
+    if (isGrayscale) {
+        context.globalCompositeOperation = 'saturation';
+        context.fillStyle = 'black';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.globalCompositeOperation = 'source-over';
+    }
+
+    // 3. Page 1 Preview (Memory friendly)
+    if(i === 1) {
+        originalPageData = canvas.toDataURL('image/jpeg', 0.7);
+    }
+
+    // 4. Compress & Embed (Base64 ki jagah direct Bytes)
+    const imgBytes = await getCompressedImageData(canvas, quality);
+    const jpgImage = await newPdf.embedJpg(imgBytes);
+    
+    if(i === 1) compressedPageData = canvas.toDataURL('image/jpeg', quality);
+
+    const pdfPage = newPdf.addPage([viewport.width / scale, viewport.height / scale]); 
+    pdfPage.drawImage(jpgImage, {
+        x: 0, y: 0,
+        width: pdfPage.getWidth(),
+        height: pdfPage.getHeight(),
+    });
+
+    // 5. Cleanup & UI Breath (Browser ko hang hone se bachayega)
+    await yieldToUI();
+    page.cleanup(); 
+}
 
                 compressedPdfBytes = await newPdf.save();
                 
@@ -947,6 +1061,177 @@ nav .text-inherit {
             cleanupAllResources();
         };
 
+    </script> -->
+
+    <script>
+        // PDF.js Worker Configuration
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let selectedFile = null;
+        let currentMode = 'ebook';
+
+        const ui = {
+            status: () => document.getElementById('statusText'),
+            bar: () => document.getElementById('progressBar'),
+            upload: () => document.getElementById('uploadUI'),
+            proc: () => document.getElementById('processingUI'),
+            res: () => document.getElementById('resultUI')
+        };
+
+        function getTargetSizeInKB() {
+            const inputEl = document.getElementById('targetSizeInput');
+            const unitEl = document.getElementById('targetSizeUnit');
+
+            if (!inputEl || !unitEl) return 0;
+
+            const value = parseFloat(inputEl.value);
+            const unit = unitEl.value;
+
+            if (isNaN(value) || value <= 0) return 0;
+
+            if (unit === 'MB') return value * 1024;
+            if (unit === 'GB') return value * 1024 * 1024;
+            return value; // Already in KB
+        }
+
+
+        async function processPDF() {
+            if (!selectedFile) return;
+
+            try {
+                ui.upload().classList.add('hidden');
+                ui.proc().classList.remove('hidden');
+                updateStatus("Initializing Smart Engine...", 5);
+
+                // ERROR FIX: Do alag buffers banayein taaki detach na ho
+                const arrayBuffer1 = await selectedFile.arrayBuffer();
+                const arrayBuffer2 = arrayBuffer1.slice(0); // Clone the buffer
+
+                updateStatus("Analyzing Document Structure...", 10);
+
+                // Load libraries with separate buffers
+                const pdfAnalyze = await pdfjsLib.getDocument({ data: arrayBuffer1 }).promise;
+                const srcDoc = await PDFLib.PDFDocument.load(arrayBuffer2);
+                const outPdf = await PDFLib.PDFDocument.create();
+
+                const numPages = pdfAnalyze.numPages;
+                const targetSizeKB = getTargetSizeInKB();
+                const currentSizeKB = selectedFile.size / 1024;
+
+                // Smart Compression Quality Calculation
+                let imgQuality = 0.6;
+                let scale = 1.5; // High Quality default
+
+                if (targetSizeKB > 0) {
+                    const ratio = targetSizeKB / currentSizeKB;
+                    imgQuality = Math.min(0.8, Math.max(0.1, ratio));
+                    scale = Math.min(1.5, Math.max(0.7, ratio * 2));
+                    if (ratio >= 1) {
+                        imgQuality = 0.9;
+                        scale = 1.5;
+                    }
+                } else if (currentMode === 'screen') {
+                    imgQuality = 0.3;
+                    scale = 1.0;
+                }
+
+                for (let i = 1; i <= numPages; i++) {
+                    const pageAnalyze = await pdfAnalyze.getPage(i);
+                    const textContent = await pageAnalyze.getTextContent();
+
+                    // DETECTION: Check if page has selectable text
+                    const hasText = textContent.items.length > 0;
+
+                    if (!hasText) {
+                        // SCANNED PAGE: Convert to Optimized Image
+                        updateStatus(`Page ${i}: Scanned (Rasterizing)...`, (i / numPages) * 85);
+
+                        const viewport = pageAnalyze.getViewport({ scale: scale });
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+
+                        await pageAnalyze.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                        // Convert to compressed JPEG
+                        const imgData = canvas.toDataURL('image/jpeg', imgQuality);
+                        const img = await outPdf.embedJpg(imgData);
+                        const newPage = outPdf.addPage([img.width, img.height]);
+                        newPage.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+
+                        // Memory cleanup
+                        canvas.width = 0; canvas.height = 0;
+                    }
+                    else {
+                        // TEXT PAGE: Copy vectors & compress structure
+                        updateStatus(`Page ${i}: Text (Vector Optimization)...`, (i / numPages) * 85);
+
+                        const [copiedPage] = await outPdf.copyPages(srcDoc, [i - 1]);
+                        outPdf.addPage(copiedPage);
+                    }
+                }
+
+                updateStatus("Applying final stream compression...", 90);
+
+                // Final structural save
+                const pdfBytes = await outPdf.save({
+                    useObjectStreams: true,
+                    addDefaultPage: false
+                });
+
+                updateStatus("Compression Finished!", 100);
+                displayResults(pdfBytes);
+
+            } catch (err) {
+                console.error("Smart Engine Error:", err);
+                alert("Smart Engine Error: " + err.message);
+                resetApp();
+            }
+        }
+
+        function updateStatus(msg, progress) {
+            if (ui.status()) ui.status().innerText = msg;
+            if (ui.bar()) ui.bar().style.width = progress + '%';
+        }
+
+        function displayResults(pdfBytes) {
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+
+            ui.proc().classList.add('hidden');
+            ui.res().classList.remove('hidden');
+
+            document.getElementById('oldSize').textContent = (selectedFile.size / (1024 * 1024)).toFixed(2) + " MB";
+            document.getElementById('newSize').textContent = (blob.size / (1024 * 1024)).toFixed(2) + " MB";
+
+            const saved = Math.round(((selectedFile.size - blob.size) / selectedFile.size) * 100);
+            document.getElementById('savedPercent').innerText = `Efficiency: ${saved}%`;
+
+            document.getElementById('downloadBtn').onclick = () => {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "Optimized_" + selectedFile.name;
+                a.click();
+            };
+        }
+
+        function resetApp() {
+            location.reload();
+        }
+
+        // Event Listeners
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            selectedFile = e.target.files[0];
+            if (selectedFile) processPDF();
+        });
+
+        window.setMode = (mode) => {
+            currentMode = mode;
+            document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('border-red-500', 'bg-red-50/30'));
+            document.getElementById(`mode-${mode}`).classList.add('border-red-500', 'bg-red-50/30');
+        };
     </script>
 </body>
+
 </html>
