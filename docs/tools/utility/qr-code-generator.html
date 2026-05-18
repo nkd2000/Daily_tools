@@ -1,40 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator | Free Online Tools</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Generate high-quality QR codes for URLs, text, Wi-Fi, and more. Customize colors and download instantly. Free online QR code maker.">
+    <meta name="description"
+        content="Generate high-quality QR codes for URLs, text, Wi-Fi, and more. Customize colors and download instantly. Free online QR code maker.">
     <meta name="keywords" content="qr code generator, create qr code, free qr maker, custom qr code, online qr tool">
     <meta name="author" content="Free Online Tools">
 
     <!-- Open Graph -->
     <meta property="og:title" content="Free QR Code Generator">
     <meta property="og:description" content="Create custom QR codes instantly for free. No signup required.">
-    
+
     <!-- User's AdSense -->
     <meta name="google-adsense-account" content="ca-pub-3793390054330330">
-    <script data-ad-client="ca-pub-3793390054330330" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    
+    <script data-ad-client="ca-pub-3793390054330330" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- QRCode.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Color Picker Style */
         input[type="color"] {
             -webkit-appearance: none;
@@ -46,331 +63,717 @@
             cursor: pointer;
             padding: 0;
         }
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: none; }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+        }
     </style>
 </head>
+
 <body class="bg-gray-50 text-slate-800 flex flex-col min-h-screen">
 
     <!-- Navigation -->
-    
-<!-- Universal Glass Header -->
-<nav class="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-xl saturate-150 no-print">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <!-- Left: Logo -->
-            <div class="flex items-center gap-3">
-                <a href="../../index.html" class="flex items-center gap-3 group">
-                    <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-screwdriver-wrench"></i>
-                    </div>
-                    <span class="font-bold text-xl tracking-tight text-inherit dark:text-white">DailyTools</span>
-                </a>
-            </div>
 
-            <!-- Right: Navigation -->
-            <div class="flex items-center gap-6 text-sm font-semibold">
-                <a href="../../index.html" class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Home</a>
-                <a href="../../pages/contact.html" class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Contact</a>
-                
-                <!-- Github Icon with subtle border -->
-                <div class="h-6 w-[1px] bg-gray-300/20 mx-2"></div>
-                <a href="https://github.com/nkd2000" class="text-inherit opacity-70 hover:opacity-100 transition-all dark:text-white text-lg">
-                    <i class="fa-brands fa-github"></i>
-                </a>
+    <!-- Universal Glass Header -->
+    <nav class="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-xl saturate-150 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Left: Logo -->
+                <div class="flex items-center gap-3">
+                    <a href="../../index.html" class="flex items-center gap-3 group">
+                        <div
+                            class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                        </div>
+                        <span class="font-bold text-xl tracking-tight text-inherit dark:text-white">DailyTools</span>
+                    </a>
+                </div>
+
+                <!-- Right: Navigation -->
+                <div class="flex items-center gap-6 text-sm font-semibold">
+                    <a href="../../index.html"
+                        class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Home</a>
+                    <a href="../../pages/contact.html"
+                        class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Contact</a>
+
+                    <!-- Github Icon with subtle border -->
+                    <div class="h-6 w-[1px] bg-gray-300/20 mx-2"></div>
+                    <a href="https://github.com/nkd2000"
+                        class="text-inherit opacity-70 hover:opacity-100 transition-all dark:text-white text-lg">
+                        <i class="fa-brands fa-github"></i>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 sm:px-6 w-full">
-        
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Free QR Code Generator</h1>
-            <p class="text-gray-500 text-lg max-w-2xl mx-auto">
-                Create permanent, high-quality QR codes for links, text, emails, or Wi-Fi passwords.
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-12 sm:px-6 w-full">
+
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-50 border border-rose-100 mb-6 shadow-sm">
+                <span class="text-[10px] font-black text-rose-700 uppercase tracking-[0.2em]">Custom Branding
+                    Active</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
+                Branded <span class="text-rose-600 italic">QR</span> Generator.
+            </h1>
+            <p class="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">
+                Create high-quality QR codes with your brand logo, custom colors, and unique styles.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            <!-- Left Column: Inputs -->
-            <div class="lg:col-span-5 space-y-6">
-                
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div class="p-5 border-b border-gray-100 bg-gray-50">
-                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-pen-to-square mr-2 text-rose-500"></i>Enter Content</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+
+            <!-- LEFT COLUMN: INPUTS -->
+            <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
+
+                <!-- STEP 1: Content with 3 Tabs -->
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-black text-slate-800 flex items-center gap-3">
+                            <span
+                                class="flex items-center justify-center w-7 h-7 bg-rose-500 text-white rounded-lg text-xs shadow-lg">1</span>
+                            Content
+                        </h3>
+                        <div class="flex bg-gray-100 p-1 rounded-xl">
+                            <button onclick="changeType('link')" id="tab-link"
+                                class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all bg-white text-rose-600 shadow-sm">Link</button>
+                            <button onclick="changeType('text')" id="tab-text"
+                                class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all text-slate-400">Message</button>
+                            <button onclick="changeType('vcard')" id="tab-vcard"
+                                class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all text-slate-400">Contact</button>
+                        </div>
                     </div>
-                    <div class="p-6 space-y-5">
-                        
-                        <!-- Content Input -->
-                        <div>
-                            <label for="qrText" class="block text-sm font-medium text-gray-700 mb-2">URL or Text</label>
-                            <textarea id="qrText" rows="4" class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-rose-500 focus:border-rose-500 sm:text-sm p-3 border resize-none" placeholder="https://www.example.com"></textarea>
-                        </div>
 
-                        <!-- Color Customization -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Customize Color</label>
-                            <div class="flex items-center gap-4 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                                <div class="flex items-center gap-2">
-                                    <input type="color" id="colorDark" value="#000000">
-                                    <span class="text-xs text-gray-500">Dots</span>
-                                </div>
-                                <div class="h-6 w-px bg-gray-300"></div>
-                                <div class="flex items-center gap-2">
-                                    <input type="color" id="colorLight" value="#ffffff">
-                                    <span class="text-xs text-gray-500">Background</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div id="inputContainer" class="space-y-4">
+                        <!-- Textarea for Link/Message -->
+                        <textarea id="qrText" rows="3"
+                            class="block w-full border-2 border-gray-50 rounded-2xl bg-gray-50 p-4 focus:border-rose-500 outline-none transition-all font-medium text-slate-700"
+                            placeholder="https://yourwebsite.com"></textarea>
 
-                        <!-- Generate Button -->
-                        <button id="generateBtn" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-medium py-3 px-4 rounded-lg shadow transition duration-150 ease-in-out flex justify-center items-center gap-2">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate QR Code
-                        </button>
+                        <!-- VCard Inputs (Hidden by default) -->
+                        <div id="vcardFields" class="hidden space-y-3">
+                            <input type="text" id="vName" placeholder="Full Name"
+                                class="w-full p-3 bg-gray-50 border-2 border-gray-50 rounded-xl focus:border-rose-500 outline-none">
+                            <input id="vPhone" placeholder="Phone Number"
+                                class="w-full p-3 bg-gray-50 border-2 border-gray-50 rounded-xl focus:border-rose-500 outline-none">
+                            <input id="vEmail" placeholder="Email Address"
+                                class="w-full p-3 bg-gray-50 border-2 border-gray-50 rounded-xl focus:border-rose-500 outline-none">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Info Card -->
-                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-md">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <i class="fa-solid fa-shield-halved text-blue-400"></i>
+                <!-- STEP 2: Branding (LOGO FEATURE) -->
+                <div class="bg-slate-900 rounded-3xl shadow-2xl p-8 text-white">
+                    <h3 class="font-black mb-6 flex items-center gap-3">
+                        <span
+                            class="flex items-center justify-center w-7 h-7 bg-white text-slate-900 rounded-lg text-xs font-black">2</span>
+                        Add Logo
+                    </h3>
+
+                    <!-- Quick Logos -->
+                    <div class="grid grid-cols-4 gap-3 mb-6">
+                        <button onclick="setLogo('whatsapp')"
+                            class="p-3 bg-white/5 rounded-xl hover:bg-green-500 transition-all border border-white/10 group">
+                            <i class="fa-brands fa-whatsapp text-xl text-white"></i>
+                        </button>
+                        <button onclick="setLogo('instagram')"
+                            class="p-3 bg-white/5 rounded-xl hover:bg-pink-500 transition-all border border-white/10">
+                            <i class="fa-brands fa-instagram text-xl text-white"></i>
+                        </button>
+                        <button onclick="setLogo('upi')"
+                            class="p-3 bg-white/5 rounded-xl hover:bg-blue-500 transition-all border border-white/10 font-black text-[10px]">
+                            UPI
+                        </button>
+                        <button onclick="clearLogo()"
+                            class="p-3 bg-white/5 rounded-xl hover:bg-red-500 transition-all border border-white/10">
+                            <i class="fa-solid fa-trash-can text-xl text-white"></i>
+                        </button>
+                    </div>
+
+                    <!-- Custom Logo Upload -->
+                    <label
+                        class="block w-full py-4 bg-white/10 border-2 border-dashed border-white/20 rounded-2xl cursor-pointer hover:bg-white/20 transition-all text-center">
+                        <span class="text-xs font-bold uppercase tracking-widest text-indigo-300"><i
+                                class="fa-solid fa-upload mr-2"></i> Custom Logo</span>
+                        <input type="file" id="logoInput" accept="image/*" class="hidden">
+                    </label>
+                </div>
+
+                <!-- STEP 3: Appearance & Transparency -->
+                <div class="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-black text-slate-800 flex items-center gap-3">
+                            <span
+                                class="flex items-center justify-center w-7 h-7 bg-rose-500 text-white rounded-lg text-xs shadow-lg">3</span>
+                            Colors
+                        </h3>
+                        <!-- Transparent Toggle -->
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <span
+                                class="text-[10px] font-black text-gray-400 uppercase group-hover:text-rose-600 transition-colors">Transparent</span>
+                            <div class="relative inline-block w-10 h-5">
+                                <input type="checkbox" id="transToggle" class="sr-only peer">
+                                <div
+                                    class="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500">
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                        <div class="flex flex-col items-center gap-2 flex-1">
+                            <input type="color" id="colorDark" value="#0f172a"
+                                class="w-10 h-10 border-none cursor-pointer bg-transparent">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase">Dots</span>
                         </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-blue-700">
-                                <strong>Privacy First:</strong> Your data is processed locally. We do not store or track your QR codes.
-                            </p>
+                        <div class="h-10 w-px bg-gray-200"></div>
+                        <div id="bgColorWrapper" class="flex flex-col items-center gap-2 flex-1 transition-opacity">
+                            <input type="color" id="colorLight" value="#ffffff"
+                                class="w-10 h-10 border-none cursor-pointer bg-transparent">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase">Back</span>
                         </div>
+                    </div>
+                </div>
+
+
+                <!-- STEP 4: Design Style (Fixed Layout) -->
+                <div class="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm w-full">
+                    <h3 class="font-black text-slate-800 mb-6 flex items-center gap-3">
+                        <span
+                            class="flex items-center justify-center w-7 h-7 bg-rose-500 text-white rounded-lg text-xs shadow-lg">4</span>
+                        Design Style
+                    </h3>
+
+                    <!-- Grid container with proper width and gap -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
+                        <button type="button" onclick="setStyle('square')"
+                            class="style-btn flex flex-col items-center justify-center py-4 px-2 border-2 border-gray-50 rounded-2xl hover:border-rose-200 hover:bg-rose-50/30 transition-all group">
+                            <div
+                                class="w-6 h-6 border-2 border-slate-400 mb-2 rounded-sm group-hover:border-rose-500 transition-colors">
+                            </div>
+                            <span
+                                class="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-rose-600">Square</span>
+                        </button>
+
+                        <button type="button" onclick="setStyle('dots')"
+                            class="style-btn flex flex-col items-center justify-center py-4 px-2 border-2 border-gray-50 rounded-2xl hover:border-rose-200 hover:bg-rose-50/30 transition-all group">
+                            <div class="flex gap-0.5 mb-2 group-hover:text-rose-500 transition-colors">
+                                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full group-hover:bg-rose-500"></span>
+                                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full group-hover:bg-rose-500"></span>
+                                <span class="w-1.5 h-1.5 bg-slate-400 rounded-full group-hover:bg-rose-500"></span>
+                            </div>
+                            <span
+                                class="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-rose-600">Dots</span>
+                        </button>
+
+                        <button type="button" onclick="setStyle('extra-rounded')"
+                            class="style-btn flex flex-col items-center justify-center py-4 px-2 border-2 border-gray-50 rounded-2xl hover:border-rose-200 hover:bg-rose-50/30 transition-all group">
+                            <div
+                                class="w-6 h-6 border-2 border-slate-400 mb-2 rounded-full group-hover:border-rose-500 transition-colors">
+                            </div>
+                            <span
+                                class="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-rose-600">Fluid</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column: Preview -->
-            <div class="lg:col-span-7">
-                
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden min-h-[450px] flex flex-col">
-                    <div class="p-5 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                        <h3 class="font-semibold text-gray-800"><i class="fa-solid fa-eye mr-2 text-rose-500"></i>Live Preview</h3>
-                        <span id="sizeBadge" class="hidden bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">Ready</span>
-                    </div>
-                    
-                    <div class="flex-grow p-8 bg-slate-50 flex flex-col items-center justify-center relative">
-                        
+
+
+            <!-- RIGHT COLUMN: PREVIEW -->
+            <div class="lg:col-span-7 h-full">
+                <div
+                    class="bg-white rounded-[3rem] shadow-[0_20px_60px_rgba(0,0,0,0.06)] border border-gray-100 p-4 h-full flex flex-col items-center justify-center min-h-[500px]">
+
+                    <!-- HTML Update -->
+                    <div id="qrWrapper"
+                        class="relative p-6 rounded-[2.5rem] flex items-center justify-center transition-all duration-500 overflow-hidden min-h-[340px] min-w-[340px]">
+                        <!-- Yahan bg-white hat gaya hai -->
+                        <div id="canvas" class="relative z-10 transition-opacity duration-300"></div>
+
                         <!-- Empty State -->
-                        <div id="emptyState" class="text-center text-gray-400 absolute">
-                            <i class="fa-solid fa-qrcode text-6xl mb-4 opacity-30"></i>
-                            <p>Enter text to generate</p>
-                        </div>
-
-                        <!-- QR Code Container -->
-                        <div id="qrContainer" class="p-4 bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-300 opacity-0 transform scale-95">
-                            <div id="qrcode"></div>
-                        </div>
-
-                    </div>
-
-                    <!-- Action Footer -->
-                    <div id="actionFooter" class="p-6 bg-white border-t border-gray-100 hidden fade-in">
-                        <div class="flex justify-center">
-                            <button id="downloadBtn" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition">
-                                <i class="fa-solid fa-download mr-2"></i> Download PNG
-                            </button>
+                        <div id="emptyState"
+                            class="absolute inset-0 flex flex-col items-center justify-center text-slate-300 bg-white rounded-[2.5rem]">
+                            <i class="fa-solid fa-qrcode text-6xl mb-4"></i>
+                            <p class="font-bold text-xs uppercase tracking-widest">Awaiting Content</p>
                         </div>
                     </div>
-                </div>
 
-                <div class="mt-4 flex justify-between items-center">
-                    <button onclick="history.back()" class="text-gray-500 hover:text-gray-700 font-medium text-sm flex items-center">
-                        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Tools
-                    </button>
+                    <!-- Action Bar -->
+                    <div id="actionBar" class="mt-12 hidden space-y-4 w-full max-w-sm">
+                        <button id="downloadBtn"
+                            class="w-full bg-rose-600 hover:bg-rose-700 text-white font-black py-5 px-8 rounded-2xl shadow-xl shadow-rose-200 transition-all flex items-center justify-center gap-3 text-lg active:scale-95">
+                            <i class="fa-solid fa-download"></i> DOWNLOAD QR (PNG)
+                        </button>
+                        <button onclick="downloadSVG()"
+                            class="w-full text-slate-400 hover:text-slate-600 text-sm font-bold transition-all">
+                            Get SVG Format
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
-    
-<footer class="relative bg-[#0f172a] text-gray-300 pt-20 pb-10 overflow-hidden no-print">
-    <!-- Background Decoration: Subtle Dot Grid & Glow -->
-    <div class="absolute inset-0 z-0">
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0); background-size: 40px 40px;"></div>
-        <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px]"></div>
-        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]"></div>
-    </div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
-            
-            <!-- Column 1: Brand & Bio -->
-            <div class="md:col-span-5">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/20">
-                        <i class="fa-solid fa-screwdriver-wrench text-white text-xl"></i>
+    <footer class="relative bg-[#0f172a] text-gray-300 pt-20 pb-10 overflow-hidden no-print">
+        <!-- Background Decoration: Subtle Dot Grid & Glow -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 opacity-[0.03]"
+                style="background-image: radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0); background-size: 40px 40px;">
+            </div>
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px]"></div>
+            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+
+                <!-- Column 1: Brand & Bio -->
+                <div class="md:col-span-5">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/20">
+                            <i class="fa-solid fa-screwdriver-wrench text-white text-xl"></i>
+                        </div>
+                        <span class="font-extrabold text-2xl text-white tracking-tight">DailyTools<span
+                                class="text-indigo-500">.</span></span>
                     </div>
-                    <span class="font-extrabold text-2xl text-white tracking-tight">DailyTools<span class="text-indigo-500">.</span></span>
+                    <p class="text-gray-400 text-base leading-relaxed max-w-md">
+                        The ultimate destination for free, privacy-first web utilities. Helping you simplify complex
+                        digital tasks since 2023.
+                    </p>
+                    <!-- Social Buttons -->
+                    <div class="flex gap-4 mt-8">
+                        <a href="https://github.com/nkd2000"
+                            class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-indigo-600 hover:border-indigo-600 transition-all duration-300 group">
+                            <i class="fa-brands fa-github text-white group-hover:scale-110 transition-transform"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-400 hover:border-blue-400 transition-all duration-300 group">
+                            <i class="fa-brands fa-x-twitter text-white group-hover:scale-110 transition-transform"></i>
+                        </a>
+                    </div>
                 </div>
-                <p class="text-gray-400 text-base leading-relaxed max-w-md">
-                    The ultimate destination for free, privacy-first web utilities. Helping you simplify complex digital tasks since 2023.
-                </p>
-                <!-- Social Buttons -->
-                <div class="flex gap-4 mt-8">
-                    <a href="https://github.com/nkd2000" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-indigo-600 hover:border-indigo-600 transition-all duration-300 group">
-                        <i class="fa-brands fa-github text-white group-hover:scale-110 transition-transform"></i>
-                    </a>
-                    <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-400 hover:border-blue-400 transition-all duration-300 group">
-                        <i class="fa-brands fa-x-twitter text-white group-hover:scale-110 transition-transform"></i>
-                    </a>
+
+                <!-- Column 2: Navigation -->
+                <div class="md:col-span-2 md:col-start-7">
+                    <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Platform</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li><a href="../../index.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i
+                                    class="fa-solid fa-chevron-right text-[10px]"></i> All Tools</a></li>
+                        <li><a href="../../pages/contact.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i
+                                    class="fa-solid fa-chevron-right text-[10px]"></i> Contact Us</a></li>
+                        <li><a href="../../pages/privacy.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i
+                                    class="fa-solid fa-chevron-right text-[10px]"></i> Privacy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Suggest Tool CTA -->
+                <div class="md:col-span-4">
+                    <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Contribute</h4>
+                    <div
+                        class="p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 backdrop-blur-md">
+                        <p class="text-gray-400 text-sm mb-5">Have an idea for a new tool? Submit your request on
+                            GitHub.</p>
+                        <a href="https://github.com/nkd2000/Daily_tools/issues"
+                            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-all shadow-lg shadow-indigo-600/30">
+                            <i class="fa-brands fa-github-alt"></i> Request Feature
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <!-- Column 2: Navigation -->
-            <div class="md:col-span-2 md:col-start-7">
-                <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Platform</h4>
-                <ul class="space-y-4 text-sm">
-                    <li><a href="../../index.html" class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px]"></i> All Tools</a></li>
-                    <li><a href="../../pages/contact.html" class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px]"></i> Contact Us</a></li>
-                    <li><a href="../../pages/privacy.html" class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px]"></i> Privacy</a></li>
-                </ul>
-            </div>
+            <!-- Bottom Bar -->
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                    <p class="text-gray-500 text-sm">&copy; 2025 <span class="text-white font-semibold">DailyTools
+                            Pro</span>.</p>
+                    <div
+                        class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems
+                            Operational</span>
+                    </div>
+                </div>
 
-            <!-- Column 3: Suggest Tool CTA -->
-            <div class="md:col-span-4">
-                <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Contribute</h4>
-                <div class="p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 backdrop-blur-md">
-                    <p class="text-gray-400 text-sm mb-5">Have an idea for a new tool? Submit your request on GitHub.</p>
-                    <a href="https://github.com/nkd2000/Daily_tools/issues" class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-all shadow-lg shadow-indigo-600/30">
-                        <i class="fa-brands fa-github-alt"></i> Request Feature
-                    </a>
+                <div class="text-gray-500 text-sm font-medium">
+                    Made with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i> by <span
+                        class="text-gray-200">Nkd2000</span>
                 </div>
             </div>
         </div>
+    </footer>
+    <style>
+        /* Transparency indicator (Checkered background) */
+        .transparency-grid {
+            background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+                linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+                linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
 
-        <!-- Bottom Bar -->
-        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
-                <p class="text-gray-500 text-sm">&copy; 2025 <span class="text-white font-semibold">DailyTools Pro</span>.</p>
-                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
-                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems Operational</span>
-                </div>
-            </div>
-            
-            <div class="text-gray-500 text-sm font-medium">
-                Made with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i> by <span class="text-gray-200">Nkd2000</span>
-            </div>
-        </div>
-    </div>
-</footer>
-<style>
-/* Header text adaptive color logic */
-nav .text-inherit {
-    color: currentColor; /* Ye apne parent ka color lega */
-}
+        /* Header text adaptive color logic */
+        nav .text-inherit {
+            color: currentColor;
+            /* Ye apne parent ka color lega */
+        }
 
-/* Agar tool dark hai toh text white ho jayega automatically */
-.dark-theme nav { color: white; border-bottom-color: rgba(255,255,255,0.1); }
-.light-theme nav { color: #1e293b; border-bottom-color: rgba(0,0,0,0.05); }
+        /* Agar tool dark hai toh text white ho jayega automatically */
+        .dark-theme nav {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
 
-/* Strong blur effect */
-.backdrop-blur-xl {
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    backdrop-filter: blur(24px) saturate(150%);
-}
-</style>
+        .light-theme nav {
+            color: #1e293b;
+            border-bottom-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Strong blur effect */
+        .backdrop-blur-xl {
+            -webkit-backdrop-filter: blur(24px) saturate(150%);
+            backdrop-filter: blur(24px) saturate(150%);
+        }
+    </style>
 
 
     <script>
-        (function() {
-            const qrText = document.getElementById('qrText');
-            const colorDark = document.getElementById('colorDark');
-            const colorLight = document.getElementById('colorLight');
-            const generateBtn = document.getElementById('generateBtn');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const qrContainer = document.getElementById('qrContainer');
-            const emptyState = document.getElementById('emptyState');
-            const actionFooter = document.getElementById('actionFooter');
-            const qrcodeDiv = document.getElementById('qrcode');
+        // Initialize QR Stylist
+        let qrCode = null;
+        let currentLogo = "";
 
-            let qrObj = null;
+        const config = {
+            width: 320,
+            height: 320,
+            type: "svg",
+            data: "",
+            image: "",
+            dotsOptions: { color: "#0f172a", type: "rounded" },
+            backgroundOptions: { color: "#ffffff" },
+            imageOptions: { crossOrigin: "anonymous", margin: 10 }
+        };
 
-            function generateQR() {
-                const text = qrText.value.trim();
-                if (!text) {
-                    alert("Please enter some text or a URL");
+        // UI Elements
+        const el = {
+            text: document.getElementById('qrText'),
+            colorDark: document.getElementById('colorDark'),
+            colorLight: document.getElementById('colorLight'),
+            canvas: document.getElementById('canvas'),
+            empty: document.getElementById('emptyState'),
+            actionBar: document.getElementById('actionBar'),
+            logoInput: document.getElementById('logoInput')
+
+        };
+
+        // 1. Transparency Toggle Logic
+        const transToggle = document.getElementById('transToggle');
+        const bgColorWrapper = document.getElementById('bgColorWrapper');
+
+        transToggle.addEventListener('change', () => {
+            if (transToggle.checked) {
+                bgColorWrapper.style.opacity = "0.3";
+                bgColorWrapper.style.pointerEvents = "none";
+            } else {
+                bgColorWrapper.style.opacity = "1";
+                bgColorWrapper.style.pointerEvents = "auto";
+            }
+            updateQR();
+        });
+
+        // 2. Custom Logo Upload wala logic (Improved)
+        document.getElementById('logoInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+
+            if (file) {
+                // Check karein ki file image hi hai
+                if (!file.type.startsWith('image/')) {
+                    alert("Please upload an image file (PNG, JPG, SVG).");
                     return;
                 }
 
-                // Clear previous
-                qrcodeDiv.innerHTML = "";
-                emptyState.classList.add('hidden');
-                
-                // Generate
-                qrObj = new QRCode(qrcodeDiv, {
-                    text: text,
-                    width: 256,
-                    height: 256,
-                    colorDark : colorDark.value,
-                    colorLight : colorLight.value,
-                    correctLevel : QRCode.CorrectLevel.H
-                });
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    currentLogo = event.target.result;
+                    updateQR();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-                // Show UI
-                qrContainer.classList.remove('opacity-0', 'scale-95');
-                qrContainer.classList.add('opacity-100', 'scale-100');
-                actionFooter.classList.remove('hidden');
-                
-                // Update download link logic
-                setTimeout(prepareDownload, 100);
+        // Initialize the QR Styling Instance
+        qrCode = new QRCodeStyling(config);
+        qrCode.append(el.canvas);
+
+        // Update QR Function
+        function updateQR() {
+            let dataString = "";
+            if (currentType === 'vcard') {
+                const name = document.getElementById('vName').value;
+                const phone = document.getElementById('vPhone').value;
+                const email = document.getElementById('vEmail').value;
+                if (name || phone || email) {
+                    dataString = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${phone}\nEMAIL:${email}\nEND:VCARD`;
+                }
+            } else {
+                dataString = document.getElementById('qrText').value.trim();
             }
 
-            function prepareDownload() {
-                const img = qrcodeDiv.querySelector("img");
-                if (img && img.src) {
-                    // It's already an image data URL
-                } else {
-                    // Fallback if library renders canvas
-                    const canvas = qrcodeDiv.querySelector("canvas");
-                    if(canvas) {
-                        // Wait slightly for canvas to render
-                    }
-                }
+            const emptyState = document.getElementById('emptyState');
+            const qrCanvas = document.getElementById('canvas');
+            const actionBar = document.getElementById('actionBar');
+
+            if (!dataString) {
+                emptyState.style.display = "flex";
+                qrCanvas.style.opacity = "0";
+                actionBar.classList.add('hidden');
+                return;
+            } else {
+                emptyState.style.display = "none";
+                qrCanvas.style.opacity = "1";
+                actionBar.classList.remove('hidden');
             }
 
-            downloadBtn.addEventListener('click', () => {
-                const img = qrcodeDiv.querySelector("img");
-                let url = "";
-                
-                if (img && img.src) {
-                    url = img.src;
-                } else {
-                    const canvas = qrcodeDiv.querySelector("canvas");
-                    if (canvas) url = canvas.toDataURL("image/png");
-                }
+            // Transparency Check
+            const isTransparent = transToggle.checked;
+            const bgColor = isTransparent ? "rgba(0,0,0,0)" : document.getElementById('colorLight').value;
 
-                if(url) {
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = 'qrcode.png';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+            qrCode.update({
+                data: dataString,
+                image: currentLogo,
+                dotsOptions: {
+                    color: document.getElementById('colorDark').value,
+                    type: currentStyle
+                },
+                backgroundOptions: {
+                    color: bgColor, // Exact transparent value
+                },
+                cornersSquareOptions: {
+                    type: currentStyle === 'dots' ? 'dot' : 'extra-rounded',
+                    color: document.getElementById('colorDark').value
+                },
+                imageOptions: {
+                    crossOrigin: "anonymous",
+                    margin: 10,
+                    saveAsBlob: true // Compatibility ke liye important
                 }
             });
 
-            generateBtn.addEventListener('click', generateQR);
-            
-            // Auto generate on color change if text exists
-            [colorDark, colorLight].forEach(input => {
-                input.addEventListener('change', () => {
-                    if(qrText.value.trim()) generateQR();
-                });
+
+
+        }
+
+        // 3. HIGH-QUALITY DOWNLOAD (The Secret Sauce)
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            // Hum download function mein options pass karenge
+            qrCode.download({
+                name: "DailyTools_HighRes_QR",
+                extension: "png",
+                // Quality fix: Download hamesha 2000px par hoga chahe preview chhota ho
+                width: 2000,
+                height: 2000,
+                margin: 20
+            });
+        });
+
+        // Logo Handling
+        window.setLogo = function (type) {
+            const logos = {
+                'whatsapp': 'https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg',
+                'instagram': 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg',
+                'upi': 'https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg'
+            };
+            currentLogo = logos[type] || "";
+            updateQR();
+        };
+
+        // 1. Logo Clear karne ka naya logic
+        window.clearLogo = function () {
+            currentLogo = "";
+
+            // SABSE IMPORTANT: Input field ko poori tarah khali karein
+            const logoInput = document.getElementById('logoInput');
+            if (logoInput) {
+                logoInput.value = "";
+            }
+
+            updateQR();
+        };
+
+        // Custom Logo Upload
+        el.logoInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    currentLogo = event.target.result;
+                    updateQR();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Event Listeners for Live Preview
+        el.text.addEventListener('input', updateQR);
+        el.colorDark.addEventListener('change', updateQR);
+        el.colorLight.addEventListener('change', updateQR);
+
+        // Download Functions
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            qrCode.download({ name: "DailyTools_QR", extension: "png" });
+        });
+
+        // SVG Download also updated for high quality
+        window.downloadSVG = function () {
+            qrCode.download({
+                name: "DailyTools_Vector_QR",
+                extension: "svg",
+                width: 2000,
+                height: 2000
+            });
+        };
+
+        let currentType = 'link'; // Default type
+
+        window.changeType = function (type) {
+            currentType = type;
+            const textarea = document.getElementById('qrText');
+            const icon = document.getElementById('typeIcon');
+            const btnLink = document.getElementById('tab-link');
+            const btnText = document.getElementById('tab-text');
+
+            // UI Updates
+            if (type === 'link') {
+                textarea.placeholder = "https://yourwebsite.com";
+                icon.className = "fa-solid fa-link text-2xl";
+                btnLink.className = "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all bg-white text-rose-600 shadow-sm";
+                btnText.className = "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all text-slate-400";
+            } else {
+                textarea.placeholder = "Enter your custom message here...";
+                icon.className = "fa-solid fa-comment-dots text-2xl";
+                btnText.className = "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all bg-white text-rose-600 shadow-sm";
+                btnLink.className = "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all text-slate-400";
+            }
+
+            // Refresh QR if there's existing text
+            updateQR();
+        };
+
+        let currentStyle = 'rounded'; // Default style
+
+        window.changeType = function (type) {
+            currentType = type;
+            const textarea = document.getElementById('qrText');
+            const vcard = document.getElementById('vcardFields');
+
+            // UI Reset
+            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+                btn.className = "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all text-slate-400";
+            });
+            document.getElementById(`tab-${type}`).className = "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all bg-white text-rose-600 shadow-sm";
+
+            if (type === 'vcard') {
+                textarea.classList.add('hidden');
+                vcard.classList.remove('hidden');
+            } else {
+                textarea.classList.remove('hidden');
+                vcard.classList.add('hidden');
+                textarea.placeholder = type === 'link' ? "https://yourwebsite.com" : "Enter your message...";
+            }
+            updateQR();
+        };
+
+        window.setStyle = function (styleType) {
+            currentStyle = styleType;
+
+            // UI Update: Highlight active button
+            document.querySelectorAll('.style-btn').forEach(btn => {
+                btn.classList.remove('border-rose-500', 'bg-rose-50');
+                btn.classList.add('border-gray-50');
             });
 
-        })();
+            // Find clicked button by checking the onclick attribute text
+            const clickedBtn = Array.from(document.querySelectorAll('.style-btn'))
+                .find(b => b.getAttribute('onclick').includes(styleType));
+
+            if (clickedBtn) {
+                clickedBtn.classList.add('border-rose-500', 'bg-rose-50');
+                clickedBtn.classList.remove('border-gray-50');
+            }
+
+            updateQR();
+        };
+
+        function updateQR() {
+            let dataString = "";
+
+            // 1. Data Selection Logic
+            if (currentType === 'vcard') {
+                const name = document.getElementById('vName').value;
+                const phone = document.getElementById('vPhone').value;
+                const email = document.getElementById('vEmail').value;
+                if (name || phone || email) {
+                    dataString = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${phone}\nEMAIL:${email}\nEND:VCARD`;
+                }
+            } else {
+                dataString = document.getElementById('qrText').value.trim();
+            }
+
+            // 2. UI Toggle Logic (Watermark hatane ke liye)
+            const emptyState = document.getElementById('emptyState');
+            const qrCanvas = document.getElementById('canvas');
+            const actionBar = document.getElementById('actionBar');
+
+            if (!dataString) {
+                // Agar koi data nahi hai toh "Awaiting Content" dikhao
+                emptyState.style.display = "flex";
+                qrCanvas.style.opacity = "0";
+                actionBar.classList.add('hidden');
+                return;
+            } else {
+                // Agar data mil gaya toh "Awaiting Content" ko FORCE HIDE karo
+                emptyState.style.display = "none";
+                qrCanvas.style.opacity = "1";
+                actionBar.classList.remove('hidden');
+            }
+
+            // 3. QR Update
+            qrCode.update({
+                data: dataString,
+                image: currentLogo,
+                dotsOptions: {
+                    color: document.getElementById('colorDark').value,
+                    type: currentStyle
+                },
+                backgroundOptions: {
+                    color: document.getElementById('colorLight').value
+                },
+                cornersSquareOptions: {
+                    type: currentStyle === 'dots' ? 'dot' : 'extra-rounded',
+                    color: document.getElementById('colorDark').value
+                }
+            });
+        }
+        // Add listeners to VCard fields
+        ['vName', 'vPhone', 'vEmail'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateQR);
+        });
+
     </script>
 </body>
+
 </html>
