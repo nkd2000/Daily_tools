@@ -236,6 +236,8 @@ Choose the appropriate category for your tool:
 
 After creating your tool, update the "Available Tools" section in this README.md with your new tool's information.
 
+If you are developing uisng AI then please read [AI_README.md]()
+
 ## 📄 License
 
 This project is open source. Feel free to use and modify as needed.
