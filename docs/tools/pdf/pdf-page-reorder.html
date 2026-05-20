@@ -217,6 +217,12 @@
                     <i class="fa-solid fa-file-export"></i> Export PDF
                 </button>
             </div>
+
+            <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl">
+                <i class="fa-solid fa-magnifying-glass-minus text-[10px] text-slate-400"></i>
+                <input type="range" id="grid-zoom" min="2" max="12" value="6" class="w-20 h-1 accent-indigo-600">
+                <i class="fa-solid fa-magnifying-glass-plus text-[10px] text-slate-400"></i>
+            </div>
         </div>
     </div>
 
@@ -230,9 +236,9 @@
                 <div
                     class="absolute -top-24 -left-24 w-48 h-48 bg-indigo-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity">
                 </div>
-
-                <input type="file" id="file-input" multiple accept=".pdf" class="hidden"
+                <input type="file" id="file-input" multiple accept=".pdf,image/jpeg,image/png,image/webp" class="hidden"
                     onchange="handleFiles(this.files)">
+
                 <div onclick="document.getElementById('file-input').click()" class="cursor-pointer relative z-10">
                     <div
                         class="w-24 h-24 bg-indigo-600 text-white rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl shadow-indigo-200 group-hover:scale-110 transition-transform">
@@ -279,6 +285,7 @@
                     </div>
                     <span class="text-[9px] font-bold uppercase tracking-widest opacity-60">Delete</span>
                 </button>
+
             </div>
             <button onclick="clearSelection()"
                 class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all">
@@ -447,112 +454,127 @@
  * Features: High-Speed Caching, Smart Sequence, Batch Actions, Undo/Redo
  */
 
-// Worker setup
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        // Worker setup
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// --- Global State ---
-let state = {
-    pages: [],      // { id, docId, originalIndex, rotation, isBlank }
-    buffers: {},    // Binary PDF data stored by docId
-    history: [],    // Undo stack
-    selectedIds: new Set(),
-    isSelectMode: false,
-    currentPreviewId: null,
-    docCounter: 0,
-    lastSelectedIndex: null
-};
+        // --- Global State ---
+        let state = {
+            pages: [],      // { id, docId, originalIndex, rotation, isBlank }
+            buffers: {},    // Binary PDF data stored by docId
+            history: [],    // Undo stack
+            selectedIds: new Set(),
+            isSelectMode: false,
+            currentPreviewId: null,
+            docCounter: 0,
+            lastSelectedIndex: null
+        };
 
-// --- Caching System (Efficiency Fix) ---
-const THUMBNAIL_CACHE = {}; 
-const RENDER_QUEUE = [];
-let isProcessingQueue = false;
+        // --- Caching System (Efficiency Fix) ---
+        const THUMBNAIL_CACHE = {};
+        const RENDER_QUEUE = [];
+        let isProcessingQueue = false;
 
-const grid = document.getElementById('pages-grid');
+        const grid = document.getElementById('pages-grid');
 
-// --- 1. Initialization & Sortable ---
-document.addEventListener('DOMContentLoaded', () => {
-    new Sortable(grid, {
-        animation: 250,
-        delay: 150,
-        delayOnTouchOnly: true,
-        ghostClass: 'opacity-20',
-        chosenClass: 'shadow-2xl',
-        onEnd: () => {
-            saveHistory();
-            syncStateFromDOM();
-        }
-    });
-});
+        // --- 1. Initialization & Sortable ---
+        document.addEventListener('DOMContentLoaded', () => {
+            new Sortable(grid, {
+                animation: 250,
+                delay: 150,
+                delayOnTouchOnly: true,
+                ghostClass: 'opacity-20',
+                chosenClass: 'shadow-2xl',
+                onEnd: () => {
+                    saveHistory();
+                    syncStateFromDOM();
+                }
+            });
+        });
 
-// --- 2. File Handling ---
-async function handleFiles(files) {
-    if (!files.length) return;
+        // --- 2. File Handling ---
+        async function handleFiles(files) {
+            if (!files.length) return;
 
-    document.getElementById('dropzone').classList.add('hidden');
-    document.getElementById('editor-area').classList.remove('hidden');
-    document.getElementById('sequence-container').classList.remove('hidden');
+            document.getElementById('dropzone').classList.add('hidden');
+            document.getElementById('editor-area').classList.remove('hidden');
+            document.getElementById('sequence-container').classList.remove('hidden');
 
-    for (const file of files) {
-        if (file.type !== 'application/pdf') continue;
-        try {
-            const buffer = await file.arrayBuffer();
-            const docId = `doc_${++state.docCounter}`;
-            state.buffers[docId] = buffer;
-            
-            const pdf = await pdfjsLib.getDocument({ data: buffer.slice(0) }).promise;
+            for (const file of files) {
+                // PDF Handling
+                if (file.type === 'application/pdf') {
+                    try {
+                        const buffer = await file.arrayBuffer();
+                        const docId = `doc_${++state.docCounter}`;
+                        state.buffers[docId] = buffer;
+                        const pdf = await pdfjsLib.getDocument({ data: buffer.slice(0) }).promise;
 
-            for (let i = 1; i <= pdf.numPages; i++) {
-                state.pages.push({
-                    id: `pg_${Math.random().toString(36).substr(2, 9)}`,
-                    docId, 
-                    originalIndex: i - 1, 
-                    rotation: 0, 
-                    isBlank: false
-                });
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            state.pages.push({
+                                id: `pg_${Math.random().toString(36).substr(2, 9)}`,
+                                docId, originalIndex: i - 1, rotation: 0, isBlank: false, isImage: false
+                            });
+                        }
+                    } catch (e) { console.error("PDF Load Error:", e); }
+                }
+                // IMAGE Handling (NEW)
+                else if (file.type.startsWith('image/')) {
+                    try {
+                        const buffer = await file.arrayBuffer();
+                        const docId = `img_${++state.docCounter}`;
+                        state.buffers[docId] = buffer; // Image buffer save karein
+
+                        state.pages.push({
+                            id: `pg_${Math.random().toString(36).substr(2, 9)}`,
+                            docId,
+                            originalIndex: -1,
+                            rotation: 0,
+                            isBlank: false,
+                            isImage: true,
+                            imageType: file.type // JPEG ya PNG store karein
+                        });
+                    } catch (e) { console.error("Image Load Error:", e); }
+                }
             }
-        } catch (e) { console.error("Load Error:", e); }
-    }
-    
-    saveHistory();
-    smartRender();
-    updateUI();
-}
 
-// --- 3. Smart Rendering Engine (No Lag for 100+ pages) ---
-function smartRender() {
-    const fragment = document.createDocumentFragment();
-    const existingIds = new Set(Array.from(grid.children).map(c => c.dataset.id));
-    const targetIds = new Set(state.pages.map(p => p.id));
-
-    // Remove deleted items
-    existingIds.forEach(id => {
-        if (!targetIds.has(id)) grid.querySelector(`[data-id="${id}"]`)?.remove();
-    });
-
-    // Update or Add items
-    state.pages.forEach((pageData, index) => {
-        let card = grid.querySelector(`[data-id="${pageData.id}"]`);
-        if (!card) {
-            card = createCardElement(pageData, index);
-            grid.appendChild(card);
-        } else {
-            // Update index and selection status
-            card.querySelector('.badge').innerText = index + 1;
-            updateCardVisualState(card, pageData.id);
+            saveHistory();
+            smartRender();
+            updateUI();
         }
-    });
-    
-    processQueue();
-}
+        // --- 3. Smart Rendering Engine (No Lag for 100+ pages) ---
+        function smartRender() {
+            const fragment = document.createDocumentFragment();
+            const existingIds = new Set(Array.from(grid.children).map(c => c.dataset.id));
+            const targetIds = new Set(state.pages.map(p => p.id));
 
-function createCardElement(pageData, index) {
-    const card = document.createElement('div');
-    card.dataset.id = pageData.id;
-    card.className = `page-card relative group bg-white border border-gray-100 rounded-[1.5rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 cursor-grab`;
-    
-    card.onclick = (e) => handleCardClick(e, pageData.id, index);
+            // Remove deleted items
+            existingIds.forEach(id => {
+                if (!targetIds.has(id)) grid.querySelector(`[data-id="${id}"]`)?.remove();
+            });
 
-    card.innerHTML = `
+            // Update or Add items
+            state.pages.forEach((pageData, index) => {
+                let card = grid.querySelector(`[data-id="${pageData.id}"]`);
+                if (!card) {
+                    card = createCardElement(pageData, index);
+                    grid.appendChild(card);
+                } else {
+                    // Update index and selection status
+                    card.querySelector('.badge').innerText = index + 1;
+                    updateCardVisualState(card, pageData.id);
+                }
+            });
+
+            processQueue();
+        }
+
+        function createCardElement(pageData, index) {
+            const card = document.createElement('div');
+            card.dataset.id = pageData.id;
+            card.className = `page-card relative group bg-white border border-gray-100 rounded-[1.5rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 cursor-grab`;
+
+            card.onclick = (e) => handleCardClick(e, pageData.id, index);
+
+            card.innerHTML = `
         <div class="absolute top-4 left-4 z-10 bg-slate-900/80 backdrop-blur-md text-white text-[9px] font-black w-6 h-6 flex items-center justify-center rounded-lg badge">${index + 1}</div>
         <div class="selection-indicator absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 border-white shadow-md transition-all flex items-center justify-center">
             <i class="fa-solid fa-check text-[10px] text-white"></i>
@@ -562,259 +584,325 @@ function createCardElement(pageData, index) {
         </div>
         <div class="flex justify-center gap-1 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
             <button onclick="event.stopPropagation(); rotatePage('${pageData.id}')" class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"><i class="fa-solid fa-rotate-right text-[10px]"></i></button>
+            <button onclick="event.stopPropagation(); duplicatePage('${pageData.id}')" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all" title="Duplicate Page">
+        <i class="fa-solid fa-copy text-[10px]"></i>
+    </button>
             <button onclick="event.stopPropagation(); deletePage('${pageData.id}')" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-600 hover:text-white transition-all"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
         </div>
     `;
 
-    updateCardVisualState(card, pageData.id);
-    if (!pageData.isBlank) RENDER_QUEUE.push(pageData.id);
-    return card;
-}
+            updateCardVisualState(card, pageData.id);
+            if (!pageData.isBlank) RENDER_QUEUE.push(pageData.id);
+            return card;
+        }
 
-function updateCardVisualState(card, id) {
-    const isSelected = state.selectedIds.has(id);
-    card.classList.toggle('ring-4', isSelected);
-    card.classList.toggle('ring-indigo-500/20', isSelected);
-    card.classList.toggle('border-indigo-500', isSelected);
-    
-    const indicator = card.querySelector('.selection-indicator');
-    indicator.className = `selection-indicator absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 border-white shadow-md transition-all flex items-center justify-center ${isSelected ? 'bg-indigo-600 scale-110' : 'bg-white opacity-0 group-hover:opacity-100'}`;
-}
+        function updateCardVisualState(card, id) {
+            const isSelected = state.selectedIds.has(id);
+            card.classList.toggle('ring-4', isSelected);
+            card.classList.toggle('ring-indigo-500/20', isSelected);
+            card.classList.toggle('border-indigo-500', isSelected);
 
-// --- 4. High-Performance Thumbnail Queue ---
-async function processQueue() {
-    if (isProcessingQueue || RENDER_QUEUE.length === 0) return;
-    isProcessingQueue = true;
+            const indicator = card.querySelector('.selection-indicator');
+            indicator.className = `selection-indicator absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 border-white shadow-md transition-all flex items-center justify-center ${isSelected ? 'bg-indigo-600 scale-110' : 'bg-white opacity-0 group-hover:opacity-100'}`;
+        }
 
-    const id = RENDER_QUEUE.shift();
-    const pageData = state.pages.find(p => p.id === id);
-    const card = grid.querySelector(`[data-id="${id}"]`);
+        // --- 4. High-Performance Thumbnail Queue ---
+        // processQueue ke andar if-else check add karein:
+        async function processQueue() {
+            if (isProcessingQueue || RENDER_QUEUE.length === 0) return;
+            isProcessingQueue = true;
 
-    if (pageData && card) {
-        const container = card.querySelector('.canvas-container');
-        try {
-            let imgData = THUMBNAIL_CACHE[id];
-            if (!imgData) {
-                const pdf = await pdfjsLib.getDocument({ data: state.buffers[pageData.docId].slice(0) }).promise;
-                const page = await pdf.getPage(pageData.originalIndex + 1);
-                const viewport = page.getViewport({ scale: 0.3 });
-                const canvas = document.createElement('canvas');
-                canvas.height = viewport.height; canvas.width = viewport.width;
-                await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
-                imgData = canvas.toDataURL('image/jpeg', 0.6);
-                THUMBNAIL_CACHE[id] = imgData;
-                canvas.width = 0; canvas.height = 0; // GC
+            const id = RENDER_QUEUE.shift();
+            const pageData = state.pages.find(p => p.id === id);
+            const card = grid.querySelector(`[data-id="${id}"]`);
+
+            if (pageData && card) {
+                const container = card.querySelector('.canvas-container');
+                try {
+                    let imgData = THUMBNAIL_CACHE[id];
+
+                    if (!imgData) {
+                        if (pageData.isImage) {
+                            // Agar image hai toh seedha Blob banayein
+                            const blob = new Blob([state.buffers[pageData.docId]], { type: pageData.imageType });
+                            imgData = URL.createObjectURL(blob);
+                        } else {
+                            // Purana PDF rendering logic
+                            const pdf = await pdfjsLib.getDocument({ data: state.buffers[pageData.docId].slice(0) }).promise;
+                            const page = await pdf.getPage(pageData.originalIndex + 1);
+                            const viewport = page.getViewport({ scale: 0.6 });
+                            const canvas = document.createElement('canvas');
+                            canvas.height = viewport.height; canvas.width = viewport.width;
+                            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+                            imgData = canvas.toDataURL('image/jpeg', 0.6);
+                        }
+                        THUMBNAIL_CACHE[id] = imgData;
+                    }
+
+                    container.innerHTML = `<img src="${imgData}" class="w-full h-full object-contain transition-transform duration-300" style="transform: rotate(${pageData.rotation}deg)">`;
+                } catch (e) { console.error("Render Error:", e); }
             }
 
-            container.innerHTML = `<img src="${imgData}" class="max-w-full h-auto transition-transform duration-300" style="transform: rotate(${pageData.rotation}deg)">`;
-        } catch (e) { console.error("Render Error:", e); }
-    }
+            isProcessingQueue = false;
+            setTimeout(processQueue, 10);
+        }
+        // --- 5. Page Actions ---
+        function rotatePage(id) {
+            saveHistory();
+            const p = state.pages.find(x => x.id === id);
+            p.rotation = (p.rotation + 90) % 360;
+            const img = grid.querySelector(`[data-id="${id}"] img`);
+            if (img) img.style.transform = `rotate(${p.rotation}deg)`;
+        }
 
-    isProcessingQueue = false;
-    setTimeout(processQueue, 10);
-}
-
-// --- 5. Page Actions ---
-function rotatePage(id) {
-    saveHistory();
-    const p = state.pages.find(x => x.id === id);
-    p.rotation = (p.rotation + 90) % 360;
-    const img = grid.querySelector(`[data-id="${id}"] img`);
-    if (img) img.style.transform = `rotate(${p.rotation}deg)`;
-}
-
-function deletePage(id) {
-    saveHistory();
-    state.pages = state.pages.filter(p => p.id !== id);
-    state.selectedIds.delete(id);
-    smartRender();
-    updateUI();
-}
-
-function applySmartSequence() {
-    const inputEl = document.getElementById('sequence-input');
-    const input = inputEl.value.trim();
-    if (!input) return;
-
-    saveHistory();
-    const snapshot = [...state.pages];
-    const newOrder = [];
-    
-    try {
-        input.split(',').forEach(seg => {
-            seg = seg.trim();
-            if (seg.includes('-')) {
-                const [start, end] = seg.split('-').map(n => parseInt(n.trim()));
-                if (start <= end) {
-                    for (let i = start; i <= end; i++) if (snapshot[i - 1]) newOrder.push(snapshot[i - 1]);
-                } else {
-                    for (let i = start; i >= end; i--) if (snapshot[i - 1]) newOrder.push(snapshot[i - 1]);
-                }
-            } else {
-                const pos = parseInt(seg);
-                if (snapshot[pos - 1]) newOrder.push(snapshot[pos - 1]);
-            }
-        });
-
-        if (newOrder.length) {
-            state.pages = newOrder;
+        function deletePage(id) {
+            saveHistory();
+            state.pages = state.pages.filter(p => p.id !== id);
+            state.selectedIds.delete(id);
             smartRender();
-            inputEl.value = "";
+            updateUI();
         }
-    } catch (e) { alert("Format Error! Use: 1-5, 10-8"); }
-}
+        function duplicatePage(id) {
+            saveHistory();
+            const index = state.pages.findIndex(p => p.id === id);
+            if (index !== -1) {
+                const original = state.pages[index];
 
-// --- 6. Batch Logic & UI ---
-function handleCardClick(e, id, index) {
-    if (e.target.closest('button')) return;
+                // Naya unique ID generate karein
+                const newId = `pg_${Math.random().toString(36).substr(2, 9)}`;
 
-    if (state.isSelectMode || e.ctrlKey || e.metaKey) {
-        if (state.selectedIds.has(id)) state.selectedIds.delete(id);
-        else state.selectedIds.add(id);
-        smartRender();
-        updateBatchToolbar();
-    } else if (e.shiftKey && state.lastSelectedIndex !== null) {
-        const [start, end] = [Math.min(state.lastSelectedIndex, index), Math.max(state.lastSelectedIndex, index)];
-        for (let i = start; i <= end; i++) state.selectedIds.add(state.pages[i].id);
-        smartRender();
-        updateBatchToolbar();
-    } else {
-        openPreview(id);
-    }
-    state.lastSelectedIndex = index;
-}
+                // Page ki copy banayein
+                const copy = { ...original, id: newId };
 
-function updateBatchToolbar() {
-    const toolbar = document.getElementById('batch-toolbar');
-    const count = document.getElementById('selected-count');
-    if (state.selectedIds.size > 0) {
-        toolbar.classList.remove('translate-y-40', 'opacity-0');
-        count.innerText = `${state.selectedIds.size} Selected`;
-    } else {
-        toolbar.classList.add('translate-y-40', 'opacity-0');
-    }
-}
+                // Original page ke theek baad copy ko insert karein
+                state.pages.splice(index + 1, 0, copy);
 
-function toggleSelectMode() {
-    state.isSelectMode = !state.isSelectMode;
-    const btn = document.getElementById('select-mode-btn');
-    btn.classList.toggle('bg-indigo-600', state.isSelectMode);
-    btn.classList.toggle('text-white', state.isSelectMode);
-    if (!state.isSelectMode) clearSelection();
-}
+                // Performance Fix: Purane thumbnail ko hi naye ID ke liye cache mein copy kar dein
+                // Taaki dobara render na karna pade
+                if (THUMBNAIL_CACHE[id]) {
+                    THUMBNAIL_CACHE[newId] = THUMBNAIL_CACHE[id];
+                }
 
-function clearSelection() {
-    state.selectedIds.clear();
-    smartRender();
-    updateBatchToolbar();
-}
-
-function batchRotate() {
-    saveHistory();
-    state.pages.forEach(p => { if (state.selectedIds.has(p.id)) p.rotation = (p.rotation + 90) % 360; });
-    smartRender();
-}
-
-function batchDelete() {
-    if (!confirm(`Delete ${state.selectedIds.size} pages?`)) return;
-    saveHistory();
-    state.pages = state.pages.filter(p => !state.selectedIds.has(p.id));
-    clearSelection();
-    updateUI();
-}
-
-// --- 7. Export & Undo ---
-async function exportPDF() {
-    const btn = document.getElementById('export-btn');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Processing...`;
-    btn.disabled = true;
-
-    try {
-        const finalPdf = await PDFLib.PDFDocument.create();
-        for (const p of state.pages) {
-            if (p.isBlank) {
-                finalPdf.addPage([595.28, 841.89]);
-            } else {
-                const src = await PDFLib.PDFDocument.load(state.buffers[p.docId]);
-                const [copied] = await finalPdf.copyPages(src, [p.originalIndex]);
-                if (p.rotation !== 0) copied.setRotation(PDFLib.degrees(p.rotation));
-                finalPdf.addPage(copied);
+                smartRender(); // UI update karein
+                updateUI();
             }
         }
-        const bytes = await finalPdf.save();
-        const blob = new Blob([bytes], { type: 'application/pdf' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `dailytools_export_${Date.now()}.pdf`;
-        a.click();
-    } catch (e) { alert("Export failed!"); }
-    
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-}
 
-function saveHistory() {
-    if (state.history.length > 20) state.history.shift();
-    state.history.push(JSON.stringify(state.pages));
-}
+        function applySmartSequence() {
+            const inputEl = document.getElementById('sequence-input');
+            const input = inputEl.value.trim();
+            if (!input) return;
 
-function undo() {
-    if (state.history.length < 1) return;
-    state.pages = JSON.parse(state.history.pop());
-    smartRender();
-    updateUI();
-}
+            saveHistory();
+            const snapshot = [...state.pages];
+            const newOrder = [];
 
-function updateUI() {
-    document.getElementById('export-btn').disabled = state.pages.length === 0;
-    document.getElementById('undo-btn').disabled = state.history.length === 0;
-    if (state.pages.length === 0) {
-        document.getElementById('dropzone').classList.remove('hidden');
-        document.getElementById('editor-area').classList.add('hidden');
-    }
-}
+            try {
+                input.split(',').forEach(seg => {
+                    seg = seg.trim();
+                    if (seg.includes('-')) {
+                        const [start, end] = seg.split('-').map(n => parseInt(n.trim()));
+                        if (start <= end) {
+                            for (let i = start; i <= end; i++) if (snapshot[i - 1]) newOrder.push(snapshot[i - 1]);
+                        } else {
+                            for (let i = start; i >= end; i--) if (snapshot[i - 1]) newOrder.push(snapshot[i - 1]);
+                        }
+                    } else {
+                        const pos = parseInt(seg);
+                        if (snapshot[pos - 1]) newOrder.push(snapshot[pos - 1]);
+                    }
+                });
 
-function addBlankPage() {
-    saveHistory();
-    state.pages.push({ id: `bl_${Date.now()}`, docId: null, originalIndex: -1, rotation: 0, isBlank: true });
-    document.getElementById('dropzone').classList.add('hidden');
-    document.getElementById('editor-area').classList.remove('hidden');
-    smartRender(); updateUI();
-}
+                if (newOrder.length) {
+                    state.pages = newOrder;
+                    smartRender();
+                    inputEl.value = "";
+                }
+            } catch (e) { alert("Format Error! Use: 1-5, 10-8"); }
+        }
 
-function syncStateFromDOM() {
-    const newOrder = [];
-    document.querySelectorAll('.page-card').forEach(el => {
-        newOrder.push(state.pages.find(p => p.id === el.dataset.id));
-    });
-    state.pages = newOrder;
-    updateUI();
-}
+        // --- 6. Batch Logic & UI ---
+        function handleCardClick(e, id, index) {
+            if (e.target.closest('button')) return;
 
-// Modal logic (Kept simple and clean)
-async function openPreview(id) {
-    state.currentPreviewId = id;
-    const p = state.pages.find(x => x.id === id);
-    document.getElementById('preview-modal').classList.remove('hidden');
-    const container = document.getElementById('modal-canvas-container');
-    container.innerHTML = '<div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent animate-spin rounded-full"></div>';
+            if (state.isSelectMode || e.ctrlKey || e.metaKey) {
+                if (state.selectedIds.has(id)) state.selectedIds.delete(id);
+                else state.selectedIds.add(id);
+                smartRender();
+                updateBatchToolbar();
+            } else if (e.shiftKey && state.lastSelectedIndex !== null) {
+                const [start, end] = [Math.min(state.lastSelectedIndex, index), Math.max(state.lastSelectedIndex, index)];
+                for (let i = start; i <= end; i++) state.selectedIds.add(state.pages[i].id);
+                smartRender();
+                updateBatchToolbar();
+            } else {
+                openPreview(id);
+            }
+            state.lastSelectedIndex = index;
+        }
 
-    if (p.isBlank) { container.innerHTML = '<div class="p-20 text-slate-300 font-bold uppercase tracking-widest">Blank Page</div>'; return; }
-    
-    const pdf = await pdfjsLib.getDocument({ data: state.buffers[p.docId].slice(0) }).promise;
-    const page = await pdf.getPage(p.originalIndex + 1);
-    const viewport = page.getViewport({ scale: 1.0 });
-    const canvas = document.createElement('canvas');
-    canvas.height = viewport.height; canvas.width = viewport.width;
-    await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
-    container.innerHTML = '';
-    canvas.style.transform = `rotate(${p.rotation}deg)`;
-    canvas.className = "max-w-full max-h-[70vh] shadow-2xl rounded-lg";
-    container.appendChild(canvas);
-}
+        function updateBatchToolbar() {
+            const toolbar = document.getElementById('batch-toolbar');
+            const count = document.getElementById('selected-count');
+            if (state.selectedIds.size > 0) {
+                toolbar.classList.remove('translate-y-40', 'opacity-0');
+                count.innerText = `${state.selectedIds.size} Selected`;
+            } else {
+                toolbar.classList.add('translate-y-40', 'opacity-0');
+            }
+        }
 
-window.closePreview = () => document.getElementById('preview-modal').classList.add('hidden');
+        function toggleSelectMode() {
+            state.isSelectMode = !state.isSelectMode;
+            const btn = document.getElementById('select-mode-btn');
+            btn.classList.toggle('bg-indigo-600', state.isSelectMode);
+            btn.classList.toggle('text-white', state.isSelectMode);
+            if (!state.isSelectMode) clearSelection();
+        }
+
+        function clearSelection() {
+            state.selectedIds.clear();
+            smartRender();
+            updateBatchToolbar();
+        }
+
+        function batchRotate() {
+            saveHistory();
+            state.pages.forEach(p => { if (state.selectedIds.has(p.id)) p.rotation = (p.rotation + 90) % 360; });
+            smartRender();
+        }
+
+        function batchDelete() {
+            if (!confirm(`Delete ${state.selectedIds.size} pages?`)) return;
+            saveHistory();
+            state.pages = state.pages.filter(p => !state.selectedIds.has(p.id));
+            clearSelection();
+            updateUI();
+        }
+
+        // --- 7. Export & Undo ---
+        async function exportPDF() {
+            const btn = document.getElementById('export-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Processing...`;
+            btn.disabled = true;
+
+            try {
+                const finalPdf = await PDFLib.PDFDocument.create();
+
+                for (const p of state.pages) {
+                    if (p.isBlank) {
+                        finalPdf.addPage([595.28, 841.89]); // A4 size
+                    }
+                    else if (p.isImage) {
+                        // IMAGE EMBEDDING
+                        const imgBuffer = state.buffers[p.docId];
+                        let img;
+                        if (p.imageType.includes('png')) img = await finalPdf.embedPng(imgBuffer);
+                        else img = await finalPdf.embedJpg(imgBuffer);
+
+                        // Naya page banayein image ke size ka ya A4 ka
+                        const page = finalPdf.addPage([img.width, img.height]);
+                        page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+                        if (p.rotation !== 0) page.setRotation(PDFLib.degrees(p.rotation));
+                    }
+                    else {
+                        // PDF PAGE EMBEDDING
+                        const src = await PDFLib.PDFDocument.load(state.buffers[p.docId]);
+                        const [copied] = await finalPdf.copyPages(src, [p.originalIndex]);
+                        if (p.rotation !== 0) copied.setRotation(PDFLib.degrees(p.rotation));
+                        finalPdf.addPage(copied);
+                    }
+                }
+
+                const bytes = await finalPdf.save();
+                const blob = new Blob([bytes], { type: 'application/pdf' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `dailytools_export_${Date.now()}.pdf`;
+                a.click();
+            } catch (e) {
+                console.error(e);
+                alert("Export failed!");
+            }
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+        function saveHistory() {
+            if (state.history.length > 20) state.history.shift();
+            state.history.push(JSON.stringify(state.pages));
+        }
+
+        function undo() {
+            if (state.history.length < 1) return;
+            state.pages = JSON.parse(state.history.pop());
+            smartRender();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('export-btn').disabled = state.pages.length === 0;
+            document.getElementById('undo-btn').disabled = state.history.length === 0;
+            if (state.pages.length === 0) {
+                document.getElementById('dropzone').classList.remove('hidden');
+                document.getElementById('editor-area').classList.add('hidden');
+            }
+        }
+
+        function addBlankPage() {
+            saveHistory();
+            state.pages.push({ id: `bl_${Date.now()}`, docId: null, originalIndex: -1, rotation: 0, isBlank: true });
+            document.getElementById('dropzone').classList.add('hidden');
+            document.getElementById('editor-area').classList.remove('hidden');
+            smartRender(); updateUI();
+        }
+
+        function syncStateFromDOM() {
+            const newOrder = [];
+            document.querySelectorAll('.page-card').forEach(el => {
+                newOrder.push(state.pages.find(p => p.id === el.dataset.id));
+            });
+            state.pages = newOrder;
+            updateUI();
+        }
+
+        // Modal logic (Kept simple and clean)
+        async function openPreview(id) {
+            state.currentPreviewId = id;
+            const p = state.pages.find(x => x.id === id);
+            document.getElementById('preview-modal').classList.remove('hidden');
+            const container = document.getElementById('modal-canvas-container');
+            container.innerHTML = '<div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent animate-spin rounded-full"></div>';
+
+            if (p.isBlank) { container.innerHTML = '<div class="p-20 text-slate-300 font-bold uppercase tracking-widest">Blank Page</div>'; return; }
+
+            const pdf = await pdfjsLib.getDocument({ data: state.buffers[p.docId].slice(0) }).promise;
+            const page = await pdf.getPage(p.originalIndex + 1);
+            const viewport = page.getViewport({ scale: 1.0 });
+            const canvas = document.createElement('canvas');
+            canvas.height = viewport.height; canvas.width = viewport.width;
+            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+            container.innerHTML = '';
+            canvas.style.transform = `rotate(${p.rotation}deg)`;
+            canvas.className = "max-w-full max-h-[70vh] shadow-2xl rounded-lg";
+            container.appendChild(canvas);
+        }
+
+        // 1. Grid Zoom Logic
+        document.getElementById('grid-zoom').oninput = function () {
+            const val = this.value;
+            const grid = document.getElementById('pages-grid');
+            // Remove existing col classes
+            grid.className = grid.className.replace(/grid-cols-\d+|md:grid-cols-\d+|lg:grid-cols-\d+|xl:grid-cols-\d+/g, '');
+            // Add new dynamic col class
+            grid.classList.add(`grid-cols-${Math.max(2, val - 2)}`, `md:grid-cols-${Math.max(4, val - 1)}`, `lg:grid-cols-${val}`);
+        };
+
+
+
+
+        window.closePreview = () => document.getElementById('preview-modal').classList.add('hidden');
     </script>
 </body>
 
