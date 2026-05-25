@@ -37,8 +37,9 @@
 
     <!-- User's AdSense -->
     <meta name="google-adsense-account" content="ca-pub-3793390054330330">
-    <script  data-ad-client="ca-pub-3793390054330330" async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" onerror="console.warn('Ads script blocked')"></script>
+    <script data-ad-client="ca-pub-3793390054330330" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+        onerror="console.warn('Ads script blocked')"></script>
 
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -140,226 +141,328 @@
     ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
 
     <!-- 1. Global Navigation (Standard) -->
-    
-<!-- Universal Glass Header -->
 
+    <!-- Universal Glass Header -->
+    <nav class="sticky top-0 z-50 w-full border-b border-white/10 bg-white/10 backdrop-blur-xl saturate-150 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Left: Logo -->
+                <div class="flex items-center gap-3">
+                    <a href="../../index.html" class="flex items-center gap-3 group">
+                        <div
+                            class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                        </div>
+                        <span class="font-bold text-xl tracking-tight text-inherit dark:text-white">DailyTools</span>
+                    </a>
+                </div>
 
+                <!-- Right: Navigation -->
+                <div class="flex items-center gap-6 text-sm font-semibold">
+                    <a href="../../index.html"
+                        class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Home</a>
+                    <a href="../../pages/contact.html"
+                        class="text-inherit opacity-70 hover:opacity-100 hover:text-indigo-500 transition-all dark:text-white">Contact</a>
 
-
-
-<nav class="sticky top-0 z-50 w-full border-b border-white/10 bg-white/70 backdrop-blur-xl saturate-150 no-print transition-all">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <!-- Left: Logo & Branding -->
-            <div class="flex items-center gap-3">
-                <a href="../../index.html" class="flex items-center gap-3 group">
-                    <!-- Ab yahan aapka favicon.svg render hoga -->
-                    <div class="relative flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl shadow-lg shadow-indigo-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 overflow-hidden p-1.5">
-                        <img src="../../assets/img/favicon.svg" class="w-full h-full object-contain" alt="Logo">
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-black text-xl tracking-tight text-slate-900 leading-none">DailyTools<span class="text-indigo-600">.</span></span>
-                        <span class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Smart Utilities</span>
-                    </div>
-                </a>
-            </div>
-            <!-- Right: Navigation -->
-            <div class="flex items-center gap-6 text-sm font-bold">
-                <a href="../../index.html" class="text-slate-500 hover:text-indigo-600 transition-all">Home</a>
-                <a href="../../pages/contact.html" class="text-slate-500 hover:text-indigo-600 transition-all">Contact</a>
-                <div class="h-6 w-[1px] bg-slate-200 mx-1"></div>
-                <a href="https://github.com/nkd2000" target="_blank" class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-900 hover:text-white transition-all shadow-sm border border-slate-100">
-                    <i class="fa-brands fa-github text-lg"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</nav>
-
-
-
-
-
-
-
-    <header class="bg-white border-b px-4 py-3 flex flex-col gap-3 z-50 shadow-sm">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <button onclick="undo()" id="undo-btn" disabled
-                    class="p-2 text-slate-400 hover:text-indigo-600 transition"><i
-                        class="fa-solid fa-rotate-left"></i></button>
-                <button onclick="toggleSelectMode()" id="select-mode-btn"
-                    class="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1">
-                    <i class="fa-solid fa-check-double"></i> <span class="hidden sm:inline">Select Mode</span>
-                </button>
-                <button id="export-btn" disabled onclick="exportPDF()"
-                    class="bg-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-md hover:bg-green-700 transition">Export
-                    PDF</button>
-            </div>
-
-
-            <!-- Secondary Toolbar -->
-            <div class="flex gap-2 items-center">
-                <button onclick="document.getElementById('file-input').click()"
-                    class="bg-indigo-600 text-white px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1 shrink-0">
-                    <i class="fa-solid fa-plus"></i> Add Files
-                </button>
-                <button onclick="addBlankPage()"
-                    class="bg-white border-2 border-indigo-100 text-indigo-600 px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1 shrink-0">
-                    <i class="fa-solid fa-file-circle-plus"></i> Blank Page
-                </button>
-
-                <!-- Smart Sequence Input (Visible after upload) -->
-                <div id="sequence-container" class="hidden flex flex-1 gap-1">
-                    <input type="text" id="sequence-input" placeholder="क्रम: 10-9, 5-4, 6"
-                        class="w-full bg-slate-100 border-2 border-transparent focus:border-indigo-500 rounded-lg px-3 py-1.5 text-xs outline-none transition-all"
-                        onkeydown="if(event.key==='Enter') applySmartSequence()">
-                    <button onclick="applySmartSequence()"
-                        class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">Apply</button>
+                    <!-- Github Icon with subtle border -->
+                    <div class="h-6 w-[1px] bg-gray-300/20 mx-2"></div>
+                    <a href="https://github.com/nkd2000"
+                        class="text-inherit opacity-70 hover:opacity-100 transition-all dark:text-white text-lg">
+                        <i class="fa-brands fa-github"></i>
+                    </a>
                 </div>
             </div>
         </div>
-    </header>
+    </nav>
 
-     <main class="flex-1 relative flex flex-col overflow-hidden">
-        <!-- Welcome Screen -->
-        <div id="dropzone" class="absolute inset-0 z-40 flex flex-col items-center justify-center p-6 text-center bg-slate-50">
-            <input type="file" id="file-input" multiple accept=".pdf" class="hidden" onchange="handleFiles(this.files)">
-            <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-4">
-                <i class="fa-solid fa-file-arrow-up text-3xl"></i>
+
+    <!-- Tool Header (Secondary) -->
+    <div class="bg-white border-b border-gray-100 sticky top-16 z-30 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
+            <!-- Action Group 1: Undo & Selection -->
+            <div class="flex items-center gap-2">
+                <button onclick="undo()" id="undo-btn" disabled
+                    class="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+                    title="Undo (Ctrl+Z)">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+                <div class="h-6 w-[1px] bg-slate-200 mx-1"></div>
+                <button onclick="toggleSelectMode()" id="select-mode-btn"
+                    class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 transition-all">
+                    <i class="fa-solid fa-check-double"></i> <span>Select Mode</span>
+                </button>
             </div>
-            <h2 class="text-xl font-bold text-slate-700">PDF फाइलें लोड करें</h2>
-            <p class="text-slate-400 text-xs mt-2 max-w-xs">Smart Range (10-9), Multi-Select, और Blank Page सब यहाँ है!</p>
+
+            <!-- Action Group 2: Smart Sequence (The Brain) -->
+            <div id="sequence-container" class="hidden flex-1 max-w-md group">
+                <div class="relative flex items-center">
+                    <div class="absolute left-4 text-slate-400">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                    </div>
+                    <input type="text" id="sequence-input" placeholder="Smart Sequence: 10-9, 5-4, 6"
+                        class="w-full pl-10 pr-20 py-2.5 bg-slate-50 border-2 border-transparent focus:border-indigo-500 rounded-2xl text-xs font-medium outline-none transition-all"
+                        onkeydown="if(event.key==='Enter') applySmartSequence()">
+                    <button onclick="applySmartSequence()"
+                        class="absolute right-2 px-3 py-1.5 bg-slate-900 text-white text-[10px] font-black rounded-xl hover:bg-indigo-600 transition-all uppercase tracking-wider">Apply</button>
+                </div>
+            </div>
+
+            <!-- Action Group 3: File Management -->
+            <div class="flex items-center gap-3">
+                <button onclick="addBlankPage()"
+                    class="hidden sm:flex items-center gap-2 px-4 py-2 bg-white border-2 border-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:border-indigo-200 hover:text-indigo-600 transition-all">
+                    <i class="fa-solid fa-plus"></i> Blank Page
+                </button>
+                <button id="export-btn" disabled onclick="exportPDF()"
+                    class="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-black shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all uppercase tracking-widest">
+                    <i class="fa-solid fa-file-export"></i> Export PDF
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl">
+                <i class="fa-solid fa-magnifying-glass-minus text-[10px] text-slate-400"></i>
+                <input type="range" id="grid-zoom" min="2" max="12" value="6" class="w-20 h-1 accent-indigo-600">
+                <i class="fa-solid fa-magnifying-glass-plus text-[10px] text-slate-400"></i>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow relative flex flex-col min-h-[calc(100vh-180px)]">
+        <!-- Premium Dropzone -->
+        <div id="dropzone"
+            class="absolute inset-0 z-40 flex flex-col items-center justify-center p-6 text-center bg-gray-50/50 backdrop-blur-sm transition-all">
+            <div
+                class="max-w-md w-full p-12 rounded-[3rem] border-4 border-dashed border-slate-200 bg-white shadow-2xl relative overflow-hidden group hover:border-indigo-300 transition-all">
+                <!-- Animated Background Glow -->
+                <div
+                    class="absolute -top-24 -left-24 w-48 h-48 bg-indigo-50 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity">
+                </div>
+                <input type="file" id="file-input" multiple accept=".pdf,image/jpeg,image/png,image/webp" class="hidden"
+                    onchange="handleFiles(this.files)">
+
+                <div onclick="document.getElementById('file-input').click()" class="cursor-pointer relative z-10">
+                    <div
+                        class="w-24 h-24 bg-indigo-600 text-white rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl shadow-indigo-200 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-file-import text-4xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900 mb-2">Organize Your PDF</h2>
+                    <p class="text-slate-400 text-sm mb-8 leading-relaxed">Drag and drop files to start reordering,
+                        rotating, or deleting pages.</p>
+                    <button
+                        class="px-8 py-4 bg-slate-900 text-white font-black rounded-2xl text-xs uppercase tracking-widest shadow-lg group-hover:bg-indigo-600 transition-all">Select
+                        PDF Files</button>
+                </div>
+            </div>
         </div>
 
-        <!-- Main Workspace -->
-        <div id="editor-area" class="flex-1 overflow-y-auto p-4 hidden">
-            <div id="pages-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 pb-32">
-                <!-- Page Cards -->
+        <!-- Workspace Grid -->
+        <div id="editor-area" class="flex-1 overflow-y-auto p-8 hidden">
+            <div id="pages-grid"
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 pb-40">
+                <!-- Dynamic Page Cards -->
             </div>
         </div>
 
-        <!-- Batch Action Toolbar -->
-        <div id="batch-toolbar" class="fixed bottom-6 left-4 right-4 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex justify-between items-center z-[100] transition-all transform translate-y-40 opacity-0">
-            <div class="flex items-center gap-4">
-                <span id="selected-count" class="bg-indigo-600 px-2 py-1 rounded text-[10px] font-bold">0</span>
-                <button onclick="batchRotate()" class="text-xs font-bold hover:text-indigo-400 flex items-center gap-2"><i class="fa-solid fa-rotate-right"></i> रोटेट</button>
-                <button onclick="batchDelete()" class="text-xs font-bold text-red-400 hover:text-red-300 flex items-center gap-2"><i class="fa-solid fa-trash"></i> डिलीट</button>
+        <!-- Apple-style Floating Dock Action Bar -->
+        <div id="batch-toolbar"
+            class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-xl text-white px-8 py-4 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-8 z-[100] transition-all transform translate-y-40 opacity-0 border border-white/10">
+            <div class="flex items-center gap-3 pr-8 border-r border-white/10">
+                <span id="selected-count"
+                    class="bg-indigo-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">0
+                    Selected</span>
             </div>
-            <button onclick="clearSelection()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-circle-xmark text-lg"></i></button>
+            <div class="flex items-center gap-6">
+                <button onclick="batchRotate()" class="flex flex-col items-center gap-1 group">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-indigo-500 transition-all">
+                        <i class="fa-solid fa-rotate-right text-sm"></i>
+                    </div>
+                    <span class="text-[9px] font-bold uppercase tracking-widest opacity-60">Rotate</span>
+                </button>
+                <button onclick="batchDelete()" class="flex flex-col items-center gap-1 group">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-red-500 transition-all">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </div>
+                    <span class="text-[9px] font-bold uppercase tracking-widest opacity-60">Delete</span>
+                </button>
+
+            </div>
+            <button onclick="clearSelection()"
+                class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-all">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
         </div>
     </main>
 
-    <!-- Preview Modal -->
-    <div id="preview-modal" class="fixed inset-0 z-[110] bg-black flex flex-col hidden" onclick="if(event.target === this) closePreview()">
-        <div class="p-4 flex justify-between items-center text-white border-b border-white/10">
-            <span class="text-sm font-bold">पेज प्रिव्यू</span>
-            <button onclick="closePreview()" class="p-2"><i class="fa-solid fa-xmark text-2xl"></i></button>
-        </div>
-        <div class="flex-1 overflow-auto flex justify-center items-center p-6">
-            <div id="modal-canvas-container" class="bg-white shadow-2xl"></div>
-        </div>
-        <div class="p-6 bg-white rounded-t-[2.5rem] flex flex-col gap-6" onclick="event.stopPropagation()">
-            <div class="flex flex-wrap justify-between items-center gap-4">
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-bold text-slate-600">नई पोजीशन:</span>
-                    <input type="number" id="move-to-pos" class="w-20 border-2 border-slate-100 rounded-xl px-3 py-2 text-center font-bold focus:border-indigo-500 outline-none">
-                    <button onclick="quickMove()" class="bg-indigo-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md">भेजें</button>
-                </div>
-                <div class="flex gap-4">
-                    <button onclick="rotateModalPage()" class="flex-1 p-3 border-2 border-slate-100 rounded-xl text-indigo-600 hover:bg-indigo-50"><i class="fa-solid fa-rotate-right"></i></button>
-                    <button onclick="deleteModalPage()" class="flex-1 p-3 border-2 border-slate-100 rounded-xl text-red-500 hover:bg-red-50"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Footer -->
-    
 
+    <footer class="relative bg-[#0f172a] text-gray-300 pt-20 pb-10 overflow-hidden no-print">
+        <!-- Background Decoration: Subtle Dot Grid & Glow -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 opacity-[0.03]"
+                style="background-image: radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0); background-size: 40px 40px;">
+            </div>
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px]"></div>
+            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]"></div>
+        </div>
 
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
 
-
-
-<footer class="relative bg-[#0f172a] text-gray-300 pt-20 pb-10 overflow-hidden no-print">
-    <div class="absolute inset-0 z-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0); background-size: 40px 40px;"></div>
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
-            <div class="md:col-span-5">
-                <div class="flex items-center gap-3 mb-6">
-                    <!-- Footer Logo using favicon.svg -->
-                    <div class="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/20 p-0">
-                        <img src="../../assets/img/favicon.svg" class="w-full h-full object-contain" alt="Logo">
+                <!-- Column 1: Brand & Bio -->
+                <div class="md:col-span-5">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/20">
+                            <i class="fa-solid fa-screwdriver-wrench text-white text-xl"></i>
+                        </div>
+                        <span class="font-extrabold text-2xl text-white tracking-tight">DailyTools<span
+                                class="text-indigo-500">.</span></span>
                     </div>
-                    <span class="font-extrabold text-2xl text-white tracking-tight">DailyTools<span class="text-indigo-600">.</span></span>
+                    <p class="text-gray-400 text-base leading-relaxed max-w-md">
+                        The ultimate destination for free, privacy-first web utilities. Helping you simplify complex
+                        digital tasks since 2023.
+                    </p>
+                    <!-- Social Buttons -->
+                    <div class="flex gap-4 mt-8">
+                        <a href="https://github.com/nkd2000"
+                            class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-indigo-600 hover:border-indigo-600 transition-all duration-300 group">
+                            <i class="fa-brands fa-github text-white group-hover:scale-110 transition-transform"></i>
+                        </a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-400 hover:border-blue-400 transition-all duration-300 group">
+                            <i class="fa-brands fa-x-twitter text-white group-hover:scale-110 transition-transform"></i>
+                        </a>
+                    </div>
                 </div>
-                <p class="text-gray-400 text-sm leading-relaxed max-w-md">Helping you simplify complex digital tasks since 2023. Fast, Secure, and 100% Client-Side.</p>
-                <div class="flex gap-4 mt-8">
-                    <a href="https://github.com/nkd2000" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-indigo-600 transition-all"><i class="fa-brands fa-github"></i></a>
-                    <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-400 transition-all"><i class="fa-brands fa-x-twitter"></i></a>
+
+                <!-- Column 2: Navigation -->
+                <div class="md:col-span-2 md:col-start-7">
+                    <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Platform</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li><a href="../../index.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i
+                                    class="fa-solid fa-chevron-right text-[10px]"></i> All Tools</a></li>
+                        <li><a href="../../pages/contact.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i
+                                    class="fa-solid fa-chevron-right text-[10px]"></i> Contact Us</a></li>
+                        <li><a href="../../pages/privacy.html"
+                                class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-2"><i
+                                    class="fa-solid fa-chevron-right text-[10px]"></i> Privacy</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Suggest Tool CTA -->
+                <div class="md:col-span-4">
+                    <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Contribute</h4>
+                    <div
+                        class="p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 backdrop-blur-md">
+                        <p class="text-gray-400 text-sm mb-5">Have an idea for a new tool? Submit your request on
+                            GitHub.</p>
+                        <a href="https://github.com/nkd2000/Daily_tools/issues"
+                            class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-all shadow-lg shadow-indigo-600/30">
+                            <i class="fa-brands fa-github-alt"></i> Request Feature
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="md:col-span-2 md:col-start-7">
-                <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Platform</h4>
-                <ul class="space-y-4 text-sm text-gray-400">
-                    <li><a href="../../index.html" class="hover:text-indigo-400 transition-colors">All Tools</a></li>
-                    <li><a href="../../pages/privacy.html" class="hover:text-indigo-400 transition-colors">Privacy Policy</a></li>
-                    <li><a href="../../pages/contact.html" class="hover:text-indigo-400 transition-colors">Contact</a></li>
-                </ul>
-            </div>
-            <div class="md:col-span-4">
-                <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Contribute</h4>
-                <div class="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md">
-                    <p class="text-gray-400 text-xs mb-4 uppercase tracking-tighter">Found a bug or need a feature?</p>
-                    <a href="https://github.com/nkd2000/Daily_tools/issues" class="w-full inline-flex items-center justify-center py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-all">Submit Issue</a>
+
+            <!-- Bottom Bar -->
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                    <p class="text-gray-500 text-sm">&copy; 2025 <span class="text-white font-semibold">DailyTools
+                            Pro</span>.</p>
+                    <div
+                        class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems
+                            Operational</span>
+                    </div>
+                </div>
+
+                <div class="text-gray-500 text-sm font-medium">
+                    Made with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i> by <span
+                        class="text-gray-200">Nkd2000</span>
                 </div>
             </div>
         </div>
-        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p class="text-gray-500 text-sm">&copy; 2025 DailyTools Pro. Built with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i></p>
-            <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
-                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems Nominal</span>
-            </div>
-        </div>
-    </div>
-</footer>
+    </footer>
+    <style>
+        /* Header text adaptive color logic */
+        nav .text-inherit {
+            color: currentColor;
+            /* Ye apne parent ka color lega */
+        }
 
+        /* Agar tool dark hai toh text white ho jayega automatically */
+        .dark-theme nav {
+            color: white;
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
 
+        .light-theme nav {
+            color: #1e293b;
+            border-bottom-color: rgba(0, 0, 0, 0.05);
+        }
 
+        /* Strong blur effect */
+        .backdrop-blur-xl {
+            -webkit-backdrop-filter: blur(24px) saturate(150%);
+            backdrop-filter: blur(24px) saturate(150%);
+        }
 
+        /* Premium Grid Transitions */
+        .page-card {
+            cursor: grab;
+        }
 
-<style>
-/* Header text adaptive color logic */
-nav .text-inherit {
-    color: currentColor; /* Ye apne parent ka color lega */
-}
+        .page-card:active {
+            cursor: grabbing;
+        }
 
-/* Agar tool dark hai toh text white ho jayega automatically */
-.dark-theme nav { color: white; border-bottom-color: rgba(255,255,255,0.1); }
-.light-theme nav { color: #1e293b; border-bottom-color: rgba(0,0,0,0.05); }
+        .sortable-ghost {
+            opacity: 0.2;
+            transform: scale(0.9);
+        }
 
-/* Strong blur effect */
-.backdrop-blur-xl {
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    backdrop-filter: blur(24px) saturate(150%);
-}
-</style>
+        .sortable-chosen {
+            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.2);
+        }
 
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
 
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-
-
-
+        .page-card {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
 
 
     <script>
+        /**
+ * DailyTools: Ultra-Robust PDF Organizer Engine
+ * Features: High-Speed Caching, Smart Sequence, Batch Actions, Undo/Redo
+ */
+
+        // Worker setup
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+        // --- Global State ---
         let state = {
             pages: [],      // { id, docId, originalIndex, rotation, isBlank }
-            buffers: {},
-            history: [],
+            buffers: {},    // Binary PDF data stored by docId
+            history: [],    // Undo stack
             selectedIds: new Set(),
             isSelectMode: false,
             currentPreviewId: null,
@@ -367,136 +470,287 @@ nav .text-inherit {
             lastSelectedIndex: null
         };
 
+        // --- Caching System (Efficiency Fix) ---
+        const THUMBNAIL_CACHE = {};
+        const RENDER_QUEUE = [];
+        let isProcessingQueue = false;
+
         const grid = document.getElementById('pages-grid');
 
-        // Sortable Initialization with Mobile Long Press
-        new Sortable(grid, {
-            animation: 150,
-            delay: 200,
-            delayOnTouchOnly: true,
-            onEnd: () => {
-                saveHistory();
-                syncStateFromDOM();
-            }
+        // --- 1. Initialization & Sortable ---
+        document.addEventListener('DOMContentLoaded', () => {
+            new Sortable(grid, {
+                animation: 250,
+                delay: 150,
+                delayOnTouchOnly: true,
+                ghostClass: 'opacity-20',
+                chosenClass: 'shadow-2xl',
+                onEnd: () => {
+                    saveHistory();
+                    syncStateFromDOM();
+                }
+            });
         });
 
+        // --- 2. File Handling ---
         async function handleFiles(files) {
             if (!files.length) return;
+
             document.getElementById('dropzone').classList.add('hidden');
             document.getElementById('editor-area').classList.remove('hidden');
             document.getElementById('sequence-container').classList.remove('hidden');
 
             for (const file of files) {
-                if (file.type !== 'application/pdf') continue;
-                try {
-                    const buffer = await file.arrayBuffer();
-                    const docId = `doc_${++state.docCounter}`;
-                    state.buffers[docId] = buffer;
-                    const pdf = await pdfjsLib.getDocument({ data: buffer.slice(0) }).promise;
+                // PDF Handling
+                if (file.type === 'application/pdf') {
+                    try {
+                        const buffer = await file.arrayBuffer();
+                        const docId = `doc_${++state.docCounter}`;
+                        state.buffers[docId] = buffer;
+                        const pdf = await pdfjsLib.getDocument({ data: buffer.slice(0) }).promise;
 
-                    for (let i = 1; i <= pdf.numPages; i++) {
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            state.pages.push({
+                                id: `pg_${Math.random().toString(36).substr(2, 9)}`,
+                                docId, originalIndex: i - 1, rotation: 0, isBlank: false, isImage: false
+                            });
+                        }
+                    } catch (e) { console.error("PDF Load Error:", e); }
+                }
+                // IMAGE Handling (NEW)
+                else if (file.type.startsWith('image/')) {
+                    try {
+                        const buffer = await file.arrayBuffer();
+                        const docId = `img_${++state.docCounter}`;
+                        state.buffers[docId] = buffer; // Image buffer save karein
+
                         state.pages.push({
                             id: `pg_${Math.random().toString(36).substr(2, 9)}`,
-                            docId, originalIndex: i - 1, rotation: 0, isBlank: false
+                            docId,
+                            originalIndex: -1,
+                            rotation: 0,
+                            isBlank: false,
+                            isImage: true,
+                            imageType: file.type // JPEG ya PNG store karein
                         });
-                    }
-                } catch (e) { console.error(e); }
+                    } catch (e) { console.error("Image Load Error:", e); }
+                }
             }
-            rebuildGrid();
+
             saveHistory();
+            smartRender();
             updateUI();
         }
+        // --- 3. Smart Rendering Engine (No Lag for 100+ pages) ---
+        function smartRender() {
+            const fragment = document.createDocumentFragment();
+            const existingIds = new Set(Array.from(grid.children).map(c => c.dataset.id));
+            const targetIds = new Set(state.pages.map(p => p.id));
 
-        function renderCard(pageData, index) {
+            // Remove deleted items
+            existingIds.forEach(id => {
+                if (!targetIds.has(id)) grid.querySelector(`[data-id="${id}"]`)?.remove();
+            });
+
+            // Update or Add items
+            state.pages.forEach((pageData, index) => {
+                let card = grid.querySelector(`[data-id="${pageData.id}"]`);
+                if (!card) {
+                    card = createCardElement(pageData, index);
+                    grid.appendChild(card);
+                } else {
+                    // Update index and selection status
+                    card.querySelector('.badge').innerText = index + 1;
+                    updateCardVisualState(card, pageData.id);
+                }
+            });
+
+            processQueue();
+        }
+
+        function createCardElement(pageData, index) {
             const card = document.createElement('div');
-            card.className = `page-card bg-white border-2 rounded-2xl p-2 shadow-sm group ${state.selectedIds.has(pageData.id) ? 'selected' : ''}`;
             card.dataset.id = pageData.id;
+            card.className = `page-card relative group bg-white border border-gray-100 rounded-[1.5rem] p-3 shadow-sm hover:shadow-xl transition-all duration-300 cursor-grab`;
 
             card.onclick = (e) => handleCardClick(e, pageData.id, index);
 
             card.innerHTML = `
-                <div class="absolute top-2 left-2 z-10 bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded-full font-bold badge">${index + 1}</div>
-                <div class="canvas-container bg-slate-50 aspect-[3/4] rounded-xl flex items-center justify-center overflow-hidden mb-2">
-                    ${pageData.isBlank ? '<div class="text-slate-300 text-center"><i class="fa-regular fa-file text-2xl"></i><div class="text-[8px] font-bold mt-1 uppercase">Blank</div></div>' : '<div class="loader"></div>'}
-                </div>
-                <div class="flex justify-between items-center px-1">
-                    <button onclick="event.stopPropagation(); rotatePage('${pageData.id}')" class="text-slate-400 hover:text-indigo-600 p-2"><i class="fa-solid fa-rotate-right text-xs"></i></button>
-                    <button onclick="event.stopPropagation(); deletePage('${pageData.id}')" class="text-slate-400 hover:text-red-500 p-2"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                </div>
-            `;
-            grid.appendChild(card);
-            if (!pageData.isBlank) generateThumbnail(pageData, card.querySelector('.canvas-container'));
+        <div class="absolute top-4 left-4 z-10 bg-slate-900/80 backdrop-blur-md text-white text-[9px] font-black w-6 h-6 flex items-center justify-center rounded-lg badge">${index + 1}</div>
+        <div class="selection-indicator absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 border-white shadow-md transition-all flex items-center justify-center">
+            <i class="fa-solid fa-check text-[10px] text-white"></i>
+        </div>
+        <div class="canvas-container bg-slate-50 aspect-[3/4] rounded-2xl flex items-center justify-center overflow-hidden mb-3 shadow-inner">
+            ${pageData.isBlank ? '<div class="opacity-20 text-center"><i class="fa-regular fa-file text-3xl"></i></div>' : '<div class="w-6 h-6 border-2 border-indigo-500 border-t-transparent animate-spin rounded-full"></div>'}
+        </div>
+        <div class="flex justify-center gap-1 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+            <button onclick="event.stopPropagation(); rotatePage('${pageData.id}')" class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all"><i class="fa-solid fa-rotate-right text-[10px]"></i></button>
+            <button onclick="event.stopPropagation(); duplicatePage('${pageData.id}')" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all" title="Duplicate Page">
+        <i class="fa-solid fa-copy text-[10px]"></i>
+    </button>
+            <button onclick="event.stopPropagation(); deletePage('${pageData.id}')" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-600 hover:text-white transition-all"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
+        </div>
+    `;
+
+            updateCardVisualState(card, pageData.id);
+            if (!pageData.isBlank) RENDER_QUEUE.push(pageData.id);
+            return card;
         }
 
-        // --- Core Action: Smart Sequence (FIXED & ROBUST) ---
-        function applySmartSequence() {
-            const input = document.getElementById('sequence-input').value.trim();
-            if (!input) return;
+        function updateCardVisualState(card, id) {
+            const isSelected = state.selectedIds.has(id);
+            card.classList.toggle('ring-4', isSelected);
+            card.classList.toggle('ring-indigo-500/20', isSelected);
+            card.classList.toggle('border-indigo-500', isSelected);
 
-            saveHistory();
-            const snapshot = [...state.pages]; // वर्तमान स्थिति की कॉपी
-            const newOrder = [];
-            const segments = input.split(',');
+            const indicator = card.querySelector('.selection-indicator');
+            indicator.className = `selection-indicator absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 border-white shadow-md transition-all flex items-center justify-center ${isSelected ? 'bg-indigo-600 scale-110' : 'bg-white opacity-0 group-hover:opacity-100'}`;
+        }
 
-            try {
-                segments.forEach(seg => {
-                    seg = seg.trim();
-                    if (seg.includes('-')) {
-                        const parts = seg.split('-').map(n => parseInt(n.trim()));
-                        const start = parts[0];
-                        const end = parts[1];
+        // --- 4. High-Performance Thumbnail Queue ---
+        // processQueue ke andar if-else check add karein:
+        async function processQueue() {
+            if (isProcessingQueue || RENDER_QUEUE.length === 0) return;
+            isProcessingQueue = true;
 
-                        if (isNaN(start) || isNaN(end)) return;
+            const id = RENDER_QUEUE.shift();
+            const pageData = state.pages.find(p => p.id === id);
+            const card = grid.querySelector(`[data-id="${id}"]`);
 
-                        if (start <= end) {
-                            // सीधा क्रम: 4-6
-                            for (let i = start; i <= end; i++) {
-                                if (snapshot[i - 1]) newOrder.push(snapshot[i - 1]);
-                            }
+            if (pageData && card) {
+                const container = card.querySelector('.canvas-container');
+                try {
+                    let imgData = THUMBNAIL_CACHE[id];
+
+                    if (!imgData) {
+                        if (pageData.isImage) {
+                            // Agar image hai toh seedha Blob banayein
+                            const blob = new Blob([state.buffers[pageData.docId]], { type: pageData.imageType });
+                            imgData = URL.createObjectURL(blob);
                         } else {
-                            // उल्टा क्रम: 10-9
-                            for (let i = start; i >= end; i--) {
-                                if (snapshot[i - 1]) newOrder.push(snapshot[i - 1]);
-                            }
+                            // Purana PDF rendering logic
+                            const pdf = await pdfjsLib.getDocument({ data: state.buffers[pageData.docId].slice(0) }).promise;
+                            const page = await pdf.getPage(pageData.originalIndex + 1);
+                            const viewport = page.getViewport({ scale: 0.6 });
+                            const canvas = document.createElement('canvas');
+                            canvas.height = viewport.height; canvas.width = viewport.width;
+                            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+                            imgData = canvas.toDataURL('image/jpeg', 0.6);
                         }
-                    } else {
-                        const pos = parseInt(seg);
-                        if (!isNaN(pos) && snapshot[pos - 1]) {
-                            newOrder.push(snapshot[pos - 1]);
-                        }
+                        THUMBNAIL_CACHE[id] = imgData;
                     }
-                });
 
-                if (newOrder.length > 0) {
-                    state.pages = newOrder;
-                    rebuildGrid();
-                    updateUI();
-                    document.getElementById('sequence-input').value = ""; // Clear input
+                    container.innerHTML = `<img src="${imgData}" class="w-full h-full object-contain transition-transform duration-300" style="transform: rotate(${pageData.rotation}deg)">`;
+                } catch (e) { console.error("Render Error:", e); }
+            }
+
+            isProcessingQueue = false;
+            setTimeout(processQueue, 10);
+        }
+        // --- 5. Page Actions ---
+        function rotatePage(id) {
+            saveHistory();
+            const p = state.pages.find(x => x.id === id);
+            p.rotation = (p.rotation + 90) % 360;
+            const img = grid.querySelector(`[data-id="${id}"] img`);
+            if (img) img.style.transform = `rotate(${p.rotation}deg)`;
+        }
+
+        function deletePage(id) {
+            saveHistory();
+            state.pages = state.pages.filter(p => p.id !== id);
+            state.selectedIds.delete(id);
+            smartRender();
+            updateUI();
+        }
+        function duplicatePage(id) {
+            saveHistory();
+            const index = state.pages.findIndex(p => p.id === id);
+            if (index !== -1) {
+                const original = state.pages[index];
+
+                // Naya unique ID generate karein
+                const newId = `pg_${Math.random().toString(36).substr(2, 9)}`;
+
+                // Page ki copy banayein
+                const copy = { ...original, id: newId };
+
+                // Original page ke theek baad copy ko insert karein
+                state.pages.splice(index + 1, 0, copy);
+
+                // Performance Fix: Purane thumbnail ko hi naye ID ke liye cache mein copy kar dein
+                // Taaki dobara render na karna pade
+                if (THUMBNAIL_CACHE[id]) {
+                    THUMBNAIL_CACHE[newId] = THUMBNAIL_CACHE[id];
                 }
-            } catch (err) {
-                alert("गलत फॉर्मेट! कृपया '10-9, 5-4, 6' जैसा लिखें।");
+
+                smartRender(); // UI update karein
+                updateUI();
             }
         }
 
-        // --- Interaction Logic ---
+        function applySmartSequence() {
+            const inputEl = document.getElementById('sequence-input');
+            const input = inputEl.value.trim();
+            if (!input) return;
+
+            saveHistory();
+            const snapshot = [...state.pages];
+            const newOrder = [];
+
+            try {
+                input.split(',').forEach(seg => {
+                    seg = seg.trim();
+                    if (seg.includes('-')) {
+                        const [start, end] = seg.split('-').map(n => parseInt(n.trim()));
+                        if (start <= end) {
+                            for (let i = start; i <= end; i++) if (snapshot[i - 1]) newOrder.push(snapshot[i - 1]);
+                        } else {
+                            for (let i = start; i >= end; i--) if (snapshot[i - 1]) newOrder.push(snapshot[i - 1]);
+                        }
+                    } else {
+                        const pos = parseInt(seg);
+                        if (snapshot[pos - 1]) newOrder.push(snapshot[pos - 1]);
+                    }
+                });
+
+                if (newOrder.length) {
+                    state.pages = newOrder;
+                    smartRender();
+                    inputEl.value = "";
+                }
+            } catch (e) { alert("Format Error! Use: 1-5, 10-8"); }
+        }
+
+        // --- 6. Batch Logic & UI ---
         function handleCardClick(e, id, index) {
             if (e.target.closest('button')) return;
 
             if (state.isSelectMode || e.ctrlKey || e.metaKey) {
                 if (state.selectedIds.has(id)) state.selectedIds.delete(id);
                 else state.selectedIds.add(id);
-                rebuildGrid();
+                smartRender();
                 updateBatchToolbar();
             } else if (e.shiftKey && state.lastSelectedIndex !== null) {
-                const start = Math.min(state.lastSelectedIndex, index);
-                const end = Math.max(state.lastSelectedIndex, index);
+                const [start, end] = [Math.min(state.lastSelectedIndex, index), Math.max(state.lastSelectedIndex, index)];
                 for (let i = start; i <= end; i++) state.selectedIds.add(state.pages[i].id);
-                rebuildGrid();
+                smartRender();
                 updateBatchToolbar();
             } else {
                 openPreview(id);
             }
             state.lastSelectedIndex = index;
+        }
+
+        function updateBatchToolbar() {
+            const toolbar = document.getElementById('batch-toolbar');
+            const count = document.getElementById('selected-count');
+            if (state.selectedIds.size > 0) {
+                toolbar.classList.remove('translate-y-40', 'opacity-0');
+                count.innerText = `${state.selectedIds.size} Selected`;
+            } else {
+                toolbar.classList.add('translate-y-40', 'opacity-0');
+            }
         }
 
         function toggleSelectMode() {
@@ -507,80 +761,88 @@ nav .text-inherit {
             if (!state.isSelectMode) clearSelection();
         }
 
-        function addBlankPage() {
-            saveHistory();
-            state.pages.push({ id: `bl_${Date.now()}`, docId: null, originalIndex: -1, rotation: 0, isBlank: true });
-            rebuildGrid(); updateUI();
-            document.getElementById('dropzone').classList.add('hidden');
-            document.getElementById('editor-area').classList.remove('hidden');
-        }
-
-        // --- Page Actions ---
-        function rotatePage(id) {
-            saveHistory();
-            const p = state.pages.find(x => x.id === id);
-            p.rotation = (p.rotation + 90) % 360;
-            rebuildGrid();
-        }
-
-        function deletePage(id) {
-            saveHistory();
-            state.pages = state.pages.filter(p => p.id !== id);
-            rebuildGrid(); updateUI();
+        function clearSelection() {
+            state.selectedIds.clear();
+            smartRender();
+            updateBatchToolbar();
         }
 
         function batchRotate() {
             saveHistory();
             state.pages.forEach(p => { if (state.selectedIds.has(p.id)) p.rotation = (p.rotation + 90) % 360; });
-            rebuildGrid();
+            smartRender();
         }
 
         function batchDelete() {
-            if (!confirm(`क्या आप ${state.selectedIds.size} पेज डिलीट करना चाहते हैं?`)) return;
+            if (!confirm(`Delete ${state.selectedIds.size} pages?`)) return;
             saveHistory();
             state.pages = state.pages.filter(p => !state.selectedIds.has(p.id));
-            state.selectedIds.clear(); rebuildGrid(); updateUI(); updateBatchToolbar();
+            clearSelection();
+            updateUI();
         }
 
-        function clearSelection() { state.selectedIds.clear(); rebuildGrid(); updateBatchToolbar(); }
+        // --- 7. Export & Undo ---
+        async function exportPDF() {
+            const btn = document.getElementById('export-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Processing...`;
+            btn.disabled = true;
 
-        // --- Modal & Helpers ---
-        function rebuildGrid() { grid.innerHTML = ''; state.pages.forEach((p, i) => renderCard(p, i)); }
+            try {
+                const finalPdf = await PDFLib.PDFDocument.create();
 
-        async function generateThumbnail(pageData, container) {
-            const pdf = await pdfjsLib.getDocument({ data: state.buffers[pageData.docId].slice(0) }).promise;
-            const page = await pdf.getPage(pageData.originalIndex + 1);
-            const viewport = page.getViewport({ scale: 0.3 });
-            const canvas = document.createElement('canvas');
-            canvas.height = viewport.height; canvas.width = viewport.width;
-            await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
-            container.innerHTML = '';
-            canvas.style.transform = `rotate(${pageData.rotation}deg)`;
-            canvas.className = "max-w-full h-auto shadow-sm";
-            container.appendChild(canvas);
-        }
+                for (const p of state.pages) {
+                    if (p.isBlank) {
+                        finalPdf.addPage([595.28, 841.89]); // A4 size
+                    }
+                    else if (p.isImage) {
+                        // IMAGE EMBEDDING
+                        const imgBuffer = state.buffers[p.docId];
+                        let img;
+                        if (p.imageType.includes('png')) img = await finalPdf.embedPng(imgBuffer);
+                        else img = await finalPdf.embedJpg(imgBuffer);
 
-        function updateBatchToolbar() {
-            const toolbar = document.getElementById('batch-toolbar');
-            const countLabel = document.getElementById('selected-count');
-            if (state.selectedIds.size > 0) {
-                toolbar.classList.remove('translate-y-40', 'opacity-0');
-                countLabel.innerText = `${state.selectedIds.size} सिलेक्टेड`;
-            } else {
-                toolbar.classList.add('translate-y-40', 'opacity-0');
+                        // Naya page banayein image ke size ka ya A4 ka
+                        const page = finalPdf.addPage([img.width, img.height]);
+                        page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+                        if (p.rotation !== 0) page.setRotation(PDFLib.degrees(p.rotation));
+                    }
+                    else {
+                        // PDF PAGE EMBEDDING
+                        const src = await PDFLib.PDFDocument.load(state.buffers[p.docId]);
+                        const [copied] = await finalPdf.copyPages(src, [p.originalIndex]);
+                        if (p.rotation !== 0) copied.setRotation(PDFLib.degrees(p.rotation));
+                        finalPdf.addPage(copied);
+                    }
+                }
+
+                const bytes = await finalPdf.save();
+                const blob = new Blob([bytes], { type: 'application/pdf' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `dailytools_export_${Date.now()}.pdf`;
+                a.click();
+            } catch (e) {
+                console.error(e);
+                alert("Export failed!");
             }
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+        function saveHistory() {
+            if (state.history.length > 20) state.history.shift();
+            state.history.push(JSON.stringify(state.pages));
         }
 
-        function syncStateFromDOM() {
-            const newOrder = [];
-            document.querySelectorAll('.page-card').forEach(el => {
-                newOrder.push(state.pages.find(p => p.id === el.dataset.id));
-            });
-            state.pages = newOrder; updateUI();
+        function undo() {
+            if (state.history.length < 1) return;
+            state.pages = JSON.parse(state.history.pop());
+            smartRender();
+            updateUI();
         }
 
         function updateUI() {
-            document.querySelectorAll('.badge').forEach((b, i) => b.innerText = i + 1);
             document.getElementById('export-btn').disabled = state.pages.length === 0;
             document.getElementById('undo-btn').disabled = state.history.length === 0;
             if (state.pages.length === 0) {
@@ -589,68 +851,59 @@ nav .text-inherit {
             }
         }
 
-        function saveHistory() { if (state.history.length > 30) state.history.shift(); state.history.push(JSON.stringify(state.pages)); }
-        function undo() { if (!state.history.length) return; state.pages = JSON.parse(state.history.pop()); rebuildGrid(); updateUI(); }
+        function addBlankPage() {
+            saveHistory();
+            state.pages.push({ id: `bl_${Date.now()}`, docId: null, originalIndex: -1, rotation: 0, isBlank: true });
+            document.getElementById('dropzone').classList.add('hidden');
+            document.getElementById('editor-area').classList.remove('hidden');
+            smartRender(); updateUI();
+        }
 
+        function syncStateFromDOM() {
+            const newOrder = [];
+            document.querySelectorAll('.page-card').forEach(el => {
+                newOrder.push(state.pages.find(p => p.id === el.dataset.id));
+            });
+            state.pages = newOrder;
+            updateUI();
+        }
+
+        // Modal logic (Kept simple and clean)
         async function openPreview(id) {
             state.currentPreviewId = id;
             const p = state.pages.find(x => x.id === id);
-            document.getElementById('move-to-pos').value = state.pages.indexOf(p) + 1;
             document.getElementById('preview-modal').classList.remove('hidden');
             const container = document.getElementById('modal-canvas-container');
-            container.innerHTML = '<div class="loader"></div>';
+            container.innerHTML = '<div class="w-12 h-12 border-4 border-indigo-600 border-t-transparent animate-spin rounded-full"></div>';
 
-            if (p.isBlank) { container.innerHTML = '<div class="p-20 text-slate-300 font-bold">BLANK PAGE</div>'; return; }
+            if (p.isBlank) { container.innerHTML = '<div class="p-20 text-slate-300 font-bold uppercase tracking-widest">Blank Page</div>'; return; }
+
             const pdf = await pdfjsLib.getDocument({ data: state.buffers[p.docId].slice(0) }).promise;
             const page = await pdf.getPage(p.originalIndex + 1);
-            const viewport = page.getViewport({ scale: 0.8 });
+            const viewport = page.getViewport({ scale: 1.0 });
             const canvas = document.createElement('canvas');
             canvas.height = viewport.height; canvas.width = viewport.width;
             await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
             container.innerHTML = '';
             canvas.style.transform = `rotate(${p.rotation}deg)`;
+            canvas.className = "max-w-full max-h-[70vh] shadow-2xl rounded-lg";
             container.appendChild(canvas);
         }
 
-        function closePreview() { document.getElementById('preview-modal').classList.add('hidden'); }
-        function rotateModalPage() { rotatePage(state.currentPreviewId); openPreview(state.currentPreviewId); }
-        function deleteModalPage() { deletePage(state.currentPreviewId); closePreview(); }
+        // 1. Grid Zoom Logic
+        document.getElementById('grid-zoom').oninput = function () {
+            const val = this.value;
+            const grid = document.getElementById('pages-grid');
+            // Remove existing col classes
+            grid.className = grid.className.replace(/grid-cols-\d+|md:grid-cols-\d+|lg:grid-cols-\d+|xl:grid-cols-\d+/g, '');
+            // Add new dynamic col class
+            grid.classList.add(`grid-cols-${Math.max(2, val - 2)}`, `md:grid-cols-${Math.max(4, val - 1)}`, `lg:grid-cols-${val}`);
+        };
 
-        function quickMove() {
-            const newPos = parseInt(document.getElementById('move-to-pos').value) - 1;
-            if (newPos < 0 || newPos >= state.pages.length) return;
-            saveHistory();
-            const idx = state.pages.findIndex(p => p.id === state.currentPreviewId);
-            const [moved] = state.pages.splice(idx, 1);
-            state.pages.splice(newPos, 0, moved);
-            rebuildGrid(); updateUI(); closePreview();
-        }
 
-        async function exportPDF() {
-            const btn = document.getElementById('export-btn');
-            const oldText = btn.innerText;
-            btn.innerText = "Processing..."; btn.disabled = true;
-            try {
-                const finalPdf = await PDFLib.PDFDocument.create();
-                for (const p of state.pages) {
-                    if (p.isBlank) finalPdf.addPage([595.28, 841.89]);
-                    else {
-                        const src = await PDFLib.PDFDocument.load(state.buffers[p.docId]);
-                        const [copied] = await finalPdf.copyPages(src, [p.originalIndex]);
-                        if (p.rotation !== 0) copied.setRotation(PDFLib.degrees(p.rotation));
-                        finalPdf.addPage(copied);
-                    }
-                }
-                const bytes = await finalPdf.save();
-                const blob = new Blob([bytes], { type: 'application/pdf' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `organized_${Date.now()}.pdf`; a.click();
-            } catch (e) { alert("निर्यात विफल!"); }
-            btn.innerText = oldText; btn.disabled = false;
-        }
 
-        window.addEventListener('keydown', (e) => { if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); } });
+
+        window.closePreview = () => document.getElementById('preview-modal').classList.add('hidden');
     </script>
 </body>
 
