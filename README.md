@@ -1,10 +1,10 @@
-# Daily Tools
+# Gen Tools
 
 A collection of free online tools to make your daily tasks easier. This repository contains various web-based utilities organized into categories for quick access.
 
 ## 🚀 Live Demo
 
-Visit the live site at: [https://nkd2000.github.io/Daily_tools/](https://nkd2000.github.io/Daily_tools/)
+Visit the live site at: [https://www.gentools.in/](https://www.gentools.in/)
 
 ## 📁 Project Structure
 
@@ -177,14 +177,14 @@ Include comprehensive meta tags for better SEO:
 <meta name="description" content="Brief description of your tool for SEO">
 <meta name="keywords" content="relevant, keywords, for, search">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://nkd2000.github.io/Daily_tools/tools/category/tool-name.html">
+<link rel="canonical" href="https://www.gentools.in/tools/category/tool-name.html">
 
 <!-- Open Graph meta tags -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="Tool Name | Free Online Tools">
 <meta property="og:description" content="Brief description">
-<meta property="og:url" content="https://nkd2000.github.io/Daily_tools/tools/category/tool-name.html">
-<meta property="og:image" content="https://nkd2000.github.io/Daily_tools/assets/og-default.svg">
+<meta property="og:url" content="https://www.gentools.in/tools/category/tool-name.html">
+<meta property="og:image" content="https://www.gentools.in/assets/og-default.svg">
 
 <!-- Twitter meta tags -->
 <meta name="twitter:card" content="summary_large_image">
