@@ -211,7 +211,12 @@
                             <div id="fileDetails" style="font-size: 11px; font-family: monospace; color:#64748b;">00:00</div>
                         </div>
                     </div>
-                    <button id="closeWorkspaceBtn" class="btn btn-danger"><i class="fa-solid fa-xmark"></i> Close</button>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button id="navHistoryBtn" class="btn btn-history hidden" type="button" style="padding: 6px 10px; font-size: 12px;">
+                            <i class="fa-solid fa-clock-rotate-left"></i> History
+                        </button>
+                        <button id="closeWorkspaceBtn" class="btn btn-danger" type="button"><i class="fa-solid fa-xmark"></i> Close</button>
+                    </div>
                 </div>
 
                 <!-- Waveform Graph -->

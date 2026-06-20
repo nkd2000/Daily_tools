@@ -2,7 +2,7 @@
  * TOOLS DATABASE - Single Source of Truth
  * AUTO-GENERATED from index.html toolsData
  * 
- * Generated: 2026-04-30T07:16:00.022Z
+ * Generated: 2026-06-19T20:31:36.288Z
  * Total tools: 39
  * 
  * ⚠️  DO NOT EDIT MANUALLY - Run: node build-tools-data.js
