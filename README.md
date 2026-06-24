@@ -236,7 +236,7 @@ Choose the appropriate category for your tool:
 
 After creating your tool, update the "Available Tools" section in this README.md with your new tool's information.
 
-If you are developing uisng AI then please read [AI_README.md]()
+If you are developing uisng AI then please read [AI_README.md](https://github.com/nkd2000/Daily_tools/tree/main)
 
 ## 📄 License
 
