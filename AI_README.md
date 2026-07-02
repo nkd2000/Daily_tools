@@ -2,13 +2,13 @@ Yeh raha aapke project ka **Final, Upgraded aur Professional README.md** content
 
 ---
 
-# 🛠️ Gen Tools Pro
+# 🛠️ GenTools Pro
 > **A Premium Suite of 30+ High-Performance, Privacy-First Web Utilities.**
 
 [![Live Demo](https://img.shields.io/badge/demo-live-indigo.svg?style=for-the-badge)](https://www.gentools.in/)
 [![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://github.com/nkd2000/Daily_tools/)
 
-**Gen Tools** ek professional-grade, client-side web tools ka collection hai. Iska mission hai complex tasks ko simplify karna bina user ka data compromise kiye. Har tool **100% Browser-side** chalta hai, jiska matlab hai aapki files kabhi hamare server par nahi jati.
+**GenTools** ek professional-grade, client-side web tools ka collection hai. Iska mission hai complex tasks ko simplify karna bina user ka data compromise kiye. Har tool **100% Browser-side** chalta hai, jiska matlab hai aapki files kabhi hamare server par nahi jati.
 
 ---
 

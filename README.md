@@ -1,4 +1,4 @@
-# Gen Tools
+# GenTools
 
 A collection of free online tools to make your daily tasks easier. This repository contains various web-based utilities organized into categories for quick access.
 
