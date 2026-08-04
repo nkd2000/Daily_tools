@@ -2,8 +2,8 @@
  * TOOLS DATABASE - Single Source of Truth
  * AUTO-GENERATED from index.html toolsData
  * 
- * Generated: 2026-06-19T20:31:36.288Z
- * Total tools: 39
+ * Generated: 2026-08-04T10:59:51.656Z
+ * Total tools: 40
  * 
  * ⚠️  DO NOT EDIT MANUALLY - Run: node build-tools-data.js
  * 
@@ -309,6 +309,14 @@ const TOOLS_DATABASE = [
         icon: 'fa-pen-nib',
         title: 'Word Counter',
         desc: 'Count words, characters, and reading time.'
+    },
+    {
+        name: 'WordCraft MS Word Processor',
+        url: 'https://ken25-del.github.io/wordcraft-ms-word-processor/',
+        cat: 'Utility',
+        icon: 'fa-file-word',
+        title: 'WordCraft MS Word Processor',
+        desc: 'Create and edit Word-style documents online with formatting tools.'
     },
     {
         name: 'Typing Speed Test',
