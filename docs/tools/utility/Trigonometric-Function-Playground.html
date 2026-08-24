@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>त्रिकोणमितीय फलन प्लेग्राउंड</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Custom range slider styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            transition: transform 0.1s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        .tab-btn.active {
+            color: #2563eb;
+            border-bottom: 2px solid #2563eb;
+            background-color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col bg-slate-100">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 px-5 py-3 flex justify-between items-center z-20 shrink-0 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white p-2.5 rounded-xl shadow-md shadow-blue-500/20">
+                <i class="fa-solid fa-wave-square text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold text-slate-800 leading-tight">त्रिकोणमितीय प्लेग्राउंड</h1>
+                <p class="text-xs text-slate-500 font-medium">आवर्ती फलनों (Periodic Functions) का विज़ुअलाइज़र</p>
+            </div>
+        </div>
+        <div class="flex gap-3 items-center">
+            <button id="resetViewBtnHeader" class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-blue-600 hover:bg-slate-50 transition-colors flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate-left"></i> दृश्य रीसेट करें
+            </button>
+            <a href="https://hi.wikipedia.org/wiki/%E0%A4%A4%E0%A5%8D%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%8B%E0%A4%A3%E0%A4%AE%E0%A4%BF%E0%A4%A4%E0%A5%80%E0%A4%AF_%E0%A4%AB%E0%A4%B2%E0%A4%A8" target="_blank" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center gap-1.5">
+                <i class="fa-solid fa-book-open"></i> सिद्धांत पढ़ें
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-1 flex overflow-hidden">
+        
+        <aside class="w-[370px] bg-white border-r border-slate-200 flex flex-col h-full z-10 shadow-lg shrink-0">
+            
+            <!-- Tab Navigation Bar -->
+            <div class="flex border-b border-slate-200 bg-slate-50/80 text-xs font-medium text-slate-500 select-none">
+                <button class="tab-btn active flex-1 py-3 px-2 text-center transition-all flex items-center justify-center gap-1.5" data-tab="tab-functions">
+                    <i class="fa-solid fa-layer-group text-sm"></i>
+                    <span>फलन (Functions)</span>
+                    <span id="layersCountBadge" class="ml-1 bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">1</span>
+                </button>
+                <button class="tab-btn flex-1 py-3 px-2 text-center transition-all flex items-center justify-center gap-1.5" data-tab="tab-graph">
+                    <i class="fa-solid fa-sliders text-sm"></i>
+                    <span>ग्राफ़ सेटिंग्स</span>
+                </button>
+                <button class="tab-btn flex-1 py-3 px-2 text-center transition-all flex items-center justify-center gap-1.5" data-tab="tab-angle">
+                    <i class="fa-solid fa-compass text-sm"></i>
+                    <span>कोण टूल</span>
+                </button>
+            </div>
+
+            <!-- Tab Content Area -->
+            <div class="flex-1 overflow-y-auto relative">
+                
+                <!-- TAB 1: FUNCTIONS -->
+                <div id="tab-functions" class="tab-content p-4 space-y-4">
+                    <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                        <div>
+                            <h2 class="font-bold text-slate-800 text-sm">समीकरण परतें (Equation Layers)</h2>
+                            <p class="text-[11px] text-slate-500">फलन जोड़ें और उनके मापदंड बदलें</p>
+                        </div>
+                        <button id="addLayerBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-transform active:scale-95">
+                            <i class="fa-solid fa-plus"></i> नया फलन
+                        </button>
+                    </div>
+
+                    <div id="layersContainer" class="space-y-3.5">
+                        <!-- Layers dynamically inserted here -->
+                    </div>
+                </div>
+
+                <!-- TAB 2: GRAPH SETTINGS -->
+                <div id="tab-graph" class="tab-content p-4 space-y-5 hidden">
+                    <div class="pb-2 border-b border-slate-100">
+                        <h2 class="font-bold text-slate-800 text-sm">ग्राफ़ नियंत्रण (Graph Controls)</h2>
+                        <p class="text-[11px] text-slate-500">अक्ष ज़ूम और ग्रिड ओवरले को कस्टमाइज़ करें</p>
+                    </div>
+
+                    <!-- Zoom Controls -->
+                    <div class="space-y-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-magnifying-glass-plus text-blue-600"></i> ज़ूम नियंत्रण (Axis Zoom)
+                        </h3>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <label class="text-xs font-medium text-slate-600">X-अक्ष ज़ूम (X-Axis)</label>
+                                <span id="xScaleVal" class="text-xs font-mono font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">1.0x</span>
+                            </div>
+                            <input type="range" id="xScaleInput" min="0.1" max="5" step="0.1" value="1">
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <label class="text-xs font-medium text-slate-600">Y-अक्ष ज़ूम (Y-Axis)</label>
+                                <span id="yScaleVal" class="text-xs font-mono font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">1.0x</span>
+                            </div>
+                            <input type="range" id="yScaleInput" min="0.1" max="5" step="0.1" value="1">
+                        </div>
+
+                        <div class="flex gap-2 pt-1">
+                            <button id="presetZoomReset" class="flex-1 text-[11px] font-medium bg-white border border-slate-200 hover:border-blue-400 py-1 rounded-md text-slate-700 transition-colors">1x सामान्य</button>
+                            <button id="presetZoomIn" class="flex-1 text-[11px] font-medium bg-white border border-slate-200 hover:border-blue-400 py-1 rounded-md text-slate-700 transition-colors">2x बड़ा</button>
+                            <button id="presetZoomOut" class="flex-1 text-[11px] font-medium bg-white border border-slate-200 hover:border-blue-400 py-1 rounded-md text-slate-700 transition-colors">0.5x छोटा</button>
+                        </div>
+                    </div>
+
+                    <!-- Display Toggles -->
+                    <div class="space-y-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-eye text-indigo-600"></i> दृश्य विकल्प (Visibility)
+                        </h3>
+
+                        <label class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 cursor-pointer hover:border-blue-300 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-calculator text-slate-400 text-xs"></i>
+                                <span class="text-xs text-slate-700 font-medium">योग परिणाम दिखाएं (Σ f(x))</span>
+                            </div>
+                            <input type="checkbox" id="showSumGrid" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer" checked>
+                        </label>
+
+                        <label class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200 cursor-pointer hover:border-blue-300 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-dot text-slate-400 text-xs"></i>
+                                <span class="text-xs text-slate-700 font-medium">मूल बिंदु दिखाएं (Show Roots)</span>
+                            </div>
+                            <input type="checkbox" id="showRoots" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer">
+                        </label>
+                    </div>
+
+                    <button id="resetViewBtnSidebar" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-compress"></i> मूल दृश्य स्थिति पर लौटें
+                    </button>
+                </div>
+
+                <!-- TAB 3: ANGLE TOOLS -->
+                <div id="tab-angle" class="tab-content p-4 space-y-5 hidden">
+                    <div class="pb-2 border-b border-slate-100">
+                        <h2 class="font-bold text-slate-800 text-sm">कोण टूलकिट (Angle Toolkit)</h2>
+                        <p class="text-[11px] text-slate-500">कोण विज़ुअलाइज़र और इकाई परिवर्तक</p>
+                    </div>
+
+                    <!-- Angle Visualizer Card -->
+                    <div class="bg-indigo-50/60 p-3.5 rounded-xl border border-indigo-100 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-ruler-vertical"></i> कोण विज़ुअलाइज़र
+                            </h3>
+                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                <input type="checkbox" id="enableAngleVis" class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                <span class="text-xs font-bold text-indigo-800">सक्रिय</span>
+                            </label>
+                        </div>
+                        
+                        <div id="angleVisControls" class="opacity-50 pointer-events-none transition-opacity duration-200 space-y-2">
+                            <div class="flex gap-2">
+                                <input type="text" id="angleVisInput" class="flex-1 w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-indigo-500" placeholder="उदा: 45 या pi/4" value="45">
+                                <select id="angleVisUnit" class="bg-white border border-slate-300 text-slate-700 text-xs rounded-lg focus:ring-indigo-500 px-2 py-1.5 font-semibold cursor-pointer">
+                                    <option value="deg">डिग्री (°)</option>
+                                    <option value="rad">रेडियन (rad)</option>
+                                </select>
+                            </div>
+                            <p class="text-[10px] text-indigo-600/80 leading-snug">ग्राफ़ पर ऊर्ध्वाधर रेखा (vertical line) और मान बिंदुओं को देखने के लिए कोण दर्ज करें।</p>
+                        </div>
+                    </div>
+
+                    <!-- Angle Converter Card -->
+                    <div class="bg-emerald-50/60 p-3.5 rounded-xl border border-emerald-100 space-y-3.5">
+                        <h3 class="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-calculator"></i> कोण परिवर्तक (Degree ↔ Radian)
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1">
+                                    <label class="text-[11px] font-semibold text-slate-600 block mb-1">डिग्री (°)</label>
+                                    <input type="text" id="converterDegInput" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-emerald-500 bg-white shadow-sm" placeholder="180" value="180">
+                                </div>
+                                <div class="text-emerald-500 mt-4 text-xs"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+                                <div class="flex-1">
+                                    <label class="text-[11px] font-semibold text-slate-600 block mb-1">रेडियन (rad)</label>
+                                    <input type="text" id="converterRadInput" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:border-emerald-500 bg-white shadow-sm" placeholder="pi" value="3.1416 rad">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <span class="text-[10px] text-slate-500 font-semibold block mb-1.5 uppercase tracking-wider">मुख्य मानक कोण (Presets):</span>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button type="button" class="preset-angle-btn text-[11px] bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 text-slate-700 py-1 rounded-md font-mono transition-colors" data-deg="30">30° (π/6)</button>
+                                    <button type="button" class="preset-angle-btn text-[11px] bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 text-slate-700 py-1 rounded-md font-mono transition-colors" data-deg="45">45° (π/4)</button>
+                                    <button type="button" class="preset-angle-btn text-[11px] bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 text-slate-700 py-1 rounded-md font-mono transition-colors" data-deg="60">60° (π/3)</button>
+                                    <button type="button" class="preset-angle-btn text-[11px] bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 text-slate-700 py-1 rounded-md font-mono transition-colors" data-deg="90">90° (π/2)</button>
+                                    <button type="button" class="preset-angle-btn text-[11px] bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 text-slate-700 py-1 rounded-md font-mono transition-colors" data-deg="180">180° (π)</button>
+                                    <button type="button" class="preset-angle-btn text-[11px] bg-white border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 text-slate-700 py-1 rounded-md font-mono transition-colors" data-deg="360">360° (2π)</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- Main Canvas Section -->
+        <section class="flex-1 relative bg-[#fafafa] flex flex-col overflow-hidden">
+            
+            <!-- Quick Canvas Toolbar -->
+            <div class="absolute top-4 left-4 z-10 flex gap-2">
+                <button id="centerOriginBtn" class="glass-panel px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-white hover:text-blue-600 transition-colors shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-crosshairs text-blue-500"></i> केंद्र में लाएं (Center)
+                </button>
+            </div>
+
+            <!-- Equations Overlay Card -->
+            <div id="equationsOverlay" class="absolute top-4 right-4 glass-panel rounded-xl p-3.5 w-72 max-h-[80%] overflow-y-auto z-10 transition-all">
+                <div class="flex justify-between items-center border-b border-slate-200/80 pb-2 mb-2.5">
+                    <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-square-root-variable text-blue-600"></i> सक्रिय समीकरण
+                    </h3>
+                    <button id="toggleOverlayBtn" class="text-slate-400 hover:text-slate-600 text-xs p-1">
+                        <i class="fa-solid fa-chevron-up"></i>
+                    </button>
+                </div>
+                <div id="equationsOverlayContent">
+                    <div id="equationsList" class="space-y-1.5 text-xs font-mono">
+                        <!-- Rendered active equations -->
+                    </div>
+                    <div id="sumEquation" class="mt-2.5 pt-2 border-t border-slate-200 text-xs font-mono font-bold text-slate-800 hidden">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mouse Coordinates Tooltip -->
+            <div id="coordTooltip" class="absolute hidden bg-slate-900/90 text-white text-[11px] px-2.5 py-1 rounded-md shadow-xl pointer-events-none z-20 font-mono backdrop-blur-sm border border-slate-700/50">
+                0.00, 0.00
+            </div>
+
+            <!-- Graph Canvas -->
+            <div class="flex-1 w-full h-full relative" id="canvasContainer">
+                <canvas id="graphCanvas" class="absolute inset-0 cursor-crosshair"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <!-- LAYER ITEM TEMPLATE -->
+    <template id="layerTemplate">
+        <div class="layer-card bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
+            <div class="layer-color-strip absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
+            
+            <div class="flex justify-between items-center mb-2.5 pl-2">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" class="layer-toggle w-4 h-4 text-blue-600 rounded cursor-pointer" checked title="दिखाएं/छुपाएं">
+                    <select class="layer-type bg-slate-50 border border-slate-300 text-slate-800 text-xs font-bold rounded-lg focus:ring-blue-500 p-1.5 cursor-pointer">
+                        <option value="sin">sin(x)</option>
+                        <option value="cos">cos(x)</option>
+                        <option value="tan">tan(x)</option>
+                        <option value="csc">csc(x)</option>
+                        <option value="sec">sec(x)</option>
+                        <option value="cot">cot(x)</option>
+                        <option value="custom">कस्टम (Custom)</option>
+                    </select>
+                </div>
+                <button class="layer-remove text-slate-300 hover:text-red-500 transition-colors p-1 rounded-md" title="हटाएं">
+                    <i class="fa-solid fa-trash-can text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Custom Equation Input (Hidden by default) -->
+            <div class="custom-equation-container hidden pl-2 mb-2">
+                <label class="text-[11px] font-semibold text-slate-600 mb-1 block">समीकरण (उदा: x^2 + sin(x))</label>
+                <input type="text" class="input-custom-eq w-full border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-mono focus:outline-none focus:border-blue-500 bg-slate-50" value="sin(x) * x">
+            </div>
+
+            <!-- Standard Parameters -->
+            <div class="standard-params space-y-2.5 pl-2 pt-1 border-t border-slate-100">
+                <!-- Amplitude -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[11px] font-semibold text-slate-600">आयाम (Amplitude - A)</label>
+                        <input type="text" class="text-input-amp w-14 text-[11px] text-right border border-slate-200 rounded px-1 py-0.5 focus:outline-none focus:border-blue-400 font-mono" placeholder="1">
+                    </div>
+                    <input type="range" class="input-amp" min="-5" max="5" step="0.1" value="1">
+                </div>
+                
+                <!-- Frequency -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[11px] font-semibold text-slate-600">आवृत्ति (Frequency - B)</label>
+                        <input type="text" class="text-input-freq w-14 text-[11px] text-right border border-slate-200 rounded px-1 py-0.5 focus:outline-none focus:border-blue-400 font-mono" placeholder="1">
+                    </div>
+                    <input type="range" class="input-freq" min="0.1" max="10" step="0.1" value="1">
+                </div>
+
+                <!-- Phase Shift -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="flex items-center gap-1.5">
+                            <label class="text-[11px] font-semibold text-slate-600">कलांतर (Phase - C)</label>
+                            <button class="btn-animate-phase text-green-600 hover:text-green-700 transition-colors p-0.5" title="एनीमेशन चालू/बंद करें">
+                                <i class="fa-solid fa-play text-[10px]"></i>
+                            </button>
+                        </div>
+                        <input type="text" class="text-input-phase w-14 text-[11px] text-right border border-slate-200 rounded px-1 py-0.5 focus:outline-none focus:border-blue-400 font-mono" placeholder="0">
+                    </div>
+                    <input type="range" class="input-phase" min="-6.28" max="6.28" step="0.01" value="0">
+                    
+                    <div class="anim-speed-ctrl hidden flex items-center gap-2 mt-1 px-2 bg-slate-50 rounded-md py-1 border border-slate-200">
+                        <label class="text-[10px] text-slate-500 font-bold">गति</label>
+                        <input type="range" class="input-speed flex-1 h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer" min="-0.2" max="0.2" step="0.01" value="0.05">
+                        <span class="text-speed-val text-[10px] text-slate-600 w-6 text-right font-mono">0.05</span>
+                    </div>
+                </div>
+
+                <!-- Vertical Shift -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-[11px] font-semibold text-slate-600">विस्थापन (Vertical - D)</label>
+                        <input type="text" class="text-input-vert w-14 text-[11px] text-right border border-slate-200 rounded px-1 py-0.5 focus:outline-none focus:border-blue-400 font-mono" placeholder="0">
+                    </div>
+                    <input type="range" class="input-vert" min="-5" max="5" step="0.1" value="0">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        const colors = [
+            '#2563eb', '#dc2626', '#059669', '#d97706', '#7c3aed', '#db2777', '#0d9488'
+        ];
+        
+        let layers = []; 
+        let colorIndex = 0;
+        let animationFrameId = null;
+
+        // Safe parser for math inputs like "pi/2" or "2*PI"
+        function evaluateMathString(str) {
+            if (typeof str === 'number') return str;
+            if (!str || str.toString().trim() === '') return 0;
+            try {
+                let sanitized = str.toString().toLowerCase()
+                    .replace(/pi|π/g, 'Math.PI')
+                    .replace(/e/g, 'Math.E');
+                
+                if (!/^[0-9\+\-\*\/\.\(\)\sMath\.\w]+$/.test(sanitized)) {
+                    throw new Error("Invalid characters");
+                }
+                
+                return new Function('return ' + sanitized)();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Custom function evaluator for arbitrary equations
+        function createCustomEvaluator(expr) {
+            try {
+                let safeExpr = expr.toLowerCase();
+                
+                const mathFuncs = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sqrt', 'log', 'abs', 'exp'];
+                mathFuncs.forEach(func => {
+                    const regex = new RegExp(`\\b${func}\\b`, 'g');
+                    safeExpr = safeExpr.replace(regex, `Math.${func}`);
+                });
+
+                safeExpr = safeExpr.replace(/\bpi\b|π/g, 'Math.PI');
+                safeExpr = safeExpr.replace(/\be\b/g, 'Math.E');
+                safeExpr = safeExpr.replace(/([a-zA-Z0-9_.]+)\s*\^\s*([a-zA-Z0-9_.]+)/g, 'Math.pow($1, $2)');
+
+                const evaluator = new Function('x', `return ${safeExpr};`);
+                evaluator(1); 
+                return evaluator;
+            } catch (e) {
+                return (x) => 0;
+            }
+        }
+
+        const mathFuncs = {
+            'sin': (x) => Math.sin(x),
+            'cos': (x) => Math.cos(x),
+            'tan': (x) => Math.tan(x),
+            'csc': (x) => 1 / Math.sin(x),
+            'sec': (x) => 1 / Math.cos(x),
+            'cot': (x) => 1 / Math.tan(x)
+        };
+
+        const state = {
+            offsetX: 0,
+            offsetY: 0,
+            scaleX: 1, 
+            scaleY: 1, 
+            basePixelsPerUnitX: 50, 
+            basePixelsPerUnitY: 50,
+            showSum: true,
+            showRoots: false,
+            isDragging: false,
+            lastMouseX: 0,
+            lastMouseY: 0,
+            showAngleVis: false,
+            angleInputStr: "45",
+            angleUnit: "deg"
+        };
+
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvasContainer');
+        const layersContainer = document.getElementById('layersContainer');
+        const addLayerBtn = document.getElementById('addLayerBtn');
+        const equationsList = document.getElementById('equationsList');
+        const sumEquationDiv = document.getElementById('sumEquation');
+        const coordTooltip = document.getElementById('coordTooltip');
+        const layersCountBadge = document.getElementById('layersCountBadge');
+
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.dataset.tab;
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.add('hidden'));
+
+                btn.classList.add('active');
+                document.getElementById(targetTab).classList.remove('hidden');
+            });
+        });
+
+        // Overlay Toggle
+        const overlay = document.getElementById('equationsOverlay');
+        const overlayContent = document.getElementById('equationsOverlayContent');
+        const toggleOverlayBtn = document.getElementById('toggleOverlayBtn');
+        let overlayOpen = true;
+
+        toggleOverlayBtn.addEventListener('click', () => {
+            overlayOpen = !overlayOpen;
+            overlayContent.classList.toggle('hidden', !overlayOpen);
+            toggleOverlayBtn.querySelector('i').className = overlayOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
+        });
+
+        function resizeCanvas() {
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            drawGraph();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        class FunctionLayer {
+            constructor() {
+                this.id = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                this.type = 'sin';
+                this.A = 1.0;
+                this.B = 1.0;
+                this.C = 0.0;
+                this.D = 0.0;
+                this.visible = true;
+                this.isAnimating = false;
+                this.animSpeed = 0.05; 
+                this.customExpression = "sin(x)";
+                this.customEvaluator = null;
+                
+                this.color = colors[colorIndex % colors.length];
+                colorIndex++;
+                
+                this.element = this.createDOMElement();
+            }
+
+            createDOMElement() {
+                const template = document.getElementById('layerTemplate');
+                const clone = template.content.cloneNode(true);
+                const card = clone.querySelector('.layer-card');
+                
+                card.dataset.id = this.id;
+                card.querySelector('.layer-color-strip').style.backgroundColor = this.color;
+
+                const toggle = card.querySelector('.layer-toggle');
+                toggle.checked = this.visible;
+                toggle.addEventListener('change', (e) => {
+                    this.visible = e.target.checked;
+                    card.style.opacity = this.visible ? '1' : '0.5';
+                    updatePlayground();
+                });
+
+                const stdParams = card.querySelector('.standard-params');
+                const customContainer = card.querySelector('.custom-equation-container');
+                const customInput = card.querySelector('.input-custom-eq');
+
+                const typeSelect = card.querySelector('.layer-type');
+                typeSelect.value = this.type;
+                typeSelect.addEventListener('change', (e) => {
+                    this.type = e.target.value;
+                    if (this.type === 'custom') {
+                        stdParams.classList.add('hidden');
+                        customContainer.classList.remove('hidden');
+                        this.customEvaluator = createCustomEvaluator(this.customExpression);
+                    } else {
+                        stdParams.classList.remove('hidden');
+                        customContainer.classList.add('hidden');
+                    }
+                    updatePlayground();
+                });
+
+                customInput.addEventListener('input', (e) => {
+                    this.customExpression = e.target.value;
+                    this.customEvaluator = createCustomEvaluator(this.customExpression);
+                    updatePlayground();
+                });
+
+                const removeBtn = card.querySelector('.layer-remove');
+                removeBtn.addEventListener('click', () => {
+                    layers = layers.filter(l => l.id !== this.id);
+                    card.remove();
+                    updatePlayground();
+                });
+
+                const bindInputs = (sliderClass, textClass, property) => {
+                    const slider = card.querySelector(sliderClass);
+                    const textInput = card.querySelector(textClass);
+                    
+                    slider.value = this[property];
+                    textInput.value = this[property];
+
+                    slider.addEventListener('input', (e) => {
+                        this[property] = parseFloat(e.target.value);
+                        if (!/[a-z\/\*]/i.test(textInput.value)) {
+                            textInput.value = this[property].toFixed(2);
+                        }
+                        updatePlayground();
+                    });
+
+                    textInput.addEventListener('input', (e) => {
+                        const val = evaluateMathString(e.target.value);
+                        if (val !== null && !isNaN(val)) {
+                            this[property] = val;
+                            slider.value = val;
+                            updatePlayground();
+                        }
+                    });
+                };
+
+                bindInputs('.input-amp', '.text-input-amp', 'A');
+                bindInputs('.input-freq', '.text-input-freq', 'B');
+                bindInputs('.input-phase', '.text-input-phase', 'C');
+                bindInputs('.input-vert', '.text-input-vert', 'D');
+
+                const animBtn = card.querySelector('.btn-animate-phase');
+                const animIcon = animBtn.querySelector('i');
+                const phaseSlider = card.querySelector('.input-phase');
+                const phaseText = card.querySelector('.text-input-phase');
+                
+                const animSpeedCtrl = card.querySelector('.anim-speed-ctrl');
+                const inputSpeed = card.querySelector('.input-speed');
+                const textSpeedVal = card.querySelector('.text-speed-val');
+
+                inputSpeed.addEventListener('input', (e) => {
+                    this.animSpeed = parseFloat(e.target.value);
+                    textSpeedVal.textContent = this.animSpeed.toFixed(2);
+                });
+
+                animBtn.addEventListener('click', () => {
+                    this.isAnimating = !this.isAnimating;
+                    if (this.isAnimating) {
+                        animIcon.classList.remove('fa-play');
+                        animIcon.classList.add('fa-pause');
+                        animBtn.classList.replace('text-green-600', 'text-red-600');
+                        animSpeedCtrl.classList.remove('hidden');
+                        startAnimationLoop();
+                    } else {
+                        animIcon.classList.remove('fa-pause');
+                        animIcon.classList.add('fa-play');
+                        animBtn.classList.replace('text-red-600', 'text-green-600');
+                        animSpeedCtrl.classList.add('hidden');
+                    }
+                });
+
+                this.uiRefs = { phaseSlider, phaseText };
+                return card;
+            }
+
+            evaluate(x) {
+                if (!this.visible) return 0;
+                
+                if (this.type === 'custom') {
+                    if (!this.customEvaluator) this.customEvaluator = createCustomEvaluator(this.customExpression);
+                    return this.customEvaluator(x);
+                }
+
+                const func = mathFuncs[this.type];
+                return this.A * func(this.B * (x - this.C)) + this.D;
+            }
+
+            getEquationString() {
+                if (this.type === 'custom') {
+                    return `<span style="color:${this.color}" class="font-bold">f(x) = ${this.customExpression || '0'}</span>`;
+                }
+
+                const funcName = this.type;
+                let aStr = this.A === 1 ? '' : (this.A === -1 ? '-' : this.A.toFixed(1));
+                if (this.A === 0) return `0`;
+                
+                let bStr = this.B === 1 ? '' : this.B.toFixed(2);
+                
+                let cStr = '';
+                if (this.C !== 0) {
+                    const sign = this.C > 0 ? '-' : '+';
+                    cStr = ` ${sign} ${Math.abs(this.C).toFixed(2)}`;
+                }
+
+                let inner = `x`;
+                if(bStr !== '') inner = `${bStr}x`;
+                if(cStr !== '') {
+                    if(bStr !== '') inner = `${bStr}(x${cStr})`;
+                    else inner = `x${cStr}`;
+                }
+
+                let dStr = '';
+                if (this.D !== 0) {
+                    const sign = this.D > 0 ? '+' : '-';
+                    dStr = ` ${sign} ${Math.abs(this.D).toFixed(1)}`;
+                }
+
+                return `<span style="color:${this.color}" class="font-bold">y = ${aStr}${funcName}(${inner})${dStr}</span>`;
+            }
+        }
+
+        addLayerBtn.addEventListener('click', () => {
+            const newLayer = new FunctionLayer();
+            layers.push(newLayer);
+            layersContainer.appendChild(newLayer.element);
+            layersContainer.scrollTop = layersContainer.scrollHeight;
+            updatePlayground();
+        });
+
+        // Zoom inputs logic
+        const updateZoomUI = () => {
+            document.getElementById('xScaleInput').value = state.scaleX;
+            document.getElementById('yScaleInput').value = state.scaleY;
+            document.getElementById('xScaleVal').textContent = state.scaleX.toFixed(1) + 'x';
+            document.getElementById('yScaleVal').textContent = state.scaleY.toFixed(1) + 'x';
+        };
+
+        document.getElementById('xScaleInput').addEventListener('input', (e) => {
+            state.scaleX = parseFloat(e.target.value);
+            updateZoomUI();
+            drawGraph();
+        });
+
+        document.getElementById('yScaleInput').addEventListener('input', (e) => {
+            state.scaleY = parseFloat(e.target.value);
+            updateZoomUI();
+            drawGraph();
+        });
+
+        document.getElementById('presetZoomReset').addEventListener('click', () => {
+            state.scaleX = 1; state.scaleY = 1; updateZoomUI(); drawGraph();
+        });
+        document.getElementById('presetZoomIn').addEventListener('click', () => {
+            state.scaleX = 2; state.scaleY = 2; updateZoomUI(); drawGraph();
+        });
+        document.getElementById('presetZoomOut').addEventListener('click', () => {
+            state.scaleX = 0.5; state.scaleY = 0.5; updateZoomUI(); drawGraph();
+        });
+
+        document.getElementById('showSumGrid').addEventListener('change', (e) => {
+            state.showSum = e.target.checked;
+            updatePlayground();
+        });
+
+        document.getElementById('showRoots').addEventListener('change', (e) => {
+            state.showRoots = e.target.checked;
+            drawGraph();
+        });
+
+        const resetView = () => {
+            state.offsetX = 0;
+            state.offsetY = 0;
+            state.scaleX = 1;
+            state.scaleY = 1;
+            updateZoomUI();
+            drawGraph();
+        };
+
+        document.getElementById('resetViewBtnHeader').addEventListener('click', resetView);
+        document.getElementById('resetViewBtnSidebar').addEventListener('click', resetView);
+        document.getElementById('centerOriginBtn').addEventListener('click', () => {
+            state.offsetX = 0;
+            state.offsetY = 0;
+            drawGraph();
+        });
+
+        function updatePlayground() {
+            updateEquationsList();
+            drawGraph();
+        }
+
+        function updateEquationsList() {
+            equationsList.innerHTML = '';
+            let activeCount = 0;
+            
+            layers.forEach(layer => {
+                if(layer.visible) {
+                    activeCount++;
+                    const div = document.createElement('div');
+                    div.innerHTML = layer.getEquationString();
+                    div.className = "px-2 py-1 bg-white/70 rounded border border-slate-200/60 whitespace-nowrap shadow-2xs";
+                    equationsList.appendChild(div);
+                }
+            });
+
+            layersCountBadge.textContent = layers.length;
+
+            if (layers.length === 0) {
+                equationsList.innerHTML = '<span class="text-slate-400 italic">कोई फलन नहीं जोड़ा गया।</span>';
+                sumEquationDiv.classList.add('hidden');
+            } else if (state.showSum && activeCount > 1) {
+                sumEquationDiv.classList.remove('hidden');
+                sumEquationDiv.innerHTML = `<span class="text-slate-800 border-b-2 border-slate-800 pb-0.5 inline-block">y = &Sigma; f(x)</span>`;
+            } else {
+                sumEquationDiv.classList.add('hidden');
+            }
+        }
+
+        function toCanvasX(logicalX) {
+            const pixelsPerUnit = state.basePixelsPerUnitX * state.scaleX;
+            return canvas.width / 2 + state.offsetX + logicalX * pixelsPerUnit;
+        }
+
+        function toCanvasY(logicalY) {
+            const pixelsPerUnit = state.basePixelsPerUnitY * state.scaleY;
+            return canvas.height / 2 + state.offsetY - logicalY * pixelsPerUnit;
+        }
+
+        function toLogicalX(canvasX) {
+            const pixelsPerUnit = state.basePixelsPerUnitX * state.scaleX;
+            return (canvasX - (canvas.width / 2 + state.offsetX)) / pixelsPerUnit;
+        }
+        
+        function toLogicalY(canvasY) {
+            const pixelsPerUnit = state.basePixelsPerUnitY * state.scaleY;
+            return ((canvas.height / 2 + state.offsetY) - canvasY) / pixelsPerUnit;
+        }
+
+        function drawGrid(minX, maxX, minY, maxY) {
+            ctx.lineWidth = 1;
+            ctx.font = '10px Inter';
+            
+            let stepX = Math.PI / 2; 
+            if (state.scaleX > 2) stepX = Math.PI / 4;
+            if (state.scaleX < 0.5) stepX = Math.PI;
+
+            let stepY = 1;
+            if (state.scaleY > 2) stepY = 0.5;
+            if (state.scaleY < 0.5) stepY = 2;
+
+            let startX = Math.floor(minX / stepX) * stepX;
+            for (let x = startX; x <= maxX; x += stepX) {
+                const cx = toCanvasX(x);
+                ctx.beginPath();
+                ctx.moveTo(cx, 0);
+                ctx.lineTo(cx, canvas.height);
+                if (Math.abs(x) < 0.01) {
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 2;
+                } else {
+                    ctx.strokeStyle = '#e2e8f0';
+                    ctx.lineWidth = 1;
+                }
+                ctx.stroke();
+
+                if (Math.abs(x) > 0.01) {
+                    ctx.fillStyle = '#64748b';
+                    let label = (x / Math.PI).toFixed(2) + 'π';
+                    if (Math.abs((x/Math.PI) - Math.round(x/Math.PI)) < 0.01) {
+                        label = Math.round(x/Math.PI) + 'π';
+                        if(label === '1π') label = 'π';
+                        if(label === '-1π') label = '-π';
+                    }
+                    ctx.fillText(label, cx + 4, toCanvasY(0) + 14);
+                }
+            }
+
+            let startY = Math.floor(minY / stepY) * stepY;
+            for (let y = startY; y <= maxY; y += stepY) {
+                const cy = toCanvasY(y);
+                ctx.beginPath();
+                ctx.moveTo(0, cy);
+                ctx.lineTo(canvas.width, cy);
+                if (Math.abs(y) < 0.01) {
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 2;
+                } else {
+                    ctx.strokeStyle = '#e2e8f0';
+                    ctx.lineWidth = 1;
+                }
+                ctx.stroke();
+
+                if (Math.abs(y) > 0.01) {
+                    ctx.fillStyle = '#64748b';
+                    ctx.fillText(y.toFixed(1), toCanvasX(0) + 5, cy - 4);
+                }
+            }
+            
+            ctx.fillStyle = '#334155';
+            ctx.fillText('0', toCanvasX(0) + 5, toCanvasY(0) + 14);
+        }
+
+        function drawGraph() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const logicalMinX = toLogicalX(0);
+            const logicalMaxX = toLogicalX(canvas.width);
+            const logicalMinY = toLogicalY(canvas.height);
+            const logicalMaxY = toLogicalY(0);
+
+            drawGrid(logicalMinX, logicalMaxX, logicalMinY, logicalMaxY);
+
+            const pixelStep = 2; 
+            const roots = [];
+
+            layers.forEach(layer => {
+                if (!layer.visible) return;
+                
+                ctx.beginPath();
+                ctx.strokeStyle = layer.color;
+                ctx.lineWidth = 2.5;
+                ctx.globalAlpha = (state.showSum && layers.filter(l=>l.visible).length > 1) ? 0.35 : 1.0;
+
+                let firstPoint = true;
+                let prevLx = 0;
+                let prevLy = 0;
+                
+                for (let px = 0; px <= canvas.width; px += pixelStep) {
+                    const lx = toLogicalX(px);
+                    const ly = layer.evaluate(lx);
+                    const py = toCanvasY(ly);
+                    
+                    if (py < -canvas.height || py > canvas.height * 2 || isNaN(py)) {
+                        firstPoint = true;
+                        continue;
+                    }
+
+                    if (firstPoint) {
+                        ctx.moveTo(px, py);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(px, py);
+                        if (state.showRoots && !state.showSum) {
+                            if (prevLy * ly <= 0 && Math.abs(prevLy - ly) < 10) {
+                                roots.push({ x: px, y: py, color: layer.color });
+                            }
+                        }
+                    }
+                    
+                    prevLx = lx;
+                    prevLy = ly;
+                }
+                ctx.stroke();
+            });
+            ctx.globalAlpha = 1.0;
+
+            const activeLayers = layers.filter(l => l.visible);
+            if (state.showSum && activeLayers.length > 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#0f172a';
+                ctx.lineWidth = 3;
+                
+                let firstPoint = true;
+                let prevLy = 0;
+
+                for (let px = 0; px <= canvas.width; px += pixelStep) {
+                    const lx = toLogicalX(px);
+                    
+                    let ly = 0;
+                    let valid = true;
+                    for (let i = 0; i < activeLayers.length; i++) {
+                        let val = activeLayers[i].evaluate(lx);
+                         if (!isFinite(val)) { valid = false; break; }
+                         ly += val;
+                    }
+
+                    if(!valid) {
+                         firstPoint = true;
+                         continue;
+                    }
+
+                    const py = toCanvasY(ly);
+
+                    if (py < -canvas.height || py > canvas.height * 2) {
+                        firstPoint = true;
+                        continue;
+                    }
+
+                    if (firstPoint) {
+                        ctx.moveTo(px, py);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(px, py);
+                        if (state.showRoots) {
+                            if (prevLy * ly <= 0 && Math.abs(prevLy - ly) < 10) {
+                                roots.push({ x: px, y: toCanvasY(0), color: '#0f172a' });
+                            }
+                        }
+                    }
+                    prevLy = ly;
+                }
+                ctx.stroke();
+            }
+
+            if (state.showRoots) {
+                roots.forEach(root => {
+                    ctx.beginPath();
+                    ctx.arc(root.x, root.y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = root.color;
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                });
+            }
+
+            if (state.showAngleVis) {
+                let val = evaluateMathString(state.angleInputStr);
+                if (val !== null && !isNaN(val)) {
+                    let radVal = state.angleUnit === 'deg' ? (val * Math.PI / 180) : val;
+                    let cx = toCanvasX(radVal);
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(cx, 0);
+                    ctx.lineTo(cx, canvas.height);
+                    ctx.strokeStyle = '#6366f1';
+                    ctx.lineWidth = 1.5;
+                    ctx.setLineDash([5, 4]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    ctx.fillStyle = '#4338ca';
+                    ctx.font = 'bold 11px Inter';
+                    let labelText = state.angleUnit === 'deg' ? val + '°' : radVal.toFixed(2) + ' rad';
+                    ctx.fillText(labelText, cx + 5, toCanvasY(0) - 8);
+
+                    const drawIntersectionPoint = (y, color) => {
+                        let cy = toCanvasY(y);
+                        if(cy < -50 || cy > canvas.height + 50) return;
+                        
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
+                        ctx.fillStyle = color;
+                        ctx.fill();
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                        ctx.fillRect(cx + 8, cy - 9, 38, 15);
+                        
+                        ctx.fillStyle = color;
+                        ctx.font = 'bold 10px Inter';
+                        ctx.fillText(y.toFixed(2), cx + 10, cy + 3);
+                    };
+
+                    activeLayers.forEach(layer => {
+                        let yVal = layer.evaluate(radVal);
+                        if(isFinite(yVal)) {
+                            drawIntersectionPoint(yVal, layer.color);
+                        }
+                    });
+
+                    if(state.showSum && activeLayers.length > 1) {
+                        let sumY = 0;
+                        let valid = true;
+                        activeLayers.forEach(l => {
+                            let v = l.evaluate(radVal);
+                            if(!isFinite(v)) valid = false;
+                            sumY += v;
+                        });
+                        if(valid) {
+                            drawIntersectionPoint(sumY, '#0f172a');
+                        }
+                    }
+                    
+                    ctx.restore();
+                }
+            }
+        }
+
+        function startAnimationLoop() {
+            if (animationFrameId) return;
+
+            const animate = () => {
+                let anyAnimating = false;
+                layers.forEach(layer => {
+                    if (layer.isAnimating && layer.visible) {
+                        anyAnimating = true;
+                        layer.C += layer.animSpeed; 
+                        
+                        if (layer.C > 6.28) layer.C -= 12.56;
+                        if (layer.C < -6.28) layer.C += 12.56;
+                        
+                        if (layer.uiRefs) {
+                            layer.uiRefs.phaseSlider.value = layer.C;
+                            if (!/[a-z\/\*]/i.test(layer.uiRefs.phaseText.value)) {
+                                layer.uiRefs.phaseText.value = layer.C.toFixed(2);
+                            }
+                        }
+                    }
+                });
+
+                if (anyAnimating) {
+                    drawGraph();
+                    updateEquationsList();
+                    animationFrameId = requestAnimationFrame(animate);
+                } else {
+                    animationFrameId = null;
+                }
+            };
+
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            state.isDragging = true;
+            state.lastMouseX = e.clientX;
+            state.lastMouseY = e.clientY;
+            canvas.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mouseup', () => {
+            state.isDragging = false;
+            canvas.style.cursor = 'crosshair';
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            if (state.isDragging) {
+                const dx = e.clientX - state.lastMouseX;
+                const dy = e.clientY - state.lastMouseY;
+                
+                state.offsetX += dx;
+                state.offsetY += dy;
+                
+                state.lastMouseX = e.clientX;
+                state.lastMouseY = e.clientY;
+                
+                drawGraph();
+            }
+
+            const lx = toLogicalX(mouseX);
+            let lyStr = 'N/A';
+            
+            const activeLayers = layers.filter(l => l.visible);
+            if(activeLayers.length > 0) {
+                let sumY = 0;
+                let valid = true;
+                activeLayers.forEach(l => {
+                    let val = l.evaluate(lx);
+                    if(!isFinite(val)) valid = false;
+                    sumY += val;
+                });
+                
+                if(valid) {
+                    const canvasSumY = toCanvasY(sumY);
+                    if(Math.abs(mouseY - canvasSumY) < 15) { 
+                        lyStr = sumY.toFixed(2);
+                    } else {
+                        lyStr = toLogicalY(mouseY).toFixed(2);
+                    }
+                } else {
+                     lyStr = toLogicalY(mouseY).toFixed(2);
+                }
+            } else {
+                lyStr = toLogicalY(mouseY).toFixed(2);
+            }
+
+            let lxStr = lx.toFixed(2);
+            const piMult = lx / Math.PI;
+            if (Math.abs(piMult - Math.round(piMult)) < 0.05) {
+                let v = Math.round(piMult);
+                if(v===1) lxStr = 'π';
+                else if(v===-1) lxStr = '-π';
+                else if(v===0) lxStr = '0';
+                else lxStr = v + 'π';
+            }
+
+            coordTooltip.textContent = `( ${lxStr}, ${lyStr} )`;
+            coordTooltip.style.left = (mouseX + 15) + 'px';
+            coordTooltip.style.top = (mouseY + 15) + 'px';
+            coordTooltip.classList.remove('hidden');
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            coordTooltip.classList.add('hidden');
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSensitivity = 0.001;
+            const delta = -e.deltaY * zoomSensitivity;
+            
+            let newScaleX = state.scaleX + delta;
+            let newScaleY = state.scaleY + delta;
+
+            newScaleX = Math.max(0.1, Math.min(newScaleX, 5));
+            newScaleY = Math.max(0.1, Math.min(newScaleY, 5));
+
+            state.scaleX = newScaleX;
+            state.scaleY = newScaleY;
+
+            updateZoomUI();
+            drawGraph();
+        });
+
+        const enableAngleVisCheck = document.getElementById('enableAngleVis');
+        const angleVisControls = document.getElementById('angleVisControls');
+        const angleVisInput = document.getElementById('angleVisInput');
+        const angleVisUnit = document.getElementById('angleVisUnit');
+
+        enableAngleVisCheck.addEventListener('change', (e) => {
+            state.showAngleVis = e.target.checked;
+            angleVisControls.classList.toggle('opacity-50', !state.showAngleVis);
+            angleVisControls.classList.toggle('pointer-events-none', !state.showAngleVis);
+            drawGraph();
+        });
+
+        angleVisInput.addEventListener('input', (e) => {
+            state.angleInputStr = e.target.value;
+            drawGraph();
+        });
+
+        angleVisUnit.addEventListener('change', (e) => {
+            state.angleUnit = e.target.value;
+            drawGraph();
+        });
+
+        // Unit Converter Logic
+        const converterDegInput = document.getElementById('converterDegInput');
+        const converterRadInput = document.getElementById('converterRadInput');
+
+        function degToRad(deg) { return deg * (Math.PI / 180); }
+        function radToDeg(rad) { return rad * (180 / Math.PI); }
+
+        function formatRad(radVal) {
+            const piRatio = radVal / Math.PI;
+            if (Math.abs(piRatio - 1) < 0.001) return 'π (' + radVal.toFixed(4) + ')';
+            if (Math.abs(piRatio - 0.5) < 0.001) return 'π/2 (' + radVal.toFixed(4) + ')';
+            if (Math.abs(piRatio - (1/3)) < 0.001) return 'π/3 (' + radVal.toFixed(4) + ')';
+            if (Math.abs(piRatio - (1/4)) < 0.001) return 'π/4 (' + radVal.toFixed(4) + ')';
+            if (Math.abs(piRatio - (1/6)) < 0.001) return 'π/6 (' + radVal.toFixed(4) + ')';
+            if (Math.abs(piRatio - 2) < 0.001) return '2π (' + radVal.toFixed(4) + ')';
+            return radVal.toFixed(4) + ' rad';
+        }
+
+        converterDegInput.addEventListener('input', (e) => {
+            const val = evaluateMathString(e.target.value);
+            if (val !== null && !isNaN(val)) {
+                const rad = degToRad(val);
+                converterRadInput.value = formatRad(rad);
+            }
+        });
+
+        converterRadInput.addEventListener('input', (e) => {
+            const val = evaluateMathString(e.target.value);
+            if (val !== null && !isNaN(val)) {
+                const deg = radToDeg(val);
+                converterDegInput.value = deg.toFixed(2) + '°';
+            }
+        });
+
+        document.querySelectorAll('.preset-angle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const deg = parseFloat(btn.dataset.deg);
+                converterDegInput.value = deg;
+                const rad = degToRad(deg);
+                converterRadInput.value = formatRad(rad);
+            });
+        });
+
+        // Initialize with default sine layer
+        const initialLayer = new FunctionLayer();
+        layers.push(initialLayer);
+        layersContainer.appendChild(initialLayer.element);
+        
+        resizeCanvas(); 
+        updatePlayground();
+    </script>
+</body>
+</html>
