@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>HTML Playground</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: #0b0f14;
+    color: #e6edf3;
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+button,
+select,
+input {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Toolbar */
+
+.toolbar {
+    height: 48px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 8px;
+    background: #11161d;
+    border-bottom: 1px solid #252c35;
+    user-select: none;
+}
+
+.toolbar button,
+.toolbar select {
+    height: 34px;
+    border: 1px solid #303844;
+    border-radius: 6px;
+    background: #171d25;
+    color: #dce3eb;
+    padding: 0 11px;
+    outline: none;
+}
+
+.toolbar button:hover,
+.toolbar select:hover {
+    background: #1d2530;
+    border-color: #46515f;
+}
+
+.toolbar button:active {
+    transform: translateY(1px);
+}
+
+.run-button {
+    background: #238636 !important;
+    border-color: #2ea043 !important;
+    color: white !important;
+    font-weight: 600;
+}
+
+.run-button:hover {
+    background: #2ea043 !important;
+}
+
+.toolbar-spacer {
+    flex: 1;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #8b949e;
+    font-size: 12px;
+    padding: 0 7px;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #3fb950;
+}
+
+.status-dot.error {
+    background: #f85149;
+}
+
+/* Main */
+
+.main {
+    min-height: 0;
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Editor */
+
+.editor-panel {
+    width: 50%;
+    min-width: 260px;
+    display: flex;
+    flex-direction: column;
+    background: #0d1117;
+    border-right: 1px solid #252c35;
+}
+
+.editor-tabs {
+    height: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: stretch;
+    background: #11161d;
+    border-bottom: 1px solid #252c35;
+}
+
+.editor-tab {
+    border: 0;
+    border-right: 1px solid #252c35;
+    background: transparent;
+    color: #8b949e;
+    padding: 0 18px;
+    font-size: 13px;
+    position: relative;
+}
+
+.editor-tab:hover {
+    color: #c9d1d9;
+    background: #151b23;
+}
+
+.editor-tab.active {
+    color: #f0f6fc;
+    background: #0d1117;
+}
+
+.editor-tab.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: #58a6ff;
+}
+
+.editor-container {
+    min-height: 0;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.editor {
+    position: absolute;
+    inset: 0;
+    display: none;
+    overflow: hidden;
+}
+
+.editor.active {
+    display: block;
+}
+
+.editor-wrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    overflow: hidden;
+}
+
+.line-numbers {
+    width: 48px;
+    min-width: 48px;
+    padding-top: 12px;
+    padding-right: 10px;
+    overflow: hidden;
+    text-align: right;
+    color: #484f58;
+    background: #0d1117;
+    border-right: 1px solid #1d232c;
+    font-family:
+        "Cascadia Code",
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+    font-size: 13px;
+    line-height: 20px;
+    white-space: pre;
+    user-select: none;
+}
+
+.code-area {
+    position: relative;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+.code-highlight,
+.code-input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 12px 14px;
+    border: 0;
+    outline: 0;
+    resize: none;
+    overflow: auto;
+    white-space: pre;
+    tab-size: 2;
+    font-family:
+        "Cascadia Code",
+        "SFMono-Regular",
+        Consolas,
+        "Liberation Mono",
+        monospace;
+    font-size: 13px;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+
+.code-highlight {
+    pointer-events: none;
+    color: #c9d1d9;
+    background: transparent;
+    overflow: hidden;
+}
+
+.code-input {
+    z-index: 2;
+    color: transparent;
+    caret-color: #f0f6fc;
+    background: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.code-input::selection {
+    background: rgba(56, 139, 253, 0.35);
+}
+
+/* Syntax colors */
+
+.token-tag {
+    color: #7ee787;
+}
+
+.token-attribute {
+    color: #79c0ff;
+}
+
+.token-string {
+    color: #a5d6ff;
+}
+
+.token-comment {
+    color: #8b949e;
+}
+
+.token-keyword {
+    color: #ff7b72;
+}
+
+.token-property {
+    color: #79c0ff;
+}
+
+.token-number {
+    color: #79c0ff;
+}
+
+.token-function {
+    color: #d2a8ff;
+}
+
+.token-selector {
+    color: #7ee787;
+}
+
+.token-punctuation {
+    color: #c9d1d9;
+}
+
+/* Resize divider */
+
+.resize-divider {
+    width: 5px;
+    min-width: 5px;
+    cursor: col-resize;
+    background: #0d1117;
+    position: relative;
+    z-index: 20;
+}
+
+.resize-divider:hover,
+.resize-divider.dragging {
+    background: #388bfd;
+}
+
+/* Preview */
+
+.preview-panel {
+    min-width: 260px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #161b22;
+}
+
+.preview-toolbar {
+    height: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    background: #11161d;
+    border-bottom: 1px solid #252c35;
+}
+
+.preview-toolbar button,
+.preview-toolbar select {
+    height: 30px;
+    border: 1px solid #303844;
+    border-radius: 5px;
+    background: #171d25;
+    color: #c9d1d9;
+    padding: 0 9px;
+}
+
+.preview-toolbar button:hover,
+.preview-toolbar select:hover {
+    background: #1d2530;
+}
+
+.preview-spacer {
+    flex: 1;
+}
+
+.preview-stage {
+    min-height: 0;
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    background:
+        linear-gradient(45deg, #151a21 25%, transparent 25%),
+        linear-gradient(-45deg, #151a21 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #151a21 75%),
+        linear-gradient(-45deg, transparent 75%, #151a21 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+}
+
+.preview-frame-wrapper {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#previewFrame {
+    width: 100%;
+    height: calc(100vh - 128px);
+    min-height: 300px;
+    border: 1px solid #303844;
+    border-radius: 5px;
+    background: white;
+    display: block;
+    transform-origin: top center;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+#previewFrame.mobile {
+    width: 390px;
+}
+
+#previewFrame.tablet {
+    width: 768px;
+}
+
+#previewFrame.desktop {
+    width: 100%;
+}
+
+/* Console */
+
+.console {
+    height: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: #0d1117;
+    border-top: 1px solid #252c35;
+    transition: height 0.15s ease;
+}
+
+.console.open {
+    height: 180px;
+}
+
+.console-header {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    border-bottom: 1px solid #252c35;
+    color: #8b949e;
+    font-size: 12px;
+}
+
+.console-clear {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: #8b949e;
+    cursor: pointer;
+}
+
+.console-clear:hover {
+    color: #f0f6fc;
+}
+
+.console-output {
+    height: calc(100% - 34px);
+    overflow: auto;
+    padding: 6px 10px;
+    font-family:
+        "Cascadia Code",
+        "SFMono-Regular",
+        Consolas,
+        monospace;
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.console-line {
+    padding: 2px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.console-log {
+    color: #c9d1d9;
+}
+
+.console-warn {
+    color: #d29922;
+}
+
+.console-error {
+    color: #f85149;
+}
+
+/* Modal */
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 100;
+}
+
+.modal-backdrop.open {
+    display: flex;
+}
+
+.modal {
+    width: min(760px, calc(100vw - 30px));
+    max-height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: #161b22;
+    border: 1px solid #303844;
+    border-radius: 8px;
+    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    height: 46px;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    border-bottom: 1px solid #303844;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.modal-close {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: #8b949e;
+    font-size: 20px;
+}
+
+.modal-body {
+    min-height: 0;
+    overflow: auto;
+    padding: 14px;
+}
+
+.modal textarea {
+    width: 100%;
+    height: 360px;
+    resize: vertical;
+    border: 1px solid #303844;
+    border-radius: 6px;
+    outline: none;
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 7px;
+    padding: 10px 14px;
+    border-top: 1px solid #303844;
+}
+
+.modal-footer button {
+    height: 34px;
+    padding: 0 13px;
+    border-radius: 5px;
+    border: 1px solid #303844;
+    background: #21262d;
+    color: #c9d1d9;
+}
+
+/* Toast */
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translate(-50%, 20px);
+    opacity: 0;
+    pointer-events: none;
+    padding: 9px 14px;
+    border-radius: 6px;
+    background: #21262d;
+    border: 1px solid #303844;
+    color: #f0f6fc;
+    font-size: 12px;
+    transition: 0.2s ease;
+    z-index: 200;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* Fullscreen */
+
+.preview-panel.fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+}
+
+.preview-panel.fullscreen .preview-toolbar {
+    height: 44px;
+}
+
+/* Responsive */
+
+@media (max-width: 800px) {
+    .main {
+        flex-direction: column;
+    }
+
+    .editor-panel {
+        width: 100%;
+        height: 50%;
+        min-height: 200px;
+        border-right: 0;
+        border-bottom: 1px solid #252c35;
+    }
+
+    .resize-divider {
+        display: none;
+    }
+
+    .preview-panel {
+        height: 50%;
+        min-height: 200px;
+    }
+
+    #previewFrame {
+        height: calc(50vh - 70px);
+    }
+
+    .toolbar button span {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="toolbar">
+        <button class="run-button" id="runButton" title="Run preview">
+            ▶ <span>Run</span>
+        </button>
+
+        <button id="formatButton" title="Basic format">
+            Format
+        </button>
+
+        <button id="clearButton" title="Clear editors">
+            Clear
+        </button>
+
+        <button id="downloadButton" title="Download complete HTML">
+            Download
+        </button>
+
+        <button id="copyButton" title="Copy complete HTML">
+            Copy
+        </button>
+
+        <div class="toolbar-spacer"></div>
+
+        <label class="status" title="Preview status">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Ready</span>
+        </label>
+
+        <button id="consoleButton" title="Toggle console">
+            Console
+        </button>
+    </div>
+
+    <div class="main">
+
+        <section class="editor-panel" id="editorPanel">
+
+            <div class="editor-tabs">
+                <button class="editor-tab active" data-editor="html">HTML</button>
+                <button class="editor-tab" data-editor="css">CSS</button>
+                <button class="editor-tab" data-editor="js">JS</button>
+            </div>
+
+            <div class="editor-container">
+
+                <div class="editor active" id="htmlEditor">
+                    <div class="editor-wrapper">
+                        <pre class="line-numbers" id="htmlLines">1</pre>
+                        <div class="code-area">
+                            <pre class="code-highlight" id="htmlHighlight"></pre>
+                            <textarea
+                                class="code-input"
+                                id="htmlInput"
+                                spellcheck="false"
+                                wrap="off"
+                                autocomplete="off"
+                                autocorrect="off"
+                                autocapitalize="off"
+                                aria-label="HTML editor"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor" id="cssEditor">
+                    <div class="editor-wrapper">
+                        <pre class="line-numbers" id="cssLines">1</pre>
+                        <div class="code-area">
+                            <pre class="code-highlight" id="cssHighlight"></pre>
+                            <textarea
+                                class="code-input"
+                                id="cssInput"
+                                spellcheck="false"
+                                wrap="off"
+                                autocomplete="off"
+                                autocorrect="off"
+                                autocapitalize="off"
+                                aria-label="CSS editor"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor" id="jsEditor">
+                    <div class="editor-wrapper">
+                        <pre class="line-numbers" id="jsLines">1</pre>
+                        <div class="code-area">
+                            <pre class="code-highlight" id="jsHighlight"></pre>
+                            <textarea
+                                class="code-input"
+                                id="jsInput"
+                                spellcheck="false"
+                                wrap="off"
+                                autocomplete="off"
+                                autocorrect="off"
+                                autocapitalize="off"
+                                aria-label="JavaScript editor"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <div class="resize-divider" id="resizeDivider"></div>
+
+        <section class="preview-panel" id="previewPanel">
+
+            <div class="preview-toolbar">
+
+                <button id="deviceDesktop">Desktop</button>
+                <button id="deviceTablet">Tablet</button>
+                <button id="deviceMobile">Mobile</button>
+
+                <div class="preview-spacer"></div>
+
+                <button id="refreshButton" title="Refresh preview">
+                    ↻
+                </button>
+
+                <button id="fullscreenButton" title="Fullscreen preview">
+                    ⛶
+                </button>
+
+            </div>
+
+            <div class="preview-stage" id="previewStage">
+                <div class="preview-frame-wrapper">
+                    <iframe
+                        id="previewFrame"
+                        class="desktop"
+                        title="HTML Preview"
+                        sandbox="allow-scripts allow-forms allow-modals allow-popups allow-presentation"
+                    ></iframe>
+                </div>
+            </div>
+
+            <div class="console" id="consolePanel">
+                <div class="console-header">
+                    Console
+                    <button class="console-clear" id="consoleClear">Clear</button>
+                </div>
+                <div class="console-output" id="consoleOutput"></div>
+            </div>
+
+        </section>
+
+    </div>
+</div>
+
+<div class="modal-backdrop" id="pasteModal">
+    <div class="modal">
+        <div class="modal-header">
+            Paste Complete HTML
+            <button class="modal-close" id="pasteClose">×</button>
+        </div>
+
+        <div class="modal-body">
+            <textarea
+                id="completeHtmlInput"
+                spellcheck="false"
+                placeholder="Paste a complete HTML document here..."
+            ></textarea>
+        </div>
+
+        <div class="modal-footer">
+            <button id="pasteCancel">Cancel</button>
+            <button id="pasteImport">Import</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+/*
+    HTML Playground
+    No external dependencies.
+*/
+
+const STORAGE_KEY = "html-playground-v1";
+
+const htmlInput = document.getElementById("htmlInput");
+const cssInput = document.getElementById("cssInput");
+const jsInput = document.getElementById("jsInput");
+
+const htmlHighlight = document.getElementById("htmlHighlight");
+const cssHighlight = document.getElementById("cssHighlight");
+const jsHighlight = document.getElementById("jsHighlight");
+
+const htmlLines = document.getElementById("htmlLines");
+const cssLines = document.getElementById("cssLines");
+const jsLines = document.getElementById("jsLines");
+
+const previewFrame = document.getElementById("previewFrame");
+const previewPanel = document.getElementById("previewPanel");
+const previewStage = document.getElementById("previewStage");
+
+const runButton = document.getElementById("runButton");
+const clearButton = document.getElementById("clearButton");
+const copyButton = document.getElementById("copyButton");
+const downloadButton = document.getElementById("downloadButton");
+const formatButton = document.getElementById("formatButton");
+const refreshButton = document.getElementById("refreshButton");
+
+const consoleButton = document.getElementById("consoleButton");
+const consolePanel = document.getElementById("consolePanel");
+const consoleOutput = document.getElementById("consoleOutput");
+const consoleClear = document.getElementById("consoleClear");
+
+const statusDot = document.getElementById("statusDot");
+const statusText = document.getElementById("statusText");
+
+const toast = document.getElementById("toast");
+
+let autoRunTimer = null;
+let toastTimer = null;
+let isUpdatingEditor = false;
+
+/*
+    Starter content is intentionally minimal.
+    The editor itself does not add visible headings or UI to the preview.
+*/
+const DEFAULT_HTML = `<main>
+  <h1>Hello World</h1>
+  <p>Edit the HTML, CSS and JavaScript.</p>
+</main>`;
+
+const DEFAULT_CSS = `body {
+  margin: 0;
+  padding: 40px;
+  font-family: system-ui, sans-serif;
+}
+
+main {
+  max-width: 700px;
+  margin: auto;
+}
+
+h1 {
+  margin-top: 0;
+}`;
+
+const DEFAULT_JS = `console.log("Preview loaded");`;
+
+/* -------------------------------------------------------
+   Utility
+------------------------------------------------------- */
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function escapeAttribute(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function showToast(message) {
+    clearTimeout(toastTimer);
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 1800);
+}
+
+function setStatus(text, error = false) {
+    statusText.textContent = text;
+    statusDot.classList.toggle("error", error);
+}
+
+function debounce(fn, delay) {
+    let timer;
+
+    return (...args) => {
+        clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            fn(...args);
+        }, delay);
+    };
+}
+
+/* -------------------------------------------------------
+   Editor state
+------------------------------------------------------- */
+
+function getEditorValue(type) {
+    if (type === "html") return htmlInput.value;
+    if (type === "css") return cssInput.value;
+    return jsInput.value;
+}
+
+function setEditorValue(type, value) {
+    if (type === "html") {
+        htmlInput.value = value;
+        updateEditorVisuals("html");
+    }
+
+    if (type === "css") {
+        cssInput.value = value;
+        updateEditorVisuals("css");
+    }
+
+    if (type === "js") {
+        jsInput.value = value;
+        updateEditorVisuals("js");
+    }
+}
+
+function updateLineNumbers(input, lineElement) {
+    const count = Math.max(1, input.value.split("\n").length);
+
+    let output = "";
+
+    for (let i = 1; i <= count; i++) {
+        output += i;
+
+        if (i !== count) {
+            output += "\n";
+        }
+    }
+
+    lineElement.textContent = output;
+}
+
+function syncScroll(input, highlight, lines) {
+    highlight.scrollTop = input.scrollTop;
+    highlight.scrollLeft = input.scrollLeft;
+    lines.scrollTop = input.scrollTop;
+}
+
+function updateEditorVisuals(type) {
+    let input;
+    let highlight;
+    let lines;
+
+    if (type === "html") {
+        input = htmlInput;
+        highlight = htmlHighlight;
+        lines = htmlLines;
+        highlight.innerHTML = highlightHTML(input.value);
+    }
+
+    if (type === "css") {
+        input = cssInput;
+        highlight = cssHighlight;
+        lines = cssLines;
+        highlight.innerHTML = highlightCSS(input.value);
+    }
+
+    if (type === "js") {
+        input = jsInput;
+        highlight = jsHighlight;
+        lines = jsLines;
+        highlight.innerHTML = highlightJS(input.value);
+    }
+
+    updateLineNumbers(input, lines);
+
+    syncScroll(input, highlight, lines);
+}
+
+/* -------------------------------------------------------
+   Basic syntax highlighting
+------------------------------------------------------- */
+
+function highlightHTML(code) {
+    if (!code) {
+        return "";
+    }
+
+    let result = escapeHtml(code);
+
+    result = result.replace(
+        /(&lt;!--[\s\S]*?--&gt;)/g,
+        '<span class="token-comment">$1</span>'
+    );
+
+    result = result.replace(
+        /(&lt;\/?)([a-zA-Z][\w:-]*)/g,
+        '$1<span class="token-tag">$2</span>'
+    );
+
+    result = result.replace(
+        /([a-zA-Z_:][\w:.-]*)(=)(&quot;.*?&quot;|&#39;.*?&#39;)/g,
+        '<span class="token-attribute">$1</span>$2<span class="token-string">$3</span>'
+    );
+
+    result = result.replace(
+        /(&lt;\/?|\s)([a-zA-Z_:][\w:.-]*)(?=\s|\/?&gt;)/g,
+        '$1<span class="token-attribute">$2</span>'
+    );
+
+    result = result.replace(
+        /(&lt;\/?)(span class="token-tag">)/g,
+        '$1$2'
+    );
+
+    return result;
+}
+
+function highlightCSS(code) {
+    if (!code) {
+        return "";
+    }
+
+    let result = escapeHtml(code);
+
+    result = result.replace(
+        /(\/\*[\s\S]*?\*\/)/g,
+        '<span class="token-comment">$1</span>'
+    );
+
+    result = result.replace(
+        /([^{]+)(?=\s*\{)/g,
+        '<span class="token-selector">$1</span>'
+    );
+
+    result = result.replace(
+        /([-\w]+)(\s*:)/g,
+        '<span class="token-property">$1</span>$2'
+    );
+
+    result = result.replace(
+        /(#(?:[a-fA-F0-9]{3,8})\b)/g,
+        '<span class="token-number">$1</span>'
+    );
+
+    result = result.replace(
+        /(\b\d+(?:\.\d+)?(?:px|em|rem|%|vh|vw|s|ms|deg|fr)?\b)/g,
+        '<span class="token-number">$1</span>'
+    );
+
+    return result;
+}
+
+function highlightJS(code) {
+    if (!code) {
+        return "";
+    }
+
+    let result = escapeHtml(code);
+
+    result = result.replace(
+        /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/g,
+        '<span class="token-comment">$1</span>'
+    );
+
+    result = result.replace(
+        /(["'`])(?:\\.|(?!\1)[\s\S])*?\1/g,
+        '<span class="token-string">$&</span>'
+    );
+
+    result = result.replace(
+        /\b(const|let|var|function|return|if|else|for|while|new|class|extends|try|catch|finally|throw|async|await|import|export|from|typeof|instanceof|in|of|switch|case|break|continue|true|false|null|undefined)\b/g,
+        '<span class="token-keyword">$1</span>'
+    );
+
+    result = result.replace(
+        /\b(\d+(?:\.\d+)?)\b/g,
+        '<span class="token-number">$1</span>'
+    );
+
+    result = result.replace(
+        /\b([A-Za-z_$][\w$]*)(?=\s*\()/g,
+        '<span class="token-function">$1</span>'
+    );
+
+    return result;
+}
+
+/* -------------------------------------------------------
+   Complete HTML parser/importer
+------------------------------------------------------- */
+
+function containsCompleteDocument(code) {
+    return /<!doctype\s+html/i.test(code) ||
+           /<html(?:\s|>)/i.test(code) ||
+           /<head(?:\s|>)/i.test(code) ||
+           /<body(?:\s|>)/i.test(code);
+}
+
+function extractBlocksFromDocument(source) {
+    const parser = new DOMParser();
+    const documentNode = parser.parseFromString(source, "text/html");
+
+    const htmlParts = [];
+    const cssParts = [];
+    const jsParts = [];
+
+    /*
+        Preserve body content.
+    */
+    if (documentNode.body) {
+        for (const node of Array.from(documentNode.body.childNodes)) {
+            if (
+                node.nodeType === Node.ELEMENT_NODE &&
+                node.tagName.toLowerCase() === "script"
+            ) {
+                const src = node.getAttribute("src");
+
+                if (!src) {
+                    jsParts.push(node.textContent || "");
+                }
+
+                continue;
+            }
+
+            htmlParts.push(node.outerHTML || node.textContent || "");
+        }
+    }
+
+    /*
+        Extract CSS from head and body.
+    */
+    for (const style of Array.from(documentNode.querySelectorAll("style"))) {
+        cssParts.push(style.textContent || "");
+    }
+
+    /*
+        Extract inline script.
+    */
+    for (const script of Array.from(documentNode.querySelectorAll("script"))) {
+        if (!script.getAttribute("src")) {
+            const value = script.textContent || "";
+
+            if (!jsParts.includes(value)) {
+                jsParts.push(value);
+            }
+        }
+    }
+
+    /*
+        If body was empty, preserve document content as fallback.
+    */
+    let html = htmlParts.join("\n");
+
+    if (!html.trim() && documentNode.body) {
+        html = documentNode.body.innerHTML;
+    }
+
+    return {
+        html,
+        css: cssParts.join("\n\n"),
+        js: jsParts.join("\n\n")
+    };
+}
+
+function importPastedCode(code) {
+    const trimmed = code.trim();
+
+    if (!containsCompleteDocument(trimmed)) {
+        setEditorValue("html", code);
+        return;
+    }
+
+    const blocks = extractBlocksFromDocument(trimmed);
+
+    setEditorValue("html", blocks.html);
+    setEditorValue("css", blocks.css);
+    setEditorValue("js", blocks.js);
+
+    saveState();
+    runPreview();
+
+    showToast("HTML imported");
+}
+
+/* -------------------------------------------------------
+   Preview document generation
+------------------------------------------------------- */
+
+function escapeClosingTag(text, tagName) {
+    return String(text).replace(
+        new RegExp("</" + tagName, "gi"),
+        "<\\/" + tagName
+    );
+}
+
+function buildPreviewDocument() {
+    const html = htmlInput.value;
+    const css = cssInput.value;
+    const js = jsInput.value;
+
+    /*
+        If the user pasted a complete HTML document directly
+        into the HTML editor, use it as the document.
+
+        This is handled separately from the split HTML/CSS/JS mode.
+    */
+    if (containsCompleteDocument(html)) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        const existingStyles = Array.from(
+            doc.querySelectorAll("style")
+        )
+        .map(style => style.outerHTML)
+        .join("\n");
+
+        const existingScripts = Array.from(
+            doc.querySelectorAll("script")
+        )
+        .filter(script => !script.hasAttribute("src"))
+        .map(script => script.outerHTML)
+        .join("\n");
+
+        if (css.trim()) {
+            const style = doc.createElement("style");
+            style.textContent = css;
+            doc.head.appendChild(style);
+        }
+
+        if (js.trim()) {
+            const script = doc.createElement("script");
+            script.textContent = js;
+            doc.body.appendChild(script);
+        }
+
+        /*
+            Remove original extracted blocks only if the separate
+            editors are being used. Existing blocks remain intact.
+        */
+        return "<!DOCTYPE html>\n" + doc.documentElement.outerHTML;
+    }
+
+    const safeCSS = escapeClosingTag(css, "style");
+    const safeJS = escapeClosingTag(js, "script");
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+${safeCSS}
+</style>
+</head>
+<body>
+${html}
+<script>
+${buildConsoleBridge()}
+${safeJS}
+<\/script>
+</body>
+</html>`;
+}
+
+function buildConsoleBridge() {
+    return `
+(function () {
+    function serialize(value) {
+        try {
+            if (typeof value === "string") return value;
+            if (value instanceof Error) return value.stack || value.message;
+            return JSON.stringify(value, function (key, val) {
+                if (typeof val === "bigint") return val.toString() + "n";
+                if (typeof val === "function") return String(val);
+                return val;
+            }, 2);
+        } catch (e) {
+            try {
+                return String(value);
+            } catch (_) {
+                return "[Unserializable value]";
+            }
+        }
+    }
+
+    function send(type, args) {
+        try {
+            parent.postMessage({
+                source: "html-playground",
+                type: type,
+                args: Array.from(args).map(serialize)
+            }, "*");
+        } catch (_) {}
+    }
+
+    const originalLog = console.log.bind(console);
+    const originalWarn = console.warn.bind(console);
+    const originalError = console.error.bind(console);
+
+    console.log = function () {
+        send("log", arguments);
+        originalLog.apply(console, arguments);
+    };
+
+    console.warn = function () {
+        send("warn", arguments);
+        originalWarn.apply(console, arguments);
+    };
+
+    console.error = function () {
+        send("error", arguments);
+        originalError.apply(console, arguments);
+    };
+
+    window.addEventListener("error", function (event) {
+        send("error", [
+            event.message + " (" +
+            event.filename +
+            ":" +
+            event.lineno +
+            ":" +
+            event.colno +
+            ")"
+        ]);
+    });
+
+    window.addEventListener("unhandledrejection", function (event) {
+        send("error", [
+            "Unhandled Promise Rejection: " + serialize(event.reason)
+        ]);
+    });
+})();`;
+}
+
+/* -------------------------------------------------------
+   Preview
+------------------------------------------------------- */
+
+function clearConsole() {
+    consoleOutput.innerHTML = "";
+}
+
+function appendConsole(type, args) {
+    const line = document.createElement("div");
+
+    line.className = "console-line console-" + type;
+
+    line.textContent = args.join(" ");
+
+    consoleOutput.appendChild(line);
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+
+function runPreview() {
+    clearConsole();
+
+    setStatus("Running");
+
+    const documentSource = buildPreviewDocument();
+
+    /*
+        srcdoc avoids creating temporary files and keeps the
+        preview completely local.
+    */
+    previewFrame.srcdoc = documentSource;
+
+    saveState();
+
+    setTimeout(() => {
+        setStatus("Ready");
+    }, 250);
+}
+
+function refreshPreview() {
+    const current = previewFrame.srcdoc;
+
+    previewFrame.srcdoc = "";
+
+    requestAnimationFrame(() => {
+        previewFrame.srcdoc = current;
+    });
+}
+
+/* -------------------------------------------------------
+   Autosave
+------------------------------------------------------- */
+
+function saveState() {
+    try {
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+                html: htmlInput.value,
+                css: cssInput.value,
+                js: jsInput.value
+            })
+        );
+    } catch (_) {
+        /*
+            localStorage can be unavailable in some privacy modes.
+            The playground still works normally.
+        */
+    }
+}
+
+function loadState() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+
+        if (!raw) {
+            setEditorValue("html", DEFAULT_HTML);
+            setEditorValue("css", DEFAULT_CSS);
+            setEditorValue("js", DEFAULT_JS);
+            return;
+        }
+
+        const state = JSON.parse(raw);
+
+        setEditorValue(
+            "html",
+            typeof state.html === "string" ? state.html : DEFAULT_HTML
+        );
+
+        setEditorValue(
+            "css",
+            typeof state.css === "string" ? state.css : DEFAULT_CSS
+        );
+
+        setEditorValue(
+            "js",
+            typeof state.js === "string" ? state.js : DEFAULT_JS
+        );
+    } catch (_) {
+        setEditorValue("html", DEFAULT_HTML);
+        setEditorValue("css", DEFAULT_CSS);
+        setEditorValue("js", DEFAULT_JS);
+    }
+}
+
+/* -------------------------------------------------------
+   Formatting
+------------------------------------------------------- */
+
+function basicFormatHTML(source) {
+    const input = source.trim();
+
+    if (!input) {
+        return "";
+    }
+
+    /*
+        Don't attempt to reformat an entire document aggressively.
+        This preserves scripts/styles and user content.
+    */
+    if (containsCompleteDocument(input)) {
+        return input
+            .replace(/>\s*</g, ">\n<")
+            .replace(/\n{3,}/g, "\n\n")
+            .trim();
+    }
+
+    return input
+        .replace(/>\s*</g, ">\n<")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+}
+
+function basicFormatCSS(source) {
+    return source
+        .replace(/\s*\{\s*/g, " {\n  ")
+        .replace(/;\s*/g, ";\n  ")
+        .replace(/\s*\}\s*/g, "\n}\n\n")
+        .replace(/\n\s*\n\s*\n/g, "\n\n")
+        .trim();
+}
+
+function basicFormatJS(source) {
+    return source
+        .replace(/\{\s*/g, "{\n  ")
+        .replace(/;\s*/g, ";\n")
+        .replace(/\}\s*/g, "\n}\n")
+        .replace(/\n\s*\n\s*\n/g, "\n\n")
+        .trim();
+}
+
+/* -------------------------------------------------------
+   Download / Copy
+------------------------------------------------------- */
+
+function getCompleteHTML() {
+    return buildPreviewDocument();
+}
+
+async function copyCompleteHTML() {
+    const source = getCompleteHTML();
+
+    try {
+        await navigator.clipboard.writeText(source);
+        showToast("HTML copied");
+    } catch (_) {
+        const textarea = document.createElement("textarea");
+
+        textarea.value = source;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+
+        document.body.appendChild(textarea);
+
+        textarea.focus();
+        textarea.select();
+
+        try {
+            document.execCommand("copy");
+            showToast("HTML copied");
+        } catch (error) {
+            showToast("Copy failed");
+        }
+
+        textarea.remove();
+    }
+}
+
+function downloadHTML() {
+    const source = getCompleteHTML();
+
+    const blob = new Blob(
+        [source],
+        { type: "text/html;charset=utf-8" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const anchor = document.createElement("a");
+
+    anchor.href = url;
+    anchor.download = "playground.html";
+
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+
+    setTimeout(() => {
+        URL.revokeObjectURL(url);
+    }, 1000);
+
+    showToast("HTML downloaded");
+}
+
+/* -------------------------------------------------------
+   Editor events
+------------------------------------------------------- */
+
+const debouncedPreview = debounce(() => {
+    runPreview();
+}, 500);
+
+function editorChanged(type) {
+    updateEditorVisuals(type);
+    saveState();
+
+    debouncedPreview();
+}
+
+[
+    ["html", htmlInput],
+    ["css", cssInput],
+    ["js", jsInput]
+].forEach(([type, input]) => {
+
+    input.addEventListener("input", () => {
+        editorChanged(type);
+    });
+
+    input.addEventListener("scroll", () => {
+        if (type === "html") {
+            syncScroll(input, htmlHighlight, htmlLines);
+        }
+
+        if (type === "css") {
+            syncScroll(input, cssHighlight, cssLines);
+        }
+
+        if (type === "js") {
+            syncScroll(input, jsHighlight, jsLines);
+        }
+    });
+
+    input.addEventListener("keydown", event => {
+
+        /*
+            Tab inserts spaces instead of moving focus.
+        */
+        if (event.key === "Tab") {
+            event.preventDefault();
+
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+
+            input.value =
+                input.value.substring(0, start) +
+                "  " +
+                input.value.substring(end);
+
+            input.selectionStart = input.selectionEnd = start + 2;
+
+            editorChanged(type);
+        }
+
+        /*
+            Auto-close common brackets.
+        */
+        if (event.key === "Enter") {
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+
+            const before = input.value.substring(0, start);
+            const after = input.value.substring(end);
+
+            const previous = before.slice(-1);
+
+            if (
+                previous === "{" &&
+                after.startsWith("}")
+            ) {
+                event.preventDefault();
+
+                input.value =
+                    before +
+                    "\n  \n" +
+                    after;
+
+                input.selectionStart =
+                    input.selectionEnd =
+                    start + 3;
+
+                editorChanged(type);
+            }
+        }
+    });
+
+});
+
+/* -------------------------------------------------------
+   Editor tabs
+------------------------------------------------------- */
+
+document.querySelectorAll(".editor-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+
+        const type = tab.dataset.editor;
+
+        document.querySelectorAll(".editor-tab").forEach(item => {
+            item.classList.toggle(
+                "active",
+                item === tab
+            );
+        });
+
+        document.querySelectorAll(".editor").forEach(editor => {
+            editor.classList.remove("active");
+        });
+
+        document.getElementById(
+            type + "Editor"
+        ).classList.add("active");
+
+        if (type === "html") {
+            htmlInput.focus();
+        }
+
+        if (type === "css") {
+            cssInput.focus();
+        }
+
+        if (type === "js") {
+            jsInput.focus();
+        }
+    });
+});
+
+/* -------------------------------------------------------
+   Run / clear / format
+------------------------------------------------------- */
+
+runButton.addEventListener("click", runPreview);
+
+refreshButton.addEventListener("click", refreshPreview);
+
+clearButton.addEventListener("click", () => {
+    htmlInput.value = "";
+    cssInput.value = "";
+    jsInput.value = "";
+
+    updateEditorVisuals("html");
+    updateEditorVisuals("css");
+    updateEditorVisuals("js");
+
+    clearConsole();
+    saveState();
+    runPreview();
+
+    showToast("Cleared");
+});
+
+formatButton.addEventListener("click", () => {
+
+    const activeTab = document.querySelector(
+        ".editor-tab.active"
+    ).dataset.editor;
+
+    if (activeTab === "html") {
+        htmlInput.value = basicFormatHTML(htmlInput.value);
+        updateEditorVisuals("html");
+    }
+
+    if (activeTab === "css") {
+        cssInput.value = basicFormatCSS(cssInput.value);
+        updateEditorVisuals("css");
+    }
+
+    if (activeTab === "js") {
+        jsInput.value = basicFormatJS(jsInput.value);
+        updateEditorVisuals("js");
+    }
+
+    saveState();
+    runPreview();
+
+    showToast("Formatted");
+});
+
+copyButton.addEventListener("click", copyCompleteHTML);
+
+downloadButton.addEventListener("click", downloadHTML);
+
+/* -------------------------------------------------------
+   Console
+------------------------------------------------------- */
+
+consoleButton.addEventListener("click", () => {
+    consolePanel.classList.toggle("open");
+});
+
+consoleClear.addEventListener("click", clearConsole);
+
+window.addEventListener("message", event => {
+
+    if (!event.data || event.data.source !== "html-playground") {
+        return;
+    }
+
+    const type = event.data.type;
+
+    if (
+        type === "log" ||
+        type === "warn" ||
+        type === "error"
+    ) {
+        appendConsole(
+            type,
+            Array.isArray(event.data.args)
+                ? event.data.args
+                : [String(event.data.args)]
+        );
+
+        if (type === "error") {
+            setStatus("JavaScript error", true);
+        }
+    }
+});
+
+/* -------------------------------------------------------
+   Device modes
+------------------------------------------------------- */
+
+function setDevice(device) {
+    previewFrame.classList.remove(
+        "desktop",
+        "tablet",
+        "mobile"
+    );
+
+    previewFrame.classList.add(device);
+
+    if (device === "mobile") {
+        showToast("Mobile preview");
+    }
+
+    if (device === "tablet") {
+        showToast("Tablet preview");
+    }
+
+    if (device === "desktop") {
+        showToast("Desktop preview");
+    }
+}
+
+document.getElementById("deviceDesktop")
+    .addEventListener("click", () => setDevice("desktop"));
+
+document.getElementById("deviceTablet")
+    .addEventListener("click", () => setDevice("tablet"));
+
+document.getElementById("deviceMobile")
+    .addEventListener("click", () => setDevice("mobile"));
+
+/* -------------------------------------------------------
+   Fullscreen
+------------------------------------------------------- */
+
+fullscreenButton = document.getElementById("fullscreenButton");
+
+fullscreenButton.addEventListener("click", async () => {
+
+    if (!document.fullscreenElement) {
+        try {
+            await previewPanel.requestFullscreen();
+        } catch (_) {
+            previewPanel.classList.add("fullscreen");
+        }
+    } else {
+        try {
+            await document.exitFullscreen();
+        } catch (_) {}
+
+        previewPanel.classList.remove("fullscreen");
+    }
+});
+
+document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) {
+        previewPanel.classList.remove("fullscreen");
+    }
+});
+
+/* -------------------------------------------------------
+   Resizable panels
+------------------------------------------------------- */
+
+const resizeDivider = document.getElementById("resizeDivider");
+const editorPanel = document.getElementById("editorPanel");
+
+let resizing = false;
+
+resizeDivider.addEventListener("mousedown", event => {
+    event.preventDefault();
+
+    resizing = true;
+
+    resizeDivider.classList.add("dragging");
+
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+});
+
+window.addEventListener("mousemove", event => {
+
+    if (!resizing) {
+        return;
+    }
+
+    const mainRect =
+        document.querySelector(".main").getBoundingClientRect();
+
+    let width =
+        event.clientX - mainRect.left;
+
+    const minimum = 260;
+    const maximum = mainRect.width - 260;
+
+    width = Math.max(
+        minimum,
+        Math.min(maximum, width)
+    );
+
+    editorPanel.style.width = width + "px";
+    editorPanel.style.flex = "none";
+});
+
+window.addEventListener("mouseup", () => {
+
+    if (!resizing) {
+        return;
+    }
+
+    resizing = false;
+
+    resizeDivider.classList.remove("dragging");
+
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+});
+
+/* -------------------------------------------------------
+   Paste handling
+------------------------------------------------------- */
+
+document.addEventListener("paste", event => {
+
+    const active =
+        document.activeElement;
+
+    if (
+        active !== htmlInput &&
+        active !== cssInput &&
+        active !== jsInput
+    ) {
+        return;
+    }
+
+    const text =
+        event.clipboardData
+            ? event.clipboardData.getData("text/plain")
+            : "";
+
+    if (!text || !containsCompleteDocument(text)) {
+        return;
+    }
+
+    /*
+        Only automatically import a complete document when
+        the HTML editor is active.
+    */
+    if (active !== htmlInput) {
+        return;
+    }
+
+    event.preventDefault();
+
+    importPastedCode(text);
+});
+
+/*
+    Drop an HTML file directly into the playground.
+*/
+document.addEventListener("dragover", event => {
+    event.preventDefault();
+});
+
+document.addEventListener("drop", async event => {
+
+    event.preventDefault();
+
+    const files = Array.from(
+        event.dataTransfer?.files || []
+    );
+
+    if (!files.length) {
+        return;
+    }
+
+    const htmlFile = files.find(file => {
+        return (
+            file.type === "text/html" ||
+            /\.html?$/i.test(file.name)
+        );
+    });
+
+    if (!htmlFile) {
+        showToast("Please drop an HTML file");
+        return;
+    }
+
+    try {
+        const content = await htmlFile.text();
+
+        importPastedCode(content);
+    } catch (_) {
+        showToast("Unable to read HTML file");
+    }
+});
+
+/* -------------------------------------------------------
+   Keyboard shortcuts
+------------------------------------------------------- */
+
+document.addEventListener("keydown", event => {
+
+    const modifier = event.ctrlKey || event.metaKey;
+
+    if (modifier && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        downloadHTML();
+    }
+
+    if (modifier && event.key === "Enter") {
+        event.preventDefault();
+        runPreview();
+    }
+
+    if (event.key === "F5") {
+        event.preventDefault();
+        runPreview();
+    }
+
+    if (
+        event.key === "Escape" &&
+        previewPanel.classList.contains("fullscreen")
+    ) {
+        previewPanel.classList.remove("fullscreen");
+    }
+});
+
+/* -------------------------------------------------------
+   Initialization
+------------------------------------------------------- */
+
+loadState();
+
+updateEditorVisuals("html");
+updateEditorVisuals("css");
+updateEditorVisuals("js");
+
+runPreview();
+
+/*
+    Keep preview height correct after viewport changes.
+*/
+window.addEventListener(
+    "resize",
+    debounce(() => {
+        /*
+            Layout is CSS-driven; forcing a reflow here ensures
+            iframe dimensions update immediately on some browsers.
+        */
+        void previewFrame.offsetHeight;
+    }, 100)
+);
+</script>
+
+</body>
+</html>
