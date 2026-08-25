@@ -5,23 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio Studio Max - Professional Editor</title>
     <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg">
-    
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- WaveSurfer -->
     <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
     <script src="https://unpkg.com/wavesurfer.js@7/dist/plugins/regions.min.js"></script>
-    
+
     <!-- LameJS for MP3 Encoding -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
 
     <!-- Custom CSS (Tailwind Removed) -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        
+
         body {
             background-color: #f1f5f9;
             color: #1e293b;
@@ -48,7 +48,7 @@
         .logo-icon { background: #4f46e5; color: white; padding: 6px; border-radius: 6px; font-size: 16px; }
         .nav-title { font-size: 18px; font-weight: 700; color: #0f172a; }
         .badge { background: #e0e7ff; color: #4338ca; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
-        
+
         /* --- Buttons --- */
         .btn { border: none; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -77,60 +77,60 @@
 
         /* --- Workspace (2 Columns) --- */
         .workspace { flex: 1; display: flex; gap: 12px; overflow: hidden; width: 100%; }
-        
+
         /* Left Column (Graph) */
         .left-col { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 300px; overflow: hidden; }
         .panel { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; }
-        
+
         .file-info-panel { display: flex; justify-content: space-between; align-items: center; height: 56px; flex-shrink: 0; }
         .file-details { display: flex; align-items: center; gap: 12px; overflow: hidden; }
         .file-icon { background: #e0e7ff; color: #4f46e5; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
-        
+
         .graph-panel { flex: 1; display: flex; flex-direction: column; min-height: 0; position: relative; }
         .graph-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-shrink: 0; }
         .graph-wrapper { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; position: relative; overflow: hidden; }
         #waveform { position: absolute; inset: 0; }
-        
+
         .controls-panel { height: 64px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .play-btn { width: 40px; height: 40px; border-radius: 50%; background: #4f46e5; color: white; border: none; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
         .time-display { background: #f8fafc; padding: 6px 12px; border-radius: 6px; font-family: monospace; font-size: 12px; font-weight: bold; border: 1px solid #e2e8f0; }
 
         /* Right Column (Tools) */
         .right-col { width: 320px; display: flex; flex-direction: column; background: white; border: 1px solid #e2e8f0; border-radius: 12px; flex-shrink: 0; overflow: hidden; }
-        
+
         /* Tabs */
         .tabs-header { display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc; height: 48px; flex-shrink: 0; }
         .tab-btn { flex: 1; background: none; border: none; border-bottom: 2px solid transparent; font-size: 12px; font-weight: bold; color: #64748b; cursor: pointer; }
         .tab-btn.active { background: white; color: #4f46e5; border-bottom-color: #4f46e5; }
-        
+
         .tab-content { display: none; flex: 1; flex-direction: column; gap: 12px; padding: 16px; overflow-y: auto; }
         .tab-content.active { display: flex; }
-        
+
         /* Tool Layouts */
         .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .slider-group { background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 12px; }
         .slider-row { display: flex; flex-direction: column; gap: 4px; }
         .slider-labels { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; color: #64748b; }
-        
+
         /* Custom Range Slider */
         input[type=range]::-webkit-slider-thumb { background: #4f46e5; }
-        
+
         /* Export Panel */
         .export-panel { border-top: 1px solid #e2e8f0; background: #f8fafc; padding: 12px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
         .export-row { display: flex; gap: 8px; }
         .input-box { flex: 1; display: flex; flex-direction: column; gap: 4px; }
         .input-box label { font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; }
         .input-box select { padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; outline: none; }
-        
+
         /* --- Modals (Loading & History) --- */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 100; }
         .modal-box { background: white; padding: 24px; border-radius: 12px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .modal-box h3 { font-size: 16px; margin: 12px 0 4px 0; color: #0f172a; }
         .modal-box p { font-size: 12px; color: #64748b; margin-bottom: 16px; }
-        
+
         .progress-bar-bg { width: 100%; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
         .progress-bar-fill { height: 100%; background: #4f46e5; width: 0%; transition: 0.2s; }
-        
+
         /* History Modal Specifics */
         .history-modal { width: 400px; text-align: left; max-height: 80vh; display: flex; flex-direction: column; }
         .history-list { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
@@ -144,8 +144,9 @@
 <body>
 
     <!-- Navbar -->
-    
+
 <!-- Universal Glass Header -->
+
 
 
 
@@ -161,7 +162,10 @@
                     <div class="relative flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl shadow-lg shadow-indigo-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 overflow-hidden p-1.5">
                         <img src="../../assets/img/favicon.svg" class="w-full h-full object-contain" alt="Logo">
                     </div>
-                    <span class="font-bold text-xl tracking-tight text-inherit dark:text-white">GenTools</span>
+                    <div class="flex flex-col">
+                        <span class="font-black text-xl tracking-tight text-slate-900 leading-none">GenTools<span class="text-indigo-600">.</span></span>
+                        <span class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Smart Utilities</span>
+                    </div>
                 </a>
             </div>
             <!-- Right: Navigation -->
@@ -183,9 +187,10 @@
 
 
 
+
     <!-- Main Content -->
     <main class="main-container">
-        
+
         <!-- Upload Section -->
         <div id="uploadSection" class="upload-section">
             <input type="file" id="fileInput" accept="video/mp4, audio/mp3, audio/wav, audio/mpeg" class="hidden">
@@ -199,7 +204,7 @@
 
         <!-- Workspace -->
         <div id="workspaceSection" class="workspace hidden">
-            
+
             <!-- Left Column -->
             <div class="left-col">
                 <!-- File Info -->
@@ -229,7 +234,7 @@
                             <i class="fa-solid fa-eraser"></i> Clear Selection
                         </button>
                     </div>
-                    
+
                     <div class="graph-wrapper">
                         <div id="waveform"></div>
                         <div id="waveformLoading" class="modal-overlay" style="position: absolute; display: flex; background: rgba(255,255,255,0.8);">
@@ -269,11 +274,11 @@
                     <div style="font-size: 11px; text-align: center; color: #64748b; background: #f0fdf4; padding: 6px; border-radius: 4px; border: 1px solid #dcfce7;">
                         Neale rang ke hisse (Region) par action lein
                     </div>
-                    
+
                     <button id="previewRegionBtn" class="btn btn-outline" style="color: #4f46e5; border-color: #c7d2fe; background: #e0e7ff;">
                         <i class="fa-solid fa-headphones"></i> Sirf chuna hua sunein
                     </button>
-                    
+
                     <div class="tool-grid">
                         <button id="cropBtn" class="btn btn-outline" style="color: #059669; border-color: #a7f3d0; background: #ecfdf5;">
                             <i class="fa-solid fa-crop-simple"></i> Crop (Rakhein)
@@ -282,11 +287,11 @@
                             <i class="fa-solid fa-trash-can"></i> Delete (Hatayein)
                         </button>
                     </div>
-                    
+
                     <button id="muteBtn" class="btn" style="background: #1e293b; color: white;">
                         <i class="fa-solid fa-volume-xmark"></i> Mute Karein
                     </button>
-                    
+
                     <div class="tool-grid">
                         <button id="fadeInBtn" class="btn btn-outline"><i class="fa-solid fa-arrow-trend-up" style="color:#818cf8;"></i> Fade In</button>
                         <button id="fadeOutBtn" class="btn btn-outline"><i class="fa-solid fa-arrow-trend-down" style="color:#818cf8;"></i> Fade Out</button>
@@ -298,12 +303,12 @@
                     <div style="font-size: 11px; text-align: center; color: #64748b; margin-bottom: 4px;">
                         <i class="fa-solid fa-bolt" style="color: #eab308;"></i> Slider chhodte hi effect <b>Auto-Apply</b> hoga.
                     </div>
-                    
+
                     <!-- NOISE REMOVER BUTTON -->
                     <button id="noiseReductionBtn" class="btn btn-outline" style="color: #2563eb; border-color: #bfdbfe; background: #eff6ff; margin-bottom: 4px;">
                         <i class="fa-solid fa-ear-listen"></i> Background Noise Kam Karein
                     </button>
-                    
+
                     <button id="normalizeBtn" class="btn btn-outline" style="color: #7e22ce; border-color: #e9d5ff; background: #f3e8ff; margin-bottom: 4px;">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Auto Normalize (Balance)
                     </button>
@@ -326,7 +331,7 @@
                             <input type="range" id="speedSlider" min="0.5" max="2" step="0.1" value="1">
                         </div>
                     </div>
-                    
+
                     <button id="bakeEffectsBtn" class="btn btn-bake">
                         <i class="fa-solid fa-fire"></i> Waveform me Save karein (Bake)
                     </button>
@@ -339,7 +344,7 @@
                     <button id="addBgmBtn" class="btn btn-outline" style="border-style: dashed; border-width: 2px; border-color: #5eead4; color: #0f766e;">
                         <i class="fa-solid fa-plus"></i> BGM File Chunein...
                     </button>
-                    
+
                     <div id="bgmControls" class="hidden" style="display: flex; flex-direction: column; gap: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 11px; font-weight: bold; background: #f8fafc;">
                             <i class="fa-solid fa-music" style="color: #14b8a6;"></i>
@@ -431,12 +436,12 @@
             loadingText: document.getElementById('waveformLoadingText'), playPauseBtn: document.getElementById('playPauseBtn'),
             timeDisplay: document.getElementById('timeDisplay'), zoomSlider: document.getElementById('zoomSlider'),
             clearRegionsBtn: document.getElementById('clearRegionsBtn'),
-            
+
             // Edit Tools
             previewRegionBtn: document.getElementById('previewRegionBtn'), deleteBtn: document.getElementById('deleteBtn'),
             cropBtn: document.getElementById('cropBtn'), muteBtn: document.getElementById('muteBtn'),
             fadeInBtn: document.getElementById('fadeInBtn'), fadeOutBtn: document.getElementById('fadeOutBtn'),
-            
+
             // Effect Sliders & Buttons
             normalizeBtn: document.getElementById('normalizeBtn'), bakeEffectsBtn: document.getElementById('bakeEffectsBtn'),
             noiseReductionBtn: document.getElementById('noiseReductionBtn'), // New button
@@ -444,7 +449,7 @@
             bassSlider: document.getElementById('bassSlider'), bassVal: document.getElementById('bassVal'),
             trebleSlider: document.getElementById('trebleSlider'), trebleVal: document.getElementById('trebleVal'),
             speedSlider: document.getElementById('speedSlider'), speedVal: document.getElementById('speedVal'),
-            
+
             // Mix Tools
             bgmInput: document.getElementById('bgmInput'), addBgmBtn: document.getElementById('addBgmBtn'),
             bgmControls: document.getElementById('bgmControls'), bgmName: document.getElementById('bgmName'),
@@ -455,12 +460,12 @@
             formatSelect: document.getElementById('formatSelect'), qualitySelect: document.getElementById('qualitySelect'),
             qualityContainer: document.getElementById('qualityContainer'), exportBtn: document.getElementById('exportBtn'),
             exportBtnText: document.getElementById('exportBtnText'),
-            
+
             // Modals
             pModal: document.getElementById('progressModal'), pTitle: document.getElementById('progressTitle'),
             pBar: document.getElementById('progressBar'), pText: document.getElementById('progressText'),
             pContainer: document.getElementById('progressContainer'),
-            
+
             // History
             navHistoryBtn: document.getElementById('navHistoryBtn'), historyModal: document.getElementById('historyModal'),
             closeHistoryBtn: document.getElementById('closeHistoryBtn'), historyList: document.getElementById('historyList')
@@ -471,15 +476,15 @@
         let wsRegions = null;
         let originalAudioBuffer = null;
         let bgmAudioBuffer = null;
-        let appHistory = []; 
+        let appHistory = [];
         let currentFile = null;
         let currentWavUrl = null;
         let isIsolatedPreviewMode = false;
-        
+
         let audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
+
         // Real-time Effects State
-        let fxNodes = {}; 
+        let fxNodes = {};
 
         // Initialize Realtime Effect Nodes (Once globally)
         function initGlobalFXNodes() {
@@ -487,13 +492,13 @@
                 fxNodes.bass = audioContext.createBiquadFilter();
                 fxNodes.bass.type = 'lowshelf';
                 fxNodes.bass.frequency.value = 200;
-                
+
                 fxNodes.treble = audioContext.createBiquadFilter();
                 fxNodes.treble.type = 'highshelf';
                 fxNodes.treble.frequency.value = 3000;
-                
+
                 fxNodes.vol = audioContext.createGain();
-                
+
                 fxNodes.bass.connect(fxNodes.treble);
                 fxNodes.treble.connect(fxNodes.vol);
                 fxNodes.vol.connect(audioContext.destination);
@@ -519,7 +524,7 @@
         // 1. History Manager
         // ==========================================
         function saveToHistory(actionName, iconClass) {
-            if(appHistory.length >= 8) appHistory.shift(); 
+            if(appHistory.length >= 8) appHistory.shift();
             appHistory.push({
                 action: actionName,
                 icon: iconClass,
@@ -531,7 +536,7 @@
         function updateHistoryUI() {
             if (appHistory.length > 1) DOM.navHistoryBtn.classList.remove('hidden');
             else DOM.navHistoryBtn.classList.add('hidden');
-            
+
             DOM.historyList.innerHTML = '';
             for(let i = appHistory.length - 1; i >= 0; i--) {
                 const step = appHistory[i];
@@ -548,9 +553,9 @@
                     </div>
                     ${!isCurrent ? '<i class="fa-solid fa-rotate-left" style="color:#94a3b8; font-size:12px;"></i>' : ''}
                 `;
-                
+
                 div.onclick = () => {
-                    if(isCurrent) return; 
+                    if(isCurrent) return;
                     restoreHistoryState(i);
                     DOM.historyModal.style.display = 'none';
                 };
@@ -586,7 +591,7 @@
             wavesurfer = WaveSurfer.create({
                 container: '#waveform',
                 waveColor: '#94a3b8', progressColor: '#4f46e5', cursorColor: '#1e1b4b',
-                barWidth: 2, barGap: 1, barRadius: 2, height: 'auto', 
+                barWidth: 2, barGap: 1, barRadius: 2, height: 'auto',
                 normalize: true, minPxPerSec: parseInt(DOM.zoomSlider.value)
             });
 
@@ -598,7 +603,7 @@
                 DOM.loading.style.display = 'none';
                 enableControls(true);
                 DOM.fileDetails.textContent = `Duration: ${formatTime(duration)}`;
-                
+
                 // Route Audio for Realtime Effects
                 const mediaEl = wavesurfer.getMediaElement();
                 if (!mediaEl.dataset.routed) {
@@ -606,7 +611,7 @@
                     source.connect(fxNodes.bass);
                     mediaEl.dataset.routed = 'true';
                 }
-                applyRealtimeFX(); 
+                applyRealtimeFX();
             });
 
             wavesurfer.on('audioprocess', () => {
@@ -634,7 +639,7 @@
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eName => DOM.dropZone.addEventListener(eName, handleDrag));
         ['dragenter', 'dragover'].forEach(eName => DOM.dropZone.addEventListener(eName, () => DOM.dropZone.classList.add('drop-zone-active')));
         ['dragleave', 'drop'].forEach(eName => DOM.dropZone.addEventListener(eName, () => DOM.dropZone.classList.remove('drop-zone-active')));
-        
+
         DOM.dropZone.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
         DOM.fileInput.addEventListener('change', function() { handleFiles(this.files); });
 
@@ -645,12 +650,12 @@
                 alert("Kripya MP4, MP3 ya WAV file chunein."); return;
             }
             currentFile = file; appHistory = [];
-            resetSlidersVisually(); 
-            
+            resetSlidersVisually();
+
             DOM.upload.classList.add('hidden');
             DOM.workspace.classList.remove('hidden');
             DOM.fileName.textContent = file.name;
-            
+
             DOM.loading.style.display = 'flex';
             enableControls(false);
             initWaveSurfer();
@@ -659,7 +664,7 @@
                 const arrayBuffer = await file.arrayBuffer();
                 originalAudioBuffer = await audioContext.decodeAudioData(arrayBuffer);
                 saveToHistory("Original File Uploaded", "fa-solid fa-file-audio");
-                wavesurfer.load(URL.createObjectURL(file)); 
+                wavesurfer.load(URL.createObjectURL(file));
             } catch (error) {
                 alert("File decode karne me error.");
                 DOM.closeBtn.click();
@@ -693,7 +698,7 @@
         DOM.previewRegionBtn.onclick = () => {
             const regions = getSortedRegions();
             if(regions.length === 0) return alert("Pehle timeline par hissa chunein!");
-            previewRegionObj = regions[regions.length - 1]; 
+            previewRegionObj = regions[regions.length - 1];
             if (isIsolatedPreviewMode && wavesurfer.isPlaying()) {
                 wavesurfer.pause(); stopIsolatedPreview();
             } else {
@@ -822,14 +827,14 @@
             const bass = parseInt(DOM.bassSlider.value);
             const treble = parseInt(DOM.trebleSlider.value);
             const speed = parseFloat(DOM.speedSlider.value);
-            
+
             if(vol === 1 && bass === 0 && treble === 0 && speed === 1) return originalAudioBuffer;
 
             const offlineCtx = new OfflineAudioContext(originalAudioBuffer.numberOfChannels, originalAudioBuffer.length / speed, originalAudioBuffer.sampleRate);
             const source = offlineCtx.createBufferSource();
-            source.buffer = originalAudioBuffer; 
+            source.buffer = originalAudioBuffer;
             source.playbackRate.value = speed;
-            
+
             const gainNode = offlineCtx.createGain(); gainNode.gain.value = vol;
             const bassFilter = offlineCtx.createBiquadFilter();
             bassFilter.type = 'lowshelf'; bassFilter.frequency.value = 200; bassFilter.gain.value = bass;
@@ -838,7 +843,7 @@
 
             source.connect(bassFilter); bassFilter.connect(trebleFilter);
             trebleFilter.connect(gainNode); gainNode.connect(offlineCtx.destination);
-            
+
             source.start();
             return await offlineCtx.startRendering();
         }
@@ -851,10 +856,10 @@
                     const rendered = await getRenderedOfflineBuffer();
                     originalAudioBuffer = rendered;
                     saveToHistory("Effects Waveform me Bake Kiye", "fa-solid fa-fire");
-                    
+
                     resetSlidersVisually();
-                    applyRealtimeFX(); 
-                    
+                    applyRealtimeFX();
+
                     hideProgressModal();
                     reloadWaveSurferFromBuffer("Waveform update ho raha hai...");
                 } catch(e) {
@@ -889,14 +894,14 @@
         // --- NOISE REDUCTION (Smooth Envelope Noise Gate + EQ) ---
         DOM.noiseReductionBtn.onclick = async () => {
             showProgressModal("Background Noise hataya ja raha hai...");
-            
+
             setTimeout(async () => {
                 try {
                     // 1. Apply EQ (Highpass for rumble, slight Highshelf cut for harsh hiss)
                     const offlineCtx = new OfflineAudioContext(originalAudioBuffer.numberOfChannels, originalAudioBuffer.length, originalAudioBuffer.sampleRate);
                     const source = offlineCtx.createBufferSource();
                     source.buffer = originalAudioBuffer;
-                    
+
                     const highpass = offlineCtx.createBiquadFilter();
                     highpass.type = 'highpass';
                     highpass.frequency.value = 80; // Cuts low rumble/wind
@@ -905,42 +910,42 @@
                     highShelf.type = 'highshelf';
                     highShelf.frequency.value = 10000;
                     highShelf.gain.value = -3; // Mildly reduce high-end hiss
-                    
+
                     source.connect(highpass);
                     highpass.connect(highShelf);
                     highShelf.connect(offlineCtx.destination);
                     source.start();
-                    
+
                     const filteredBuffer = await offlineCtx.startRendering();
-                    
+
                     // 2. Advanced Smooth Envelope Noise Gate
                     const sampleRate = filteredBuffer.sampleRate;
                     const gatedClone = audioContext.createBuffer(filteredBuffer.numberOfChannels, filteredBuffer.length, sampleRate);
-                    
+
                     // Parameters for Professional Gate
                     const threshold = 0.025; // Amplitude threshold
                     const attackTime = 0.005; // 5ms attack (khulte waqt fast)
                     const releaseTime = 0.250; // 250ms release (band hote waqt smooth)
                     const attackCoef = Math.exp(-Math.log(9) / (sampleRate * attackTime));
                     const releaseCoef = Math.exp(-Math.log(9) / (sampleRate * releaseTime));
-                    
+
                     for (let c = 0; c < filteredBuffer.numberOfChannels; c++) {
                         const input = filteredBuffer.getChannelData(c);
                         const output = gatedClone.getChannelData(c);
-                        
+
                         let envelope = 0;
                         let currentGain = 1.0;
-                        
+
                         for (let i = 0; i < filteredBuffer.length; i++) {
                             const absVal = Math.abs(input[i]);
-                            
+
                             // Follow the volume envelope smoothly
                             if (absVal > envelope) {
                                 envelope = attackCoef * envelope + (1 - attackCoef) * absVal;
                             } else {
                                 envelope = releaseCoef * envelope + (1 - releaseCoef) * absVal;
                             }
-                            
+
                             // Calculate target gain based on envelope
                             let targetGain = 1.0;
                             if (envelope < threshold) {
@@ -948,10 +953,10 @@
                                 const ratio = Math.pow(envelope / threshold, 2);
                                 targetGain = 0.10 + (0.90 * ratio); // Keep 10% room noise to sound natural
                             }
-                            
+
                             // Smooth the gain change to completely avoid robotic distortion / clicks
-                            currentGain = 0.998 * currentGain + 0.002 * targetGain; 
-                            
+                            currentGain = 0.998 * currentGain + 0.002 * targetGain;
+
                             output[i] = input[i] * currentGain;
                         }
                     }
@@ -978,7 +983,7 @@
                 const arrayBuffer = await file.arrayBuffer();
                 bgmAudioBuffer = await audioContext.decodeAudioData(arrayBuffer);
                 DOM.bgmName.textContent = file.name;
-                DOM.addBgmBtn.classList.add('hidden'); 
+                DOM.addBgmBtn.classList.add('hidden');
                 DOM.bgmControls.classList.remove('hidden');
                 DOM.bgmControls.style.display = 'flex';
             } catch(e) { alert("Music decode nahi ho saka."); }
@@ -987,7 +992,7 @@
 
         DOM.removeBgmBtn.onclick = () => {
             bgmAudioBuffer = null; DOM.bgmInput.value = "";
-            DOM.bgmControls.classList.add('hidden'); 
+            DOM.bgmControls.classList.add('hidden');
             DOM.addBgmBtn.classList.remove('hidden');
         };
         DOM.bgmVolSlider.oninput = e => DOM.bgmVolVal.textContent = e.target.value + '%';
@@ -1011,7 +1016,7 @@
                         mixedData[i] = v1 + v2;
                     }
                 }
-                originalAudioBuffer = mixedBuffer; 
+                originalAudioBuffer = mixedBuffer;
                 saveToHistory("Background Music Mix Kiya", "fa-solid fa-code-merge");
                 hideProgressModal();
                 reloadWaveSurferFromBuffer("Mix update ho raha hai...");
@@ -1097,10 +1102,10 @@
             if (!originalAudioBuffer) return;
             const format = DOM.formatSelect.value;
             const originalName = currentFile.name.substring(0, currentFile.name.lastIndexOf('.')) || 'audio';
-            
+
             showProgressModal("Final Effects lagaye ja rahe hain...");
             DOM.pContainer.classList.add('hidden');
-            
+
             // Generate final buffer with live effects baked in
             const finalBuffer = await getRenderedOfflineBuffer();
 
@@ -1116,7 +1121,7 @@
                 const kbps = parseInt(DOM.qualitySelect.value);
                 DOM.pTitle.textContent = `MP3 Ban raha hai (${kbps}kbps)...`;
                 DOM.pContainer.classList.remove('hidden');
-                try { await encodeToMp3AndDownload(finalBuffer, kbps, originalName); } 
+                try { await encodeToMp3AndDownload(finalBuffer, kbps, originalName); }
                 catch (e) { alert("Export me error aaya."); hideProgressModal(); }
             }
         };
@@ -1137,7 +1142,7 @@
                     if (buf.length > 0) mp3Data.push(buf);
                     current += blockSize;
                     updateProgress(Math.round((current / total) * 100));
-                    
+
                     if (current < total) setTimeout(process, 0);
                     else {
                         const final = encoder.flush();
@@ -1175,6 +1180,7 @@
 
 
 
+
 <footer class="relative bg-[#0f172a] text-gray-300 pt-20 pb-10 overflow-hidden no-print">
     <div class="absolute inset-0 z-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0); background-size: 40px 40px;"></div>
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1185,7 +1191,7 @@
                     <div class="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/20 p-0">
                         <img src="../../assets/img/favicon.svg" class="w-full h-full object-contain" alt="Logo">
                     </div>
-                    <span class="font-extrabold text-2xl text-white tracking-tight">GenTools<span class="text-indigo-600">.</span></span>
+                    <span class="font-extrabold text-2xl text-white tracking-tight">GenTools<span class="text-indigo-500">.</span></span>
                 </div>
                 <p class="text-gray-400 text-sm leading-relaxed max-w-md">Helping you simplify complex digital tasks since 2023. Fast, Secure, and 100% Client-Side.</p>
                 <div class="flex gap-4 mt-8">
@@ -1210,14 +1216,21 @@
             </div>
         </div>
         <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p class="text-gray-500 text-sm">&copy; 2025 GenTools Pro. Built with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i></p>
-            <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
-                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems Nominal</span>
+            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                <p class="text-gray-500 text-sm">&copy; 2025 <span class="text-white font-semibold">GenTools Pro</span>.</p>
+                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems Operational</span>
+                </div>
+            </div>
+
+            <div class="text-gray-500 text-sm font-medium">
+                Made with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i> by <span class="text-gray-200">Nkd2000</span>
             </div>
         </div>
     </div>
 </footer>
+
 
 
 

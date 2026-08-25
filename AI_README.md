@@ -3,7 +3,7 @@ Yeh raha aapke project ka **Final, Upgraded aur Professional README.md** content
 ---
 
 # 🛠️ GenTools Pro
-> **A Premium Suite of 30+ High-Performance, Privacy-First Web Utilities.**
+> **A Premium Suite of 40+ High-Performance, Privacy-First Web Utilities.**
 
 [![Live Demo](https://img.shields.io/badge/demo-live-indigo.svg?style=for-the-badge)](https://www.gentools.in/)
 [![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://github.com/nkd2000/Daily_tools/)
@@ -85,10 +85,14 @@ Naye tool ka HTML structure hamesha aisa hona chahiye:
 ```text
 ├── docs/
 │   ├── index.html           # Modern Hub with Search & Filters
-│   ├── tools/               # 6 Categories of 30+ Tools
+│   ├── tools/               # 7 Categories of 40+ Tools
 │   │   ├── pdf/             # Smart PDF Engines
 │   │   ├── image/           # Branded QR & Image Studio
-│   │   └── utility/         # AI Speech & Daily Utils
+│   │   ├── utility/         # AI Speech & Daily Utils
+│   │   ├── developer/       # Coding and data utilities
+│   │   ├── finance/         # Finance calculators
+│   │   ├── converter/       # File and media converters
+│   │   └── learn-and-practice/ # Interactive learning tools
 │   └── tools-data.js        # Global Metadata for Discovery
 ├── organize_layout.py       # Python Layout Automation Script
 └── update_log.txt           # Automated Task Logs

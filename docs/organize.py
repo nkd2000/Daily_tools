@@ -17,18 +17,22 @@ categories = {
     "utility": [
         "ageCalculator.html", "bmi_calculator.html", "stopwatch.html", 
         "qr_code_generator.html", "password_generator.html", "resume_builder.html",
-        "typing_speed_test.html", "screen_recorder.html", "unitConverter.html",
+        "screen_recorder.html", "unitConverter.html",
         "word_counter.html", "text_to_speech.html", "speed_test.html"
     ],
     "developer": [
-        "code_minifier.html", "json_formatter.html"
+        "code_minifier.html", "json_formatter.html", "html_render.html"
     ],
     "finance": [
         "discount_calculator.html", "emi_calculator.html", "invoice_generator.html",
         "sip_calculator.html"
     ],
     "converter": [
-        "vfc_to_excel_converter.html"
+        "vfc_to_excel_converter.html", "mp4_to_mp3_converter.html"
+    ],
+    "learn-and-practice": [
+        "typing-speed-test.html", "trigonometric-function-playground.html",
+        "calendar-reasoning-quiz.html", "dice-reasoning.html"
     ]
 }
 
@@ -48,15 +52,26 @@ def log(message, level="INFO"):
 # Helper: Convert filename to kebab-case
 def to_kebab_case(name):
     base_name, ext = os.path.splitext(name)
-    s1 = base_name.replace('_', '-')
+    s1 = re.sub(r'[_\s]+', '-', base_name)
     s2 = re.sub(r'(.)([A-Z][a-z]+)', r'\1-\2', s1)
     s3 = re.sub(r'([a-z0-9])([A-Z])', r'\1-\2', s2)
-    return s3.lower() + ext
+    return re.sub(r'-+', '-', s3).strip('-').lower() + ext
 
 def ensure_dir(path):
     if not os.path.exists(path):
         os.makedirs(path)
         log(f"Created directory: {path}")
+
+def find_tool_source(filename):
+    candidates = [filename, os.path.join("tools", filename)]
+    for candidate in candidates:
+        if os.path.isfile(candidate):
+            return candidate
+
+    for root, _, files in os.walk("tools"):
+        if filename in files:
+            return os.path.join(root, filename)
+    return None
 
 def update_html_content(content, depth_level=1):
     prefix = "../" * depth_level
@@ -104,13 +119,8 @@ def organize_project():
                 pass
             else:
                 # Find source
-                src_path = old_name
-                found = False
-                if os.path.exists(src_path):
-                    found = True
-                elif os.path.exists(os.path.join("tools", old_name)):
-                    src_path = os.path.join("tools", old_name)
-                    found = True
+                src_path = find_tool_source(old_name)
+                found = src_path is not None
                 
                 if found:
                     try:

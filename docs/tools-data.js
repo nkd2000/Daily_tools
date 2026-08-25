@@ -2,8 +2,8 @@
  * TOOLS DATABASE - Single Source of Truth
  * AUTO-GENERATED from index.html toolsData
  * 
- * Generated: 2026-08-04T10:59:51.656Z
- * Total tools: 40
+ * Generated: 2026-08-25T19:01:37.772Z
+ * Total tools: 44
  * 
  * ⚠️  DO NOT EDIT MANUALLY - Run: node build-tools-data.js
  * 
@@ -247,6 +247,14 @@ const TOOLS_DATABASE = [
         desc: 'Compare two Excel files side-by-side and identify differences.'
     },
     {
+        name: 'HTML Playground',
+        url: 'tools/developer/html-render.html',
+        cat: 'Dev',
+        icon: 'fa-code',
+        title: 'HTML Playground',
+        desc: 'Write HTML and preview the rendered result instantly in your browser.'
+    },
+    {
         name: 'Resume Builder',
         url: 'tools/utility/resume-builder.html',
         cat: 'Utility',
@@ -319,20 +327,44 @@ const TOOLS_DATABASE = [
         desc: 'Create and edit Word-style documents online with formatting tools.'
     },
     {
-        name: 'Typing Speed Test',
-        url: 'tools/utility/typing-speed-test.html',
-        cat: 'Utility',
-        icon: 'fa-keyboard',
-        title: 'Typing Speed Test',
-        desc: 'Check your WPM and Accuracy with this typing game.'
-    },
-    {
         name: 'MP4 to MP3 Converter',
         url: 'tools/converter/mp4-to-mp3-converter.html',
         cat: 'Converter',
         icon: 'fa-music',
         title: 'MP4 to MP3 Converter',
         desc: 'Convert MP4 video files to MP3 audio format instantly.'
+    },
+    {
+        name: 'Typing Speed Test',
+        url: 'tools/learn-and-practice/typing-speed-test.html',
+        cat: 'Learn',
+        icon: 'fa-keyboard',
+        title: 'Typing Speed Test',
+        desc: 'Practice typing while tracking your words per minute and accuracy.'
+    },
+    {
+        name: 'Trigonometric Function Playground',
+        url: 'tools/learn-and-practice/trigonometric-function-playground.html',
+        cat: 'Learn',
+        icon: 'fa-chart-line',
+        title: 'Trigonometric Function Playground',
+        desc: 'Explore trigonometric functions with interactive graphs and angle tools.'
+    },
+    {
+        name: 'Calendar Reasoning Quiz',
+        url: 'tools/learn-and-practice/calendar-reasoning-quiz.html',
+        cat: 'Learn',
+        icon: 'fa-calendar-days',
+        title: 'Calendar Reasoning Quiz',
+        desc: 'Practice calendar-based reasoning with timed questions, explanations, and score tracking.'
+    },
+    {
+        name: 'Dice Reasoning Quiz',
+        url: 'tools/learn-and-practice/dice-reasoning.html',
+        cat: 'Learn',
+        icon: 'fa-dice',
+        title: 'Dice Reasoning Quiz',
+        desc: 'Test dice and spatial reasoning skills with timed practice questions and instant feedback.'
     }
 ];
 
