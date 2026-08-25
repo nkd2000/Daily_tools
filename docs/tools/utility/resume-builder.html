@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Resume Builder | ATS Friendly & Auto-Save</title>
     <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg">
-    
+
     <!-- SEO Meta Tags -->
     <meta name="description" content="Build your resume by editing directly on the template. Features ATS-friendly layouts (selectable text), voice typing, auto-save, and instant PDF download.">
     <meta name="keywords" content="resume builder, direct edit resume, voice typing cv, free cv maker, online resume creator, pdf resume, ats resume, auto save resume">
     <meta name="author" content="Free Online Tools">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Roboto:wght@400;500;700&family=Lora:wght@400;500;600&family=Tinos:wght@400;700&display=swap" rel="stylesheet">
 
@@ -26,7 +26,7 @@
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         .fade-in { animation: fadeIn 0.4s ease-out forwards; opacity: 0; transform: translateY(10px); }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-        
+
         /* A4 Paper Dimensions for Screen */
         .a4-page {
             width: 210mm;
@@ -37,35 +37,35 @@
             padding: 12mm;
             position: relative;
             box-sizing: border-box;
-            overflow: hidden; 
+            overflow: hidden;
         }
 
         /* Resume Typography & Templates */
         .resume-font { font-family: 'Merriweather', serif; }
-        
+
         /* ATS Template Styles */
         .template-ats .a4-page { font-family: 'Roboto', sans-serif; color: #000; }
         .template-ats .theme-text { color: #000 !important; }
         .template-ats .theme-border { border-color: #000 !important; border-bottom-width: 1px; }
-        .template-ats .resume-grid { display: block !important; } 
+        .template-ats .resume-grid { display: block !important; }
         .template-ats .photo-container { display: none !important; }
         .template-ats .header-container { text-align: left !important; border-bottom: 2px solid #000; padding-bottom: 10px; }
         .template-ats .header-contact { justify-content: flex-start !important; }
         .template-ats h1 { font-size: 2.2rem; text-transform: uppercase; }
         .template-ats .resume-sidebar { margin-top: 2rem; }
-        
+
         /* Simple (Classic) Template Styles */
         .template-simple .a4-page { font-family: 'Lora', serif; color: #1f2937; }
         .template-simple .theme-text { color: #374151 !important; }
         .template-simple .theme-border { border-color: #d1d5db !important; border-bottom-width: 1px; }
-        .template-simple .resume-grid { display: block !important; } 
-        .template-simple .photo-container { display: none !important; } 
+        .template-simple .resume-grid { display: block !important; }
+        .template-simple .photo-container { display: none !important; }
         .template-simple .header-container { display: block !important; text-align: center !important; border-bottom: 1px solid #d1d5db; padding-bottom: 15px; margin-bottom: 20px; }
         .template-simple .header-contact { justify-content: center !important; margin-top: 10px; }
         .template-simple h1 { font-size: 2.2rem; text-transform: uppercase; letter-spacing: 1px; color: #111827; }
         .template-simple h3 { text-align: center; text-transform: uppercase; letter-spacing: 1px; font-size: 1rem; color: #111827; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
         .template-simple .resume-sidebar { margin-top: 2rem; }
-        
+
         /* Creative Template Styles */
         .template-creative .header-bg { background-color: var(--accent-color, #4f46e5); margin: -12mm -12mm 20px -12mm; padding: 12mm; color: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         .template-creative .header-bg h1, .template-creative .header-bg h2, .template-creative .header-bg i { color: white !important; }
@@ -77,7 +77,7 @@
             font-family: 'Tinos', serif;
             color: #000;
             line-height: 1.4;
-            display: none; 
+            display: none;
             border: 3px double #000;
             padding: 20px;
             box-sizing: border-box;
@@ -85,7 +85,7 @@
             height: 100%;
         }
         .layout-formal.active { display: block; }
-        
+
         .formal-title {
             text-align: center;
             font-weight: bold;
@@ -94,7 +94,7 @@
             text-transform: uppercase;
             margin-bottom: 25px;
         }
-        
+
         .formal-section-title {
             font-weight: bold;
             font-size: 16px;
@@ -107,7 +107,7 @@
             position: relative;
         }
         .formal-section-title::before { content: "❖"; font-size: 14px; }
-        
+
         .formal-table {
             width: 100%;
             border-collapse: collapse;
@@ -120,20 +120,20 @@
             text-align: left;
         }
         .formal-table th { font-weight: bold; text-align: center; background-color: #f3f3f3; }
-        
+
         /* Grid for Basic Info */
         .formal-info-grid {
             display: grid;
-            grid-template-columns: 180px 10px 1fr 30px; 
+            grid-template-columns: 180px 10px 1fr 30px;
             gap: 4px 10px;
             font-size: 15px;
             align-items: center;
         }
         .formal-label { font-weight: 500; white-space: nowrap; }
-        
+
         .formal-info-row { display: contents; }
         .formal-info-row.hidden { display: none; }
-        
+
         .field-delete-btn {
             color: #ef4444;
             cursor: pointer;
@@ -152,7 +152,7 @@
             align-items: flex-end;
             padding-top: 10px;
         }
-        
+
         /* Manage Fields Popup */
         .field-manager-popup {
             position: absolute;
@@ -218,7 +218,7 @@
         [contenteditable] { border: 1px dashed transparent; transition: all 0.2s; border-radius: 2px; }
         [contenteditable]:hover { border-color: #e2e8f0; background-color: #f8fafc; cursor: text; }
         [contenteditable]:focus { border-color: #6366f1; background-color: #ffffff; outline: none; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1); }
-        
+
         ul[contenteditable] { list-style-type: disc; padding-left: 1.5rem; }
         ul[contenteditable]:empty:before { margin-left: -1.5rem; }
 
@@ -230,53 +230,53 @@
             align-items: center; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
             z-index: 100; transition: all 0.3s; flex-wrap: wrap; justify-content: center;
         }
-        
+
         .mic-active { background-color: #ef4444 !important; animation: pulse-mic 1.5s infinite; }
         @keyframes pulse-mic { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
         .ui-control { opacity: 0; transition: opacity 0.2s; }
         .group\/item:hover .ui-control, .group\/section:hover .ui-control, .formal-row:hover .ui-control { opacity: 1; }
-        
+
         .sections-menu { position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: white; border-radius: 12px; padding: 10px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); width: 200px; display: none; flex-direction: column; gap: 5px; z-index: 101; }
         .sections-menu.active { display: flex; }
         .section-toggle-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #334155; cursor: pointer; padding: 5px; border-radius: 6px; }
         .section-toggle-item:hover { background-color: #f1f5f9; }
-        
+
         .suggestion-box { position: absolute; background: white; border: 1px solid #e2e8f0; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); max-height: 200px; overflow-y: auto; z-index: 1000; min-width: 200px; font-size: 14px; display: none; }
         .suggestion-item { padding: 8px 12px; cursor: pointer; color: #334155; }
         .suggestion-item:hover, .suggestion-item.active { background-color: #f1f5f9; color: #4f46e5; }
-        
+
         /* --- PRINT OPTIMIZATION (FULL PAGE BORDER FIX & EDGE COMPATIBILITY) --- */
         @media print {
             @page {
                 margin: 0; /* Remove default browser margins */
                 size: A4;
             }
-            html, body { 
+            html, body {
                 margin: 0;
                 padding: 0;
-                background: white; 
-                -webkit-print-color-adjust: exact !important; 
-                print-color-adjust: exact !important; 
+                background: white;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
                 width: 100%;
                 height: 100%;
             }
             nav, .floating-toolbar, .ui-control, .suggestion-box, .no-print, .text-center.mb-6, .field-delete-btn, .add-row-btn { display: none !important; }
             main { padding: 0; margin: 0; width: 100%; display: block; overflow: visible; }
             .flex.justify-center.bg-gray-200\/50 { background: none; padding: 0; border: none; display: block; margin: 0; }
-            
+
             /* A4 Container in Print */
-            .a4-page { 
-                box-shadow: none; 
+            .a4-page {
+                box-shadow: none;
                 margin: 0 auto;
                 padding: 10mm; /* Very small padding to prevent clip */
                 width: 210mm;
                 height: 294mm; /* Exact height for one page */
-                border: none; 
+                border: none;
                 overflow: hidden; /* Critical: Prevent 2nd page spillover */
                 box-sizing: border-box;
             }
-            
+
             /* GRID FIX FOR PRINT: Remove 4th column completely */
             .formal-info-grid {
                 grid-template-columns: 180px 10px 1fr !important;
@@ -286,10 +286,10 @@
                 page-break-inside: avoid;
             }
             .formal-info-row .field-delete-btn { display: none !important; }
-            
+
             /* Formal Layout Full Page Border */
-            .layout-formal.active { 
-                border: 3px double #000 !important; 
+            .layout-formal.active {
+                border: 3px double #000 !important;
                 padding: 15px;
                 width: 100%;
                 height: 100%; /* Fill the container completely */
@@ -298,10 +298,10 @@
                 display: block;
                 position: relative;
             }
-            
+
             [contenteditable] { border: none !important; background: transparent !important; padding: 0; }
             [contenteditable]:empty { display: none; }
-            
+
             h3, h2, h1, .formal-section-title { page-break-after: avoid; }
             .group\/item, tr { page-break-inside: avoid; }
         }
@@ -309,8 +309,9 @@
 </head>
 <body class="flex flex-col min-h-screen text-slate-800" id="bodyRoot">
 
-    
+
 <!-- Universal Glass Header -->
+
 
 
 
@@ -326,7 +327,10 @@
                     <div class="relative flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl shadow-lg shadow-indigo-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 overflow-hidden p-1.5">
                         <img src="../../assets/img/favicon.svg" class="w-full h-full object-contain" alt="Logo">
                     </div>
-                    <span class="font-bold text-xl tracking-tight text-inherit dark:text-white">GenTools</span>
+                    <div class="flex flex-col">
+                        <span class="font-black text-xl tracking-tight text-slate-900 leading-none">GenTools<span class="text-indigo-600">.</span></span>
+                        <span class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Smart Utilities</span>
+                    </div>
                 </a>
             </div>
             <!-- Right: Navigation -->
@@ -348,17 +352,18 @@
 
 
 
+
     <main class="flex-grow w-full py-8 overflow-x-hidden">
-        
+
         <div class="text-center mb-6 no-print">
             <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded border border-green-200 mr-2">AUTO SAVE ON</span>
             <span class="text-sm text-gray-500">Changes are saved automatically. Try the <b>Formal (Indian)</b> template for gov jobs.</span>
         </div>
 
         <div class="flex justify-center bg-gray-200/50 p-4 rounded-xl border border-gray-200 overflow-x-auto mx-auto max-w-min">
-            
+
             <div id="resumeArea" class="a4-page relative bg-white">
-                
+
                 <!-- ============================
                      LAYOUT 1: STANDARD / ATS
                      ============================ -->
@@ -447,16 +452,16 @@
                      ============================ -->
                 <div id="layout-formal" class="layout-formal">
                     <h1 class="formal-title">RESUME</h1>
-                    
+
                     <div class="formal-section-title">
                         Basic Information :
                         <button onclick="addCustomField()" class="no-print ml-2 text-indigo-600 hover:text-indigo-800 text-sm" title="Add Hidden Fields"><i class="fa-solid fa-plus-circle"></i> Add Field</button>
-                        
+
                         <!-- Restore Menu -->
                         <div id="restoreMenu" class="restore-menu"></div>
                         <button onclick="toggleRestoreMenu()" class="no-print ml-2 text-gray-400 hover:text-indigo-600" style="display:none;" id="restoreBtn"><i class="fa-solid fa-eye"></i></button>
                     </div>
-                    
+
                     <div class="formal-info-grid" id="formalGrid">
                         <!-- Dynamic Grid Items will be managed by JS -->
                         <div class="formal-info-row" id="row-name"><div class="formal-label">Name</div><div>:</div><div class="editable-field" contenteditable="true" data-key="name"></div><div class="field-delete-btn no-print" onclick="hideBasicField('row-name')"><i class="fa-solid fa-xmark"></i></div></div>
@@ -473,7 +478,7 @@
                     </div>
 
                     <div class="formal-section-title">Educational Information :</div>
-                    
+
                     <table class="formal-table">
                         <thead>
                             <tr>
@@ -572,14 +577,14 @@
                 interests: ["Reading", "Cricket", "Music"]
             };
 
-            window.accentColor = '#4f46e5'; 
+            window.accentColor = '#4f46e5';
             window.currentTemplate = 'modern';
             const suggestionBox = document.getElementById('suggestionBox');
 
             // --- Load Data ---
             function loadData() {
                 const data = JSON.parse(localStorage.getItem('resumeData') || '{}');
-                
+
                 document.querySelectorAll('.editable-field').forEach(el => {
                     const key = el.getAttribute('data-key');
                     if(data[key]) {
@@ -587,7 +592,7 @@
                         else el.innerText = data[key];
                     }
                 });
-                
+
                 // Load Custom Fields
                 if (data.customFields && Array.isArray(data.customFields)) {
                     document.querySelectorAll('.formal-info-row.custom').forEach(r => r.remove());
@@ -609,7 +614,7 @@
                     img.classList.remove('hidden');
                     icon.classList.add('hidden');
                 }
-                
+
                 if (data.visibleSections) {
                     for (const [id, visible] of Object.entries(data.visibleSections)) {
                         window.toggleSection(id, visible);
@@ -617,7 +622,7 @@
                         if (checkbox) checkbox.checked = visible;
                     }
                 }
-                
+
                 // Formal basic info fields visibility
                 if (data.basicFields) {
                      for (const [id, visible] of Object.entries(data.basicFields)) {
@@ -635,7 +640,7 @@
                 (data.education || []).length ? data.education.forEach(window.addEducationItem) : window.addEducationItem();
                 (data.projects || []).length ? data.projects.forEach(window.addProjectItem) : window.addProjectItem();
                 (data.references || []).length ? data.references.forEach(window.addReferenceItem) : window.addReferenceItem();
-                
+
                 // Formal Lists
                 (data.formalEducation || []).length ? data.formalEducation.forEach(window.addFormalEduRow) : [1,2].forEach(() => window.addFormalEduRow());
 
@@ -653,18 +658,18 @@
                 });
                 data.theme = window.accentColor;
                 data.template = window.currentTemplate;
-                
+
                 data.visibleSections = {};
                 ['secSummary', 'secExperience', 'secEducation', 'secProjects', 'secReferences', 'secSkills', 'secLanguages', 'secCertifications', 'secInterests'].forEach(id => {
                     const el = document.getElementById(id);
                     if(el) data.visibleSections[id] = !el.classList.contains('hidden');
                 });
-                
+
                 data.basicFields = {};
                 document.querySelectorAll('.formal-info-row:not(.custom)').forEach(row => {
                     data.basicFields[row.id] = !row.classList.contains('hidden');
                 });
-                
+
                 // Custom Fields
                 data.customFields = [];
                 document.querySelectorAll('.formal-info-row.custom').forEach(row => {
@@ -672,7 +677,7 @@
                     const val = row.querySelector('.editable-field').innerText;
                     data.customFields.push({ label: label, value: val });
                 });
-                
+
                 const img = document.getElementById('profilePhoto');
                 if(!img.classList.contains('hidden')) data.photo = img.src;
 
@@ -686,7 +691,7 @@
                         desc: el.querySelector('[data-type="desc"]')?.innerText
                     });
                 });
-                
+
                 data.education = [];
                 document.querySelectorAll('#educationList .group\\/item').forEach(el => {
                     data.education.push({
@@ -695,7 +700,7 @@
                         year: el.querySelector('[data-type="year"]')?.innerText
                     });
                 });
-                
+
                 data.projects = [];
                 document.querySelectorAll('#projectList .group\\/item').forEach(el => {
                     data.projects.push({
@@ -704,7 +709,7 @@
                         desc: el.querySelector('[data-type="desc"]')?.innerText
                     });
                 });
-                
+
                 data.references = [];
                 document.querySelectorAll('#referenceList .group\\/item').forEach(el => {
                     data.references.push({
@@ -712,7 +717,7 @@
                         info: el.querySelector('[data-type="refInfo"]')?.innerText
                     });
                 });
-                
+
                 // Formal Education Table
                 data.formalEducation = [];
                 document.querySelectorAll('#formalEduList tr').forEach(row => {
@@ -730,7 +735,7 @@
 
                 localStorage.setItem('resumeData', JSON.stringify(data));
             }
-            
+
             document.getElementById('resumeArea').addEventListener('input', (e) => {
                 window.saveData();
                 handleSuggestions(e);
@@ -744,13 +749,13 @@
                     suggestionBox.style.display = 'none';
                     return;
                 }
-                
+
                 let val = target.innerText.trim();
-                if(target.tagName === 'UL') return; 
+                if(target.tagName === 'UL') return;
 
                 if (val.length < 1) { suggestionBox.style.display = 'none'; return; }
-                
-                const matches = suggestionData[type].filter(item => 
+
+                const matches = suggestionData[type].filter(item =>
                     item.toLowerCase().includes(val.toLowerCase()) && item.toLowerCase() !== val.toLowerCase()
                 );
 
@@ -775,7 +780,7 @@
                 suggestionBox.style.width = Math.max(rect.width, 200) + 'px';
                 suggestionBox.style.display = 'block';
             }
-            
+
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.suggestion-box') && !e.target.hasAttribute('contenteditable')) {
                     suggestionBox.style.display = 'none';
@@ -785,7 +790,7 @@
                 if (menu && menu.classList.contains('active') && !menu.contains(e.target) && !btn.contains(e.target)) {
                     menu.classList.remove('active');
                 }
-                
+
                 const restoreMenu = document.getElementById('restoreMenu');
                 const restoreBtn = document.querySelector('[onclick="toggleRestoreMenu()"]');
                 if (restoreMenu && restoreMenu.classList.contains('active') && !restoreMenu.contains(e.target) && !restoreBtn.contains(e.target)) {
@@ -849,7 +854,7 @@
                 standardLayout.classList.remove('hidden');
                 formalLayout.classList.remove('active');
                 if(colorPicker) colorPicker.style.display = 'flex';
-                
+
                 if (template === 'ats') {
                     body.classList.add('template-ats');
                 } else if (template === 'creative') {
@@ -864,12 +869,12 @@
                 }
                 window.saveData();
             };
-            
+
             // --- Section Toggling ---
             window.toggleSectionsMenu = function() {
                 document.getElementById('sectionsMenu').classList.toggle('active');
             };
-            
+
             window.toggleSection = function(id, isVisible) {
                 const el = document.getElementById(id);
                 if (el) {
@@ -878,7 +883,7 @@
                     window.saveData();
                 }
             };
-            
+
             // --- Hide/Restore Basic Fields ---
             window.hideBasicField = function(rowId) {
                 // If it's a custom field, remove it entirely
@@ -893,11 +898,11 @@
                     window.saveData();
                 }
             };
-            
+
             window.addCustomField = function(labelStr = '', valStr = '') {
                 const label = labelStr || prompt("Enter Field Name (e.g. Aadhaar No.):");
                 if (!label) return;
-                
+
                 const grid = document.getElementById('formalGrid');
                 const id = 'row-custom-' + Date.now();
                 const div = document.createElement('div');
@@ -912,11 +917,11 @@
                 grid.appendChild(div);
                 window.saveData();
             };
-            
+
             window.toggleRestoreMenu = function() {
                 const menu = document.getElementById('restoreMenu');
                 menu.innerHTML = '';
-                
+
                 const allRows = document.querySelectorAll('.formal-info-row.hidden:not(.custom)');
                 if(allRows.length === 0) {
                     menu.innerHTML = '<div class="restore-item text-gray-400">No hidden fields</div>';
@@ -937,7 +942,7 @@
                 }
                 menu.classList.toggle('active');
             };
-            
+
             window.updateRestoreButton = function() {
                 const btn = document.getElementById('restoreBtn');
                 const hiddenCount = document.querySelectorAll('.formal-info-row.hidden:not(.custom)').length;
@@ -947,12 +952,12 @@
                     btn.style.display = 'none';
                 }
             }
-            
+
             // --- Font Size Logic ---
             window.adjustFontSize = function(delta) {
                 const resume = document.getElementById('resumeArea');
                 let style = window.getComputedStyle(resume, null).getPropertyValue('font-size');
-                let fontSize = parseFloat(style); 
+                let fontSize = parseFloat(style);
                 resume.style.fontSize = (fontSize + delta) + 'px';
             };
 
@@ -971,7 +976,7 @@
                 `;
                 document.getElementById('experienceList').appendChild(div);
             };
-            
+
             window.addEducationItem = function(data = {}) {
                 const div = document.createElement('div');
                 div.className = "relative group/item fade-in mb-4";
@@ -1012,7 +1017,7 @@
                 `;
                 document.getElementById('referenceList').appendChild(div);
             };
-            
+
             window.addFormalEduRow = function(data = {}) {
                 const tbody = document.getElementById('formalEduList');
                 const count = tbody.children.length + 1;
@@ -1028,7 +1033,7 @@
                 `;
                 tbody.appendChild(tr);
             };
-            
+
             window.clearData = function() {
                 if(confirm("Delete all data?")) { localStorage.removeItem('resumeData'); location.reload(); }
             };
@@ -1070,6 +1075,7 @@
 
 
 
+
 <footer class="relative bg-[#0f172a] text-gray-300 pt-20 pb-10 overflow-hidden no-print">
     <div class="absolute inset-0 z-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0); background-size: 40px 40px;"></div>
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1080,7 +1086,7 @@
                     <div class="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/20 p-0">
                         <img src="../../assets/img/favicon.svg" class="w-full h-full object-contain" alt="Logo">
                     </div>
-                    <span class="font-extrabold text-2xl text-white tracking-tight">GenTools<span class="text-indigo-600">.</span></span>
+                    <span class="font-extrabold text-2xl text-white tracking-tight">GenTools<span class="text-indigo-500">.</span></span>
                 </div>
                 <p class="text-gray-400 text-sm leading-relaxed max-w-md">Helping you simplify complex digital tasks since 2023. Fast, Secure, and 100% Client-Side.</p>
                 <div class="flex gap-4 mt-8">
@@ -1105,14 +1111,21 @@
             </div>
         </div>
         <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p class="text-gray-500 text-sm">&copy; 2025 GenTools Pro. Built with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i></p>
-            <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
-                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems Nominal</span>
+            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                <p class="text-gray-500 text-sm">&copy; 2025 <span class="text-white font-semibold">GenTools Pro</span>.</p>
+                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems Operational</span>
+                </div>
+            </div>
+
+            <div class="text-gray-500 text-sm font-medium">
+                Made with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i> by <span class="text-gray-200">Nkd2000</span>
             </div>
         </div>
     </div>
 </footer>
+
 
 
 

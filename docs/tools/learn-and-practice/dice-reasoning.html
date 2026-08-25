@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>पासा (Dice) रीजनिंग क्विज़ - CGPSC स्पेशल (50 प्रश्न)</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+        body { font-family: 'Hind', 'Noto Sans Devanagari', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen text-slate-100 flex flex-col items-stretch selection:bg-indigo-500 selection:text-white">
+
+<nav class="sticky top-0 z-50 w-full shrink-0 border-b border-white/10 bg-white/70 backdrop-blur-xl saturate-150 no-print transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Left: Logo & Branding -->
+            <div class="flex items-center gap-3">
+                <a href="../../index.html" class="flex items-center gap-3 group">
+                    <!-- Ab yahan aapka favicon.svg render hoga -->
+                    <div class="relative flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl shadow-lg shadow-indigo-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 overflow-hidden p-1.5">
+                        <img src="../../assets/img/favicon.svg" class="w-full h-full object-contain" alt="Logo">
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-black text-xl tracking-tight text-slate-900 leading-none">GenTools<span class="text-indigo-600">.</span></span>
+                        <span class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Smart Utilities</span>
+                    </div>
+                </a>
+            </div>
+            <!-- Right: Navigation -->
+            <div class="flex items-center gap-6 text-sm font-bold">
+                <a href="../../index.html" class="text-slate-500 hover:text-indigo-600 transition-all">Home</a>
+                <a href="../../pages/contact.html" class="text-slate-500 hover:text-indigo-600 transition-all">Contact</a>
+                <div class="h-6 w-[1px] bg-slate-200 mx-1"></div>
+                <a href="https://github.com/nkd2000" target="_blank" class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-900 hover:text-white transition-all shadow-sm border border-slate-100">
+                    <i class="fa-brands fa-github text-lg"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+    <!-- Background Glow Effects -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Main App Container -->
+    <main class="relative z-10 w-full max-w-2xl mx-auto my-8 sm:my-10 bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/60 p-5 sm:p-8">
+        
+        <!-- Mute/Unmute Audio Switch -->
+        <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-20">
+            <button type="button" id="sound-toggle-btn" onclick="toggleSound()" title="ध्वनि चालू/बंद करें"
+                    class="p-2.5 bg-slate-900/80 hover:bg-slate-700 border border-slate-700/80 rounded-full text-slate-300 transition flex items-center justify-center shadow">
+                <!-- Sound On Icon -->
+                <svg id="sound-on-icon" class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                </svg>
+                <!-- Sound Off Icon -->
+                <svg id="sound-off-icon" class="w-5 h-5 text-slate-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- ================= START SCREEN ================= -->
+        <div id="start-screen" class="text-center pt-2">
+            <div class="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold px-4 py-1.5 rounded-full mb-4">
+                <span>🎲</span> CGPSC रीजनिंग स्पेशल (50 प्रश्न)
+            </div>
+            
+            <h1 class="text-2xl sm:text-4xl font-bold mb-3 text-white tracking-wide">
+                पासा (Dice) रीजनिंग टेस्ट
+            </h1>
+            
+            <p class="text-slate-300 text-sm sm:text-base max-w-lg mx-auto mb-8 leading-relaxed">
+                CGPSC (छत्तीसगढ़ लोक सेवा आयोग) मुख्य व प्रारंभिक परीक्षा के लिए पासा पर आधारित कुल **50 महत्वपूर्ण प्रश्न**। टेस्ट शुरू करने से पहले प्रति प्रश्न का समय सेट करें।
+            </p>
+
+            <!-- Timer Setup Box -->
+            <div class="bg-slate-900/60 border border-slate-700/80 rounded-2xl p-5 mb-8 max-w-sm mx-auto shadow-inner">
+                <label class="block text-sm font-semibold text-slate-200 mb-3">
+                    प्रति प्रश्न समय चुनें (सेकंड में):
+                </label>
+                
+                <div class="flex items-center justify-center gap-4">
+                    <button type="button" onclick="adjustTimer(-5)" class="w-11 h-11 bg-slate-700 hover:bg-slate-600 active:scale-95 text-white font-bold rounded-xl transition flex items-center justify-center text-xl shadow">
+                        -
+                    </button>
+                    
+                    <div class="relative">
+                        <input type="number" id="timer-input" value="30" min="5" max="180" 
+                               class="w-24 text-center bg-slate-800 border-2 border-indigo-500/60 rounded-xl py-2 text-2xl font-bold text-white focus:outline-none focus:border-indigo-400">
+                        <span class="text-xs text-slate-400 absolute -bottom-5 left-0 right-0">सेकंड</span>
+                    </div>
+
+                    <button type="button" onclick="adjustTimer(5)" class="w-11 h-11 bg-slate-700 hover:bg-slate-600 active:scale-95 text-white font-bold rounded-xl transition flex items-center justify-center text-xl shadow">
+                        +
+                    </button>
+                </div>
+
+                <!-- Quick Selection Pills -->
+                <div class="flex justify-center gap-2 mt-7">
+                    <button type="button" onclick="setQuickTimer(15)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1 rounded-lg text-slate-300">15s</button>
+                    <button type="button" onclick="setQuickTimer(30)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1 rounded-lg text-slate-300">30s (अनुशंसित)</button>
+                    <button type="button" onclick="setQuickTimer(45)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1 rounded-lg text-slate-300">45s</button>
+                    <button type="button" onclick="setQuickTimer(60)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1 rounded-lg text-slate-300">60s</button>
+                </div>
+            </div>
+
+            <button type="button" onclick="startQuiz()" 
+                    class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-lg">
+                क्विज़ शुरू करें 🎲
+            </button>
+        </div>
+
+        <!-- ================= QUIZ SCREEN ================= -->
+        <div id="quiz-screen" class="hidden pt-2">
+            <!-- Header Progress Bar -->
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-700/60 pr-10">
+                <div>
+                    <span id="question-count" class="text-xs font-bold text-indigo-400 uppercase tracking-wider">
+                        प्रश्न 1 / 50
+                    </span>
+                    <div class="w-32 sm:w-48 bg-slate-700 h-2 rounded-full mt-1.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-indigo-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Live Timer Badge -->
+                <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3.5 py-1.5 rounded-full shadow-inner">
+                    <svg class="w-4 h-4 text-amber-400 animate-spin" style="animation-duration: 3s;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span id="timer-display" class="text-base font-extrabold text-amber-300 font-mono">30s</span>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="mb-5">
+                <h2 id="question-text" class="text-base sm:text-lg font-bold text-white leading-relaxed">
+                    प्रश्न लोड हो रहा है...
+                </h2>
+                <!-- Dice Position Cards Display (if applicable) -->
+                <div id="dice-positions-container" class="mt-3 flex flex-wrap gap-2 sm:gap-3"></div>
+            </div>
+
+            <!-- Options Container -->
+            <div id="options-container" class="space-y-3 mb-6">
+                <!-- Dynamic Options Injected Here -->
+            </div>
+
+            <!-- Explanation Box -->
+            <div id="explanation-box" class="hidden bg-slate-900/90 border border-indigo-500/40 rounded-2xl p-4 sm:p-5 mb-6 text-sm">
+                <div class="flex items-center gap-2 text-indigo-400 font-bold mb-2">
+                    <span>💡</span> उत्तर की विस्तृत व्याख्या (हल):
+                </div>
+                <p id="explanation-text" class="text-slate-300 leading-relaxed text-xs sm:text-sm whitespace-pre-line"></p>
+            </div>
+
+            <!-- Next Button -->
+            <div class="flex justify-end">
+                <button type="button" id="next-btn" onclick="nextQuestion()" 
+                        class="hidden bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition flex items-center gap-2">
+                    <span>अगला प्रश्न</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= RESULT SCREEN ================= -->
+        <div id="result-screen" class="hidden text-center py-4">
+            <div class="w-24 h-24 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-xl shadow-indigo-500/30 transform rotate-3">
+                <span class="text-5xl">🏆</span>
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">क्विज़ पूरी हुई!</h2>
+            <p class="text-slate-400 text-sm mb-6">CGPSC पासा रीजनिंग टेस्ट का अंतिम परिणाम</p>
+
+            <div class="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-6 mb-8 max-w-sm mx-auto shadow-inner">
+                <div class="text-xs text-slate-400 uppercase tracking-widest font-semibold mb-1">आपका स्कोर</div>
+                <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-300 mb-3" id="final-score">
+                    0 / 50
+                </div>
+                <div id="accuracy-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 mb-3 border border-slate-700">
+                    सटीकता: 0%
+                </div>
+                <p id="result-message" class="text-sm font-medium text-slate-300 leading-relaxed"></p>
+            </div>
+
+            <button type="button" onclick="restartQuiz()" 
+                    class="px-8 py-3.5 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-white font-bold rounded-xl shadow-lg transition flex items-center gap-2 mx-auto">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                <span>पुनः प्रयास करें</span>
+            </button>
+        </div>
+
+    </main>
+
+    <script>
+        // Web Audio API Sound Generator Utility
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const onIcon = document.getElementById('sound-on-icon');
+            const offIcon = document.getElementById('sound-off-icon');
+            
+            if (soundEnabled) {
+                onIcon.classList.remove('hidden');
+                offIcon.classList.add('hidden');
+                playCorrectSound();
+            } else {
+                onIcon.classList.add('hidden');
+                offIcon.classList.remove('hidden');
+            }
+        }
+
+        function playCorrectSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const freqs = [523.25, 659.25, 783.99]; // C5, E5, G5
+                freqs.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                    gain.gain.setValueAtTime(0.15, now + i * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.25);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + i * 0.08);
+                    osc.stop(now + i * 0.08 + 0.25);
+                });
+            } catch (e) {}
+        }
+
+        function playWrongSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(90, now + 0.3);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } catch (e) {}
+        }
+
+        function playTickSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } catch (e) {}
+        }
+
+        function playTimeoutSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.setValueAtTime(200, now + 0.15);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } catch (e) {}
+        }
+
+        function playFinishSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                    gain.gain.setValueAtTime(0.2, now + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + i * 0.1);
+                    osc.stop(now + i * 0.1 + 0.4);
+                });
+            } catch (e) {}
+        }
+
+        // 50 Questions in Devanagari Hindi
+        const questions = [
+            {
+                question: "1. एक मानक पासा (Standard Dice) में संख्या 3 के विपरीत (opposite) सतह पर कौन सी संख्या होगी?",
+                positions: [],
+                options: ["4", "3", "5", "6"],
+                correct: 0,
+                explanation: "नियम (मानक पासा): मानक पासा में विपरीत सतहों का योग (sum of opposite faces) हमेशा 7 होता है।\n• 3 के विपरीत = 7 - 3 = 4"
+            },
+            {
+                question: "2. एक मानक पासा (Standard Dice) में संख्या 6 के विपरीत सतह पर कौन सी संख्या होगी?",
+                positions: [],
+                options: ["1", "2", "3", "5"],
+                correct: 0,
+                explanation: "मानक पासा नियम: 6 + 1 = 7। इसलिए 6 के विपरीत हमेशा 1 होता है।"
+            },
+            {
+                question: "3. एक पासे की 2 स्थितियाँ दी गई हैं। संख्या 3 के विपरीत सतह पर कौन सी संख्या होगी?",
+                positions: ["स्थिति 1: (2, 3, 5)", "स्थिति 2: (2, 1, 6)"],
+                options: ["1", "4", "5", "6"],
+                correct: 0,
+                explanation: "1-समान सतह नियम (Clockwise Rule): दोनों स्थितियों में '2' समान है। घड़ी की दिशा में घूमने पर:\n• स्थिति 1: 2 ➔ 3 ➔ 5\n• स्थिति 2: 2 ➔ 1 ➔ 6\nइसलिए 3 के विपरीत 1 होगा और 5 के विपरीत 6 होगा।"
+            },
+            {
+                question: "4. दी गई दो स्थितियों के आधार पर संख्या 4 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (5, 4, 1)", "स्थिति 2: (5, 2, 6)"],
+                options: ["2", "3", "6", "1"],
+                correct: 0,
+                explanation: "समान अंक '5' से घड़ी की दिशा (Clockwise) में घूमने पर:\n• स्थिति 1: 5 ➔ 4 ➔ 1\n• स्थिति 2: 5 ➔ 2 ➔ 6\n4 के विपरीत = 2।"
+            },
+            {
+                question: "5. दी गई दो स्थितियों में संख्या 6 के विपरीत सतह पर कौन सी संख्या आएगी?",
+                positions: ["स्थिति 1: (6, 1, 3)", "स्थिति 2: (6, 5, 2)"],
+                options: ["4", "1", "2", "5"],
+                correct: 0,
+                explanation: "स्थिति 1 में दिखाई दे रहे अंक = 6, 1, 3। स्थिति 2 में = 6, 5, 2। अंक '4' गायब है। एक समान अंक (6) के विपरीत हमेशा छिपी हुई संख्या (4) होती है।"
+            },
+            {
+                question: "6. एक पासे की दो स्थितियाँ दी गई हैं। संख्या 5 के विपरीत सतह पर कौन सा अंक होगा?",
+                positions: ["स्थिति 1: (4, 2, 5)", "स्थिति 2: (4, 2, 1)"],
+                options: ["1", "3", "6", "2"],
+                correct: 0,
+                explanation: "2-समान सतह नियम (2-Common Faces): जब 2 सतहें (4 और 2) दोनों स्थितियों में समान हों, तो बची हुई तीसरी सतहें (5 और 1) एक-दूसरे के विपरीत होती हैं।"
+            },
+            {
+                question: "7. दी गई दो स्थितियों में संख्या 1 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (6, 3, 1)", "स्थिति 2: (6, 3, 5)"],
+                options: ["5", "2", "4", "6"],
+                correct: 0,
+                explanation: "यहाँ 6 और 3 दोनों स्थितियों में समान हैं। अतः बची हुई सतह 1 और 5 एक-दूसरे के विपरीत होंगी।"
+            },
+            {
+                question: "8. संख्या 6 के विपरीत सतह पर कौन सा अंक होगा?",
+                positions: ["स्थिति 1: (3, 2, 6)", "स्थिति 2: (3, 2, 4)"],
+                options: ["4", "1", "5", "3"],
+                correct: 0,
+                explanation: "समान सतहें = 3 और 2। इसलिए बची हुई सतह 6 के विपरीत 4 होगा।"
+            },
+            {
+                question: "9. नीचे एक पासे की स्थिति (4, 3, 1) दी गई है। क्या यह एक मानक पासा (Standard Dice) हो सकता है?",
+                positions: ["स्थिति 1: (4, 3, 1)"],
+                options: ["नहीं, क्योंकि 4 + 3 = 7 पड़ोसी सतहों पर है", "हाँ, यह मानक पासा है", "ज्ञात नहीं किया जा सकता", "इनमें से कोई नहीं"],
+                correct: 0,
+                explanation: "साधारण पासा नियम: यदि किसी पासे की निकटवर्ती (पड़ोसी) सतहों का योग 7 हो जाए (4+3=7), तो वह मानक पासा नहीं बल्कि साधारण पासा (Ordinary Dice) होता है।"
+            },
+            {
+                question: "10. मानक पासे में अगर ऊपर की सतह पर 2 है, तो नीचे की सतह पर क्या होगा?",
+                positions: [],
+                options: ["5", "4", "3", "1"],
+                correct: 0,
+                explanation: "मानक पासे में ऊपर + नीचे = 7 होता है। इसलिए 7 - 2 = 5।"
+            },
+            {
+                question: "11. एक पासे की 2 स्थितियों के आधार पर संख्या 3 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (1, 3, 4)", "स्थिति 2: (1, 5, 2)"],
+                options: ["5", "2", "6", "4"],
+                correct: 0,
+                explanation: "समान अंक '1' से घड़ी की दिशा में:\n• स्थिति 1: 1 ➔ 3 ➔ 4\n• स्थिति 2: 1 ➔ 5 ➔ 2\n3 के विपरीत = 5, 4 के विपरीत = 2।"
+            },
+            {
+                question: "12. दी गई स्थितियों में संख्या 2 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (4, 6, 2)", "स्थिति 2: (4, 1, 5)"],
+                options: ["5", "1", "3", "6"],
+                correct: 0,
+                explanation: "समान अंक '4' से घड़ी की दिशा में घूमकर देखने पर:\n• स्थिति 1: 4 ➔ 6 ➔ 2\n• स्थिति 2: 4 ➔ 1 ➔ 5\n2 के विपरीत = 5।"
+            },
+            {
+                question: "13. संख्या 5 के विपरीत सतह पर कौन सी संख्या होगी?",
+                positions: ["स्थिति 1: (3, 1, 5)", "स्थिति 2: (3, 4, 2)"],
+                options: ["2", "4", "1", "6"],
+                correct: 0,
+                explanation: "समान अंक '3' से घड़ी की दिशा में:\n• स्थिति 1: 3 ➔ 1 ➔ 5\n• स्थिति 2: 3 ➔ 4 ➔ 2\n5 के विपरीत = 2।"
+            },
+            {
+                question: "14. एक पासे की 2 स्थितियों के आधार पर संख्या 2 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (2, 4, 6)", "स्थिति 2: (2, 3, 1)"],
+                options: ["5", "6", "4", "3"],
+                correct: 0,
+                explanation: "समान सतह '2' के साथ दिखाई देने वाले अंक = 4, 6, 3, 1। गायब अंक '5' है। इसलिए 2 के विपरीत = 5।"
+            },
+            {
+                question: "15. संख्या 3 के विपरीत सतह पर कौन सा अंक आएगा?",
+                positions: ["स्थिति 1: (5, 6, 3)", "स्थिति 2: (5, 1, 4)"],
+                options: ["4", "1", "2", "6"],
+                correct: 0,
+                explanation: "समान अंक '5' से घड़ी की दिशा में:\n• स्थिति 1: 5 ➔ 6 ➔ 3\n• स्थिति 2: 5 ➔ 1 ➔ 4\n3 के विपरीत = 4।"
+            },
+            {
+                question: "16. प्रतीक (Symbol) वाले पासे में प्रतीक '#' के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (@, #, $)", "स्थिति 2: (@, %, *)"],
+                options: ["%", "*", "$", "@"],
+                correct: 0,
+                explanation: "समान प्रतीक '@' से घड़ी की दिशा में घूमने पर:\n• स्थिति 1: @ ➔ # ➔ $\n• स्थिति 2: @ ➔ % ➔ *\n# के विपरीत = %।"
+            },
+            {
+                question: "17. प्रतीक '-' के विपरीत सतह पर कौन सा प्रतीक होगा?",
+                positions: ["स्थिति 1: (+, -, *)", "स्थिति 2: (+, /, =)"],
+                options: ["/", "=", "*", "+"],
+                correct: 0,
+                explanation: "समान प्रतीक '+' से घड़ी की दिशा में:\n• स्थिति 1: + ➔ - ➔ *\n• स्थिति 2: + ➔ / ➔ =\n'-' के विपरीत = '/'।"
+            },
+            {
+                question: "18. अक्षर 'B' के विपरीत सतह पर कौन सा अक्षर होगा?",
+                positions: ["स्थिति 1: (A, B, C)", "स्थिति 2: (A, D, E)"],
+                options: ["D", "E", "C", "F"],
+                correct: 0,
+                explanation: "समान अक्षर 'A' से घड़ी की दिशा में:\n• स्थिति 1: A ➔ B ➔ C\n• स्थिति 2: A ➔ D ➔ E\nB के विपरीत = D।"
+            },
+            {
+                question: "19. अक्षर 'P' के विपरीत सतह पर कौन सा अक्षर होगा यदि कुल अक्षर P, Q, R, S, T, U हैं?",
+                positions: ["स्थिति 1: (P, Q, R)", "स्थिति 2: (P, S, T)"],
+                options: ["U", "Q", "R", "S"],
+                correct: 0,
+                explanation: "समान अक्षर 'P' के साथ Q, R, S, T दिखाई दे रहे हैं। छिपे हुआ अक्षर 'U' P के विपरीत होगा।"
+            },
+            {
+                question: "20. रंग 'नीला' के विपरीत सतह पर कौन सा रंग होगा?",
+                positions: ["स्थिति 1: (लाल, नीला, हरा)", "स्थिति 2: (लाल, पीला, काला)"],
+                options: ["पीला", "काला", "हरा", "सफेद"],
+                correct: 0,
+                explanation: "समान रंग 'लाल' से घड़ी की दिशा में घूमकर देखने पर:\n• स्थिति 1: लाल ➔ नीला ➔ हरा\n• स्थिति 2: लाल ➔ पीला ➔ काला\nनीला के विपरीत = पीला।"
+            },
+            {
+                question: "21. 3 स्थितियों पर आधारित: संख्या 1 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (1, 2, 3)", "स्थिति 2: (1, 4, 5)", "स्थिति 3: (2, 3, 6)"],
+                options: ["6", "4", "5", "2"],
+                correct: 0,
+                explanation: "स्थिति 1 और स्थिति 3 में (2, 3) समान हैं। अतः बची हुई सतह 1 और 6 एक-दूसरे के विपरीत होंगी।"
+            },
+            {
+                question: "22. 3 स्थितियों पर आधारित: संख्या 5 के विपरीत सतह पर क्या होगा?",
+                positions: ["स्थिति 1: (2, 3, 4)", "स्थिति 2: (3, 4, 5)", "स्थिति 3: (1, 2, 6)"],
+                options: ["2", "1", "6", "3"],
+                correct: 0,
+                explanation: "स्थिति 1 और स्थिति 2 में (3, 4) समान हैं। अतः बची हुई सतह 2 और 5 एक-दूसरे के विपरीत होंगी।"
+            },
+            {
+                question: "23. 3 स्थितियों पर आधारित: संख्या 6 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (6, 1, 2)", "स्थिति 2: (6, 3, 4)", "स्थिति 3: (5, 2, 1)"],
+                options: ["5", "3", "4", "2"],
+                correct: 0,
+                explanation: "स्थिति 1 और स्थिति 3 में (1, 2) समान हैं। अतः बची सतह 6 और 5 एक-दूसरे के विपरीत हैं।"
+            },
+            {
+                question: "24. 3 स्थितियों पर आधारित: संख्या 1 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (4, 1, 5)", "स्थिति 2: (6, 4, 1)", "स्थिति 3: (5, 2, 3)"],
+                options: ["2", "3", "6", "4"],
+                correct: 0,
+                explanation: "स्थिति 1 एवं स्थिति 3 में '5' समान है:\n• स्थिति 1: 5 ➔ 4 ➔ 1\n• स्थिति 3: 5 ➔ 3 ➔ 2\n1 के विपरीत = 2।"
+            },
+            {
+                question: "25. 3 स्थितियों पर आधारित: संख्या 3 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (3, 2, 1)", "स्थिति 2: (4, 2, 3)", "स्थिति 3: (6, 5, 4)"],
+                options: ["5", "6", "1", "2"],
+                correct: 0,
+                explanation: "स्थिति 2 व स्थिति 3 में समान अंक '4' से तुलना करने पर 3 के विपरीत 5 प्राप्त होता है।"
+            },
+            {
+                question: "26. 4 स्थितियों पर आधारित: संख्या 3 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (1, 2, 3)", "स्थिति 2: (2, 3, 4)", "स्थिति 3: (3, 4, 5)", "स्थिति 4: (4, 5, 6)"],
+                options: ["6", "1", "5", "2"],
+                correct: 0,
+                explanation: "स्थिति 3 और स्थिति 4 में (4, 5) समान हैं। इसलिए बची हुई सतह 3 के विपरीत 6 होगा।"
+            },
+            {
+                question: "27. 4 स्थितियों पर आधारित: संख्या 6 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (6, 2, 3)", "स्थिति 2: (6, 4, 2)", "स्थिति 3: (6, 5, 4)", "स्थिति 4: (1, 3, 2)"],
+                options: ["1", "5", "4", "3"],
+                correct: 0,
+                explanation: "स्थिति 1, 2 और 3 में 6 के साथ 2, 3, 4, 5 पड़ोसी के रूप में दिख रहे हैं। केवल 1 गायब है। अतः 6 के विपरीत = 1।"
+            },
+            {
+                question: "28. 4 स्थितियों पर आधारित: संख्या 4 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (4, 5, 6)", "स्थिति 2: (1, 2, 3)", "स्थिति 3: (4, 1, 2)", "स्थिति 4: (3, 5, 6)"],
+                options: ["3", "2", "1", "5"],
+                correct: 0,
+                explanation: "स्थिति 1 और स्थिति 4 में (5, 6) समान हैं। इसलिए 4 के विपरीत 3 होगा।"
+            },
+            {
+                question: "29. 4 स्थितियों पर आधारित: संख्या 1 के विपरीत सतह पर क्या होगा?",
+                positions: ["स्थिति 1: (3, 1, 2)", "स्थिति 2: (6, 1, 5)", "स्थिति 3: (4, 5, 6)", "स्थिति 4: (2, 3, 4)"],
+                options: ["4", "5", "6", "2"],
+                correct: 0,
+                explanation: "स्थिति 2 और स्थिति 3 में (5, 6) समान हैं। इसलिए 1 के विपरीत 4 होगा।"
+            },
+            {
+                question: "30. बिंदु (Dot) वाले पासे में 2 बिंदुक के विपरीत कितने बिंदु होंगे?",
+                positions: ["स्थिति 1: (1 बिंदु, 2 बिंदु, 3 बिंदु)", "स्थिति 2: (1 बिंदु, 4 बिंदु, 5 बिंदु)"],
+                options: ["4 बिंदु", "5 बिंदु", "6 बिंदु", "3 बिंदु"],
+                correct: 0,
+                explanation: "समान '1 बिंदु' से घड़ी की दिशा में:\n• स्थिति 1: 1 ➔ 2 ➔ 3\n• स्थिति 2: 1 ➔ 4 ➔ 5\n2 बिंदु के विपरीत = 4 बिंदु।"
+            },
+            {
+                question: "31. खुला पासा (Open Dice): एक सीधी रेखा में 1, 2, 3, 4 हैं। अल्टरनेट नियम के आधार पर 1 के विपरीत क्या होगा?",
+                positions: ["खुला पासा: 1 - 2 - 3 - 4 (एक सीधी पट्टी)"],
+                options: ["3", "4", "2", "5"],
+                correct: 0,
+                explanation: "अल्टरनेट नियम (Alternate Face Rule): एक सीधी रेखा में एक सतह छोड़कर अगली सतह विपरीत होती है। इसलिए 1 के विपरीत 3 और 2 के विपरीत 4 होगा।"
+            },
+            {
+                question: "32. खुला पासा: 1-2-3-4 वर्टिकल हैं और बाहरी विंग्स 5 (2 के बाएं) तथा 6 (3 के दाएं) हैं। 5 के विपरीत क्या होगा?",
+                positions: ["खुला पासा: 1-2-3-4 पट्टी, विंग्स 5 और 6"],
+                options: ["6", "3", "4", "1"],
+                correct: 0,
+                explanation: "खुला पासा नियम: बाहर निकली हुई दोनों विपरीत विंग्स (Side Wings) हमेशा एक-दूसरे के विपरीत होती हैं। इसलिए 5 के विपरीत 6 होगा।"
+            },
+            {
+                question: "33. खुले पासे में A-B-C-D वर्टिकल हैं और E (बाएं) तथा F (दाएं) विंग्स हैं। B के विपरीत क्या होगा?",
+                positions: ["खुला पासा: A-B-C-D सीधी पट्टी, E व F साइड विंग्स"],
+                options: ["D", "C", "F", "E"],
+                correct: 0,
+                explanation: "अल्टरनेट नियम के अनुसार B के विपरीत D होगा और A के विपरीत C होगा।"
+            },
+            {
+                question: "34. खुला पासा (2 - 4 - 6 - 1) की सीधी पट्टी में 4 के विपरीत क्या होगा?",
+                positions: ["खुला पासा पट्टी: 2 - 4 - 6 - 1"],
+                options: ["1", "6", "2", "5"],
+                correct: 0,
+                explanation: "अल्टरनेट सतह नियम: 2 के विपरीत 6 और 4 के विपरीत 1 होगा।"
+            },
+            {
+                question: "35. नियम (खुला पासा से बंद पासा): यदि खुले पासे में A के विपरीत B है, तो बंद पासे (Closed Dice) में A और B:",
+                positions: [],
+                options: ["एक साथ कभी नहीं दिख सकते", "एक साथ हमेशा दिखेंगे", "हमेशा ऊपर होंगे", "इनमें से कोई नहीं"],
+                correct: 0,
+                explanation: "गोल्डन रूल: दो विपरीत (opposite) सतहें कभी भी एक साथ एक ही बंद पासे में सामने पड़ोसी के रूप में नहीं दिख सकतीं।"
+            },
+            {
+                question: "36. खुले पासे में 1 के विपरीत 6, 2 के विपरीत 5, 3 के विपरीत 4 हैं। कौन सा बंद पासा सही है?",
+                positions: [],
+                options: ["सतह (1, 2, 3)", "सतह (1, 6, 2)", "सतह (2, 5, 4)", "सतह (3, 4, 5)"],
+                correct: 0,
+                explanation: "विकल्प A में (1, 2, 3) हैं जिनमें कोई भी विपरीत जोड़ी साथ नहीं है। बाकी सभी विकल्पों में विपरीत जोड़ियाँ (1-6, 2-5, 3-4) साथ दिख रही हैं जो गलत हैं।"
+            },
+            {
+                question: "37. खुले पासे में A-D, B-E, C-F विपरीत हैं। कौन सा बंद पासा गलत (अमान्य) है?",
+                positions: [],
+                options: ["सतह (A, D, B)", "सतह (A, B, C)", "सतह (D, E, F)", "सतह (A, E, C)"],
+                correct: 0,
+                explanation: "विकल्प A में A और D साथ दिख रहे हैं जो एक-दूसरे के विपरीत हैं। विपरीत सतहें साथ नहीं हो सकतीं, इसलिए A गलत है।"
+            },
+            {
+                question: "38. सीधी पट्टी 1 - 3 - 5 - 6 में 3 के विपरीत क्या होगा?",
+                positions: ["खुला पासा: 1 - 3 - 5 - 6"],
+                options: ["6", "5", "1", "4"],
+                correct: 0,
+                explanation: "अल्टरनेट सतह नियम: 1 के विपरीत 5, तथा 3 के विपरीत 6 होगा।"
+            },
+            {
+                question: "39. अल्टरनेट नियम: सीधी पट्टी 6 - 3 - 2 - 4 में 6 के विपरीत क्या होगा?",
+                positions: ["खुला पासा: 6 - 3 - 2 - 4"],
+                options: ["2", "4", "3", "5"],
+                correct: 0,
+                explanation: "अल्टरनेट नियम: 6 के विपरीत 2 और 3 के विपरीत 4 होगा।"
+            },
+            {
+                question: "40. लुप्त अंक (?): स्थिति 1 (1, 2, 3), स्थिति 2 (1, 4, 5)। स्थिति 3 (1, 2, ?) में '?' के स्थान पर क्या आएगा?",
+                positions: ["स्थिति 1: (1, 2, 3)", "स्थिति 2: (1, 4, 5)", "स्थिति 3: (1, 2, ?)"],
+                options: ["3", "4", "5", "6"],
+                correct: 0,
+                explanation: "स्थिति 1 से स्पष्ट है कि जब 1 और 2 दिखते हैं तो तीसरी सतह 3 होती है। स्थिति 3 में भी 1 और 2 दिख रहे हैं, तो सामने की सतह 3 ही होगी।"
+            },
+            {
+                question: "41. लुप्त अंक (?): स्थिति 1 (4, 5, 6), स्थिति 2 (4, 1, 2)। स्थिति 3 (4, 5, ?) में '?' के स्थान पर क्या होगा?",
+                positions: ["स्थिति 1: (4, 5, 6)", "स्थिति 2: (4, 1, 2)", "स्थिति 3: (4, 5, ?)"],
+                options: ["6", "1", "2", "3"],
+                correct: 0,
+                explanation: "स्थिति 1 से स्पष्ट है कि 4 और 5 के साथ तीसरी सतह 6 है।"
+            },
+            {
+                question: "42. एक घन (Cube) की 6 सतहों को अलग रंगों से रंगा गया है। लाल के विपरीत हरा है। लाल के पड़ोसी (adjacent) कितने रंग होंगे?",
+                positions: [],
+                options: ["4 रंग", "5 रंग", "3 रंग", "2 रंग"],
+                correct: 0,
+                explanation: "किसी भी एक सतह के विपरीत केवल 1 सतह होती है और बची हुई 4 सतहें उसकी पड़ोसी (adjacent) होती हैं।"
+            },
+            {
+                question: "43. एक 3x3x3 घन (Cube) को सभी तरफ से रंगा गया है। ऐसे कितने छोटे घन होंगे जिनकी केवल 3 सतहें रंगीन होंगी?",
+                positions: [],
+                options: ["8", "12", "6", "24"],
+                correct: 0,
+                explanation: "सूत्र: 3-सतह रंगीन घनों की संख्या हमेशा कोणों (corners) पर होती है, जो कि हमेशा 8 होती है।"
+            },
+            {
+                question: "44. स्थिति 1 (पीला, सफेद, लाल), स्थिति 2 (पीला, काला, भूरा)। पीला के विपरीत कौन सा 6ठां रंग (हरा) होगा?",
+                positions: ["स्थिति 1: (पीला, सफेद, लाल)", "स्थिति 2: (पीला, काला, भूरा)"],
+                options: ["हरा", "सफेद", "लाल", "काला"],
+                correct: 0,
+                explanation: "पीला के साथ सफेद, लाल, काला, भूरा दिख रहे हैं। छिपा हुआ 6ठां रंग 'हरा' पीला के विपरीत होगा।"
+            },
+            {
+                question: "45. 5 बिंदु के विपरीत सतह पर कितने बिंदु होंगे?",
+                positions: ["स्थिति 1: (5 बिंदु, 3 बिंदु, 2 बिंदु)", "स्थिति 2: (5 बिंदु, 4 बिंदु, 1 बिंदु)"],
+                options: ["6 बिंदु", "4 बिंदु", "2 बिंदु", "3 बिंदु"],
+                correct: 0,
+                explanation: "समान '5 बिंदु' के साथ 3, 2, 4, 1 दिखाई दे रहे हैं। छिपा हुआ अंक 6 बिंदु 5 के विपरीत होगा।"
+            },
+            {
+                question: "46. स्थिति 1 (6, 3, 5) और स्थिति 2 (6, 4, 5) में संख्या 3 के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: (6, 3, 5)", "स्थिति 2: (6, 4, 5)"],
+                options: ["4", "1", "2", "5"],
+                correct: 0,
+                explanation: "2-समान सतह नियम: 6 और 5 दोनों स्थितियों में समान हैं। इसलिए बची हुई सतह 3 के विपरीत 4 होगा।"
+            },
+            {
+                question: "47. प्रतीक '$' के विपरीत क्या होगा?",
+                positions: ["स्थिति 1: ($, %, #)", "स्थिति 2: (@, %, #)"],
+                options: ["@", "%", "#", "&"],
+                correct: 0,
+                explanation: "समान प्रतीक '%' और '#' हैं। इसलिए बचा हुआ प्रतीक '$' प्रतीक '@' के विपरीत होगा।"
+            },
+            {
+                question: "48. खुले पासे में 1-4, 2-5, 3-6 विपरीत हैं। अगर ऊपर 1 और सामने 2 हो, तो दाईं तरफ (Right Side) क्या हो सकता है?",
+                positions: [],
+                options: ["3 या 6", "4 या 5", "केवल 4", "केवल 5"],
+                correct: 0,
+                explanation: "ऊपर (1) और सामने (2) तय होने पर दाईं तरफ बची हुई विपरीत जोड़ी (3 या 6) में से ही कोई एक होगा।"
+            },
+            {
+                question: "49. कौन सा पासा एक मानक पासा (Standard Dice) हो सकता है?",
+                positions: ["विकल्प A: (1, 6, 2)", "विकल्प B: (2, 5, 3)", "विकल्प C: (3, 4, 1)", "विकल्प D: (1, 3, 5)"],
+                options: ["विकल्प D", "विकल्प A", "विकल्प B", "विकल्प C"],
+                correct: 0,
+                explanation: "A (1+6=7), B (2+5=7), C (3+4=7) सभी साधारण पासे हैं। केवल विकल्प D (1, 3, 5) में किसी दो सतह का योग 7 नहीं है, अतः यह मानक पासा है।"
+            },
+            {
+                question: "50. 4 स्थितियों के आधार पर संख्या 1 के विपरीत सतह पर क्या होगा?",
+                positions: ["स्थिति 1: (1, 2, 4)", "स्थिति 2: (3, 5, 6)", "स्थिति 3: (2, 3, 6)", "स्थिति 4: (1, 4, 5)"],
+                options: ["6", "3", "5", "2"],
+                correct: 0,
+                explanation: "स्थिति 1 और स्थिति 3 से समान अंक '2' से घड़ी की दिशा में देखने पर:\n• स्थिति 1: 2 ➔ 4 ➔ 1\n• स्थिति 3: 2 ➔ 3 ➔ 6\n1 के विपरीत = 6।"
+            }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+        let timerSeconds = 30;
+        let remainingTime = 30;
+        let timerId = null;
+        let hasAnswered = false;
+
+        function adjustTimer(delta) {
+            const input = document.getElementById('timer-input');
+            let val = parseInt(input.value) || 30;
+            val = Math.max(5, Math.min(180, val + delta));
+            input.value = val;
+        }
+
+        function setQuickTimer(val) {
+            document.getElementById('timer-input').value = val;
+        }
+
+        function startQuiz() {
+            getAudioContext();
+            const inputVal = parseInt(document.getElementById('timer-input').value);
+            timerSeconds = isNaN(inputVal) ? 30 : Math.max(5, Math.min(180, inputVal));
+            
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            currentIdx = 0;
+            score = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            hasAnswered = false;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('explanation-box').classList.add('hidden');
+
+            const q = questions[currentIdx];
+            
+            // Progress Bar & Count
+            document.getElementById('question-count').innerText = `प्रश्न ${currentIdx + 1} / ${questions.length}`;
+            const progressPercent = ((currentIdx + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            document.getElementById('question-text').innerText = q.question;
+
+            // Render Dice Position Cards if available
+            const diceContainer = document.getElementById('dice-positions-container');
+            diceContainer.innerHTML = '';
+            if (q.positions && q.positions.length > 0) {
+                q.positions.forEach(posText => {
+                    const badge = document.createElement('div');
+                    badge.className = "bg-slate-900/90 border border-indigo-500/40 text-indigo-300 text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-lg shadow-sm";
+                    badge.innerText = posText;
+                    diceContainer.appendChild(badge);
+                });
+            }
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            const prefixes = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, i) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `option-btn w-full text-left bg-slate-900/60 hover:bg-slate-700/80 border border-slate-700/80 rounded-xl p-4 transition flex items-center justify-between text-white group`;
+                
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold flex items-center justify-center group-hover:border-indigo-500 group-hover:text-indigo-400 transition">
+                            ${prefixes[i]}
+                        </span>
+                        <span class="font-semibold text-sm sm:text-base">${optText}</span>
+                    </div>
+                    <div class="status-icon"></div>
+                `;
+                
+                btn.onclick = () => handleAnswer(i);
+                container.appendChild(btn);
+            });
+
+            // Timer Initialization
+            remainingTime = timerSeconds;
+            updateTimerUI();
+            clearInterval(timerId);
+            timerId = setInterval(tickTimer, 1000);
+        }
+
+        function tickTimer() {
+            remainingTime--;
+            updateTimerUI();
+
+            if (remainingTime <= 5 && remainingTime > 0) {
+                playTickSound();
+            }
+
+            if (remainingTime <= 0) {
+                clearInterval(timerId);
+                timeOutAnswer();
+            }
+        }
+
+        function updateTimerUI() {
+            const display = document.getElementById('timer-display');
+            display.innerText = `${remainingTime}s`;
+
+            if (remainingTime <= 5) {
+                display.className = 'text-base font-extrabold text-red-400 font-mono animate-pulse';
+            } else {
+                display.className = 'text-base font-extrabold text-amber-300 font-mono';
+            }
+        }
+
+        function handleAnswer(selectedIdx) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+            clearInterval(timerId);
+
+            const q = questions[currentIdx];
+            const buttons = document.querySelectorAll('.option-btn');
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-700/80');
+
+                if (idx === q.correct) {
+                    btn.classList.add('bg-emerald-950/80', 'border-emerald-500', 'text-emerald-200');
+                    btn.querySelector('.status-icon').innerHTML = `<svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+                } else if (idx === selectedIdx) {
+                    btn.classList.add('bg-rose-950/80', 'border-rose-500', 'text-rose-200');
+                    btn.querySelector('.status-icon').innerHTML = `<svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                } else {
+                    btn.classList.add('opacity-40');
+                }
+            });
+
+            if (selectedIdx === q.correct) {
+                score++;
+                playCorrectSound();
+            } else {
+                playWrongSound();
+            }
+
+            showExplanation();
+        }
+
+        function timeOutAnswer() {
+            if (hasAnswered) return;
+            hasAnswered = true;
+            playTimeoutSound();
+
+            const q = questions[currentIdx];
+            const buttons = document.querySelectorAll('.option-btn');
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-700/80');
+
+                if (idx === q.correct) {
+                    btn.classList.add('bg-emerald-950/80', 'border-emerald-500', 'text-emerald-200');
+                    btn.querySelector('.status-icon').innerHTML = `<span class="text-xs bg-amber-500/20 text-amber-300 px-2 py-1 rounded">समय समाप्त (सही उत्तर)</span>`;
+                } else {
+                    btn.classList.add('opacity-40');
+                }
+            });
+
+            showExplanation();
+        }
+
+        function showExplanation() {
+            const q = questions[currentIdx];
+            document.getElementById('explanation-text').innerText = q.explanation;
+            document.getElementById('explanation-box').classList.remove('hidden');
+
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.remove('hidden');
+
+            if (currentIdx === questions.length - 1) {
+                nextBtn.querySelector('span').innerText = 'परिणाम देखें 🏁';
+            } else {
+                nextBtn.querySelector('span').innerText = 'अगला प्रश्न';
+            }
+        }
+
+        function nextQuestion() {
+            currentIdx++;
+            if (currentIdx < questions.length) {
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            playFinishSound();
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            const scoreDisplay = document.getElementById('final-score');
+            scoreDisplay.innerText = `${score} / ${questions.length}`;
+
+            const accuracy = Math.round((score / questions.length) * 100);
+            document.getElementById('accuracy-badge').innerText = `सटीकता: ${accuracy}%`;
+
+            let msg = "";
+            if (accuracy === 100) {
+                msg = "अद्भुत! CGPSC पासा रीजनिंग पर आपकी 100% पकड़ है! 🎯";
+            } else if (accuracy >= 80) {
+                msg = "बहुत शानदार प्रदर्शन! आपकी रीजनिंग की तैयारी उत्तम स्तर की है। 👏";
+            } else if (accuracy >= 50) {
+                msg = "अच्छा प्रयास! नियमित अभ्यास से आप और बेहतर स्कोर कर सकते हैं। 📚";
+            } else {
+                msg = "अभ्यास की आवश्यकता है! पासा नियमों को दोबारा देखकर पुनः प्रयास करें। 💡";
+            }
+
+            document.getElementById('result-message').innerText = msg;
+        }
+
+        function restartQuiz() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+    </script>
+
+<footer class="relative z-10 w-full shrink-0 bg-[#0f172a] text-gray-300 pt-20 pb-10 overflow-hidden no-print">
+    <div class="absolute inset-0 z-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0); background-size: 40px 40px;"></div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+            <div class="md:col-span-5">
+                <div class="flex items-center gap-3 mb-6">
+                    <!-- Footer Logo using favicon.svg -->
+                    <div class="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/20 p-0">
+                        <img src="../../assets/img/favicon.svg" class="w-full h-full object-contain" alt="Logo">
+                    </div>
+                    <span class="font-extrabold text-2xl text-white tracking-tight">GenTools<span class="text-indigo-500">.</span></span>
+                </div>
+                <p class="text-gray-400 text-sm leading-relaxed max-w-md">Helping you simplify complex digital tasks since 2023. Fast, Secure, and 100% Client-Side.</p>
+                <div class="flex gap-4 mt-8">
+                    <a href="https://github.com/nkd2000" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-indigo-600 transition-all"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-400 transition-all"><i class="fa-brands fa-x-twitter"></i></a>
+                </div>
+            </div>
+            <div class="md:col-span-2 md:col-start-7">
+                <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Platform</h4>
+                <ul class="space-y-4 text-sm text-gray-400">
+                    <li><a href="../../index.html" class="hover:text-indigo-400 transition-colors">All Tools</a></li>
+                    <li><a href="../../pages/privacy.html" class="hover:text-indigo-400 transition-colors">Privacy Policy</a></li>
+                    <li><a href="../../pages/contact.html" class="hover:text-indigo-400 transition-colors">Contact</a></li>
+                </ul>
+            </div>
+            <div class="md:col-span-4">
+                <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Contribute</h4>
+                <div class="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md">
+                    <p class="text-gray-400 text-xs mb-4 uppercase tracking-tighter">Found a bug or need a feature?</p>
+                    <a href="https://github.com/nkd2000/Daily_tools/issues" class="w-full inline-flex items-center justify-center py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-all">Submit Issue</a>
+                </div>
+            </div>
+        </div>
+        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                <p class="text-gray-500 text-sm">&copy; 2025 <span class="text-white font-semibold">GenTools Pro</span>.</p>
+                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems Operational</span>
+                </div>
+            </div>
+            
+            <div class="text-gray-500 text-sm font-medium">
+                Made with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i> by <span class="text-gray-200">Nkd2000</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

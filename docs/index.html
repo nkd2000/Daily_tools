@@ -274,7 +274,7 @@
             <div
                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700 mb-6 border border-indigo-100 fade-in-up">
                 <span class="flex h-2 w-2 rounded-full bg-indigo-600 mr-2 animate-pulse"></span>
-                30+ Productivity Tools for Everyone
+                40+ Productivity Tools for Everyone
             </div>
 
             <h1 class="text-5xl sm:text-6xl font-extrabold text-gray-900 tracking-tight mb-6 fade-in-up">
@@ -301,6 +301,10 @@
                         + K</kbd>
                 </div>
             </div>
+            <a href="tools/learn-and-practice/index.html"
+                class="inline-flex items-center gap-2 mt-6 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-indigo-600 transition-colors shadow-lg shadow-slate-200">
+                <i class="fa-solid fa-graduation-cap"></i> Open Learn & Practice Hub
+            </a>
         </div>
     </header>
 
@@ -331,6 +335,14 @@
                 <button onclick="filterTools('Utility')"
                     class="cat-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition whitespace-nowrap">
                     <i class="fa-solid fa-bolt mr-1"></i> Utility
+                </button>
+                <button onclick="filterTools('Converter')"
+                    class="cat-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition whitespace-nowrap">
+                    <i class="fa-solid fa-arrows-rotate mr-1"></i> Converters
+                </button>
+                <button onclick="filterTools('Learn')"
+                    class="cat-btn px-4 py-1.5 rounded-full text-sm font-medium border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition whitespace-nowrap">
+                    <i class="fa-solid fa-graduation-cap mr-1"></i> Learn & Practice
                 </button>
             </div>
         </div>
@@ -369,7 +381,7 @@
                         <span class="font-bold text-2xl text-white tracking-tight">GenTools</span>
                     </div>
                     <p class="text-gray-400 text-base leading-relaxed max-w-md">
-                        Helping developers and designers speed up their daily workflow with 30+ lightweight,
+                        Helping developers and designers speed up their daily workflow with 40+ lightweight,
                         privacy-focused web utilities.
                     </p>
                     <div class="flex space-x-5 mt-8">
@@ -693,6 +705,14 @@
                 title: 'Excel Comparator',
                 desc: 'Compare two Excel files side-by-side and identify differences.'
             },
+            {
+                cat: 'Dev',
+                url: 'tools/developer/html-render.html',
+                icon: 'fa-solid fa-code',
+                color: 'slate',
+                title: 'HTML Playground',
+                desc: 'Write HTML and preview the rendered result instantly in your browser.'
+            },
 
             // --- UTILITY ---
             {
@@ -767,15 +787,6 @@
                 title: 'WordCraft MS Word Processor',
                 desc: 'Create and edit Word-style documents online with formatting tools.'
             },
-            {
-                cat: 'Utility',
-                url: 'tools/utility/typing-speed-test.html',
-                icon: 'fa-solid fa-keyboard',
-                color: 'orange',
-                title: 'Typing Speed Test',
-                desc: 'Check your WPM and Accuracy with this typing game.'
-            },
-
             // --- AUDIO ---
             {
                 cat: 'Converter',
@@ -784,6 +795,40 @@
                 color: 'purple',
                 title: 'MP4 to MP3 Converter',
                 desc: 'Convert MP4 video files to MP3 audio format instantly.'
+            },
+
+            // --- LEARN & PRACTICE ---
+            {
+                cat: 'Learn',
+                url: 'tools/learn-and-practice/typing-speed-test.html',
+                icon: 'fa-solid fa-keyboard',
+                color: 'orange',
+                title: 'Typing Speed Test',
+                desc: 'Practice typing while tracking your words per minute and accuracy.'
+            },
+            {
+                cat: 'Learn',
+                url: 'tools/learn-and-practice/trigonometric-function-playground.html',
+                icon: 'fa-solid fa-chart-line',
+                color: 'emerald',
+                title: 'Trigonometric Function Playground',
+                desc: 'Explore trigonometric functions with interactive graphs and angle tools.'
+            },
+            {
+                cat: 'Learn',
+                url: 'tools/learn-and-practice/calendar-reasoning-quiz.html',
+                icon: 'fa-solid fa-calendar-days',
+                color: 'indigo',
+                title: 'Calendar Reasoning Quiz',
+                desc: 'Practice calendar-based reasoning with timed questions, explanations, and score tracking.'
+            },
+            {
+                cat: 'Learn',
+                url: 'tools/learn-and-practice/dice-reasoning.html',
+                icon: 'fa-solid fa-dice',
+                color: 'purple',
+                title: 'Dice Reasoning Quiz',
+                desc: 'Test dice and spatial reasoning skills with timed practice questions and instant feedback.'
             }
         ];
 
@@ -797,7 +842,9 @@
             'PDF': { title: 'PDF & Document Tools', subtitle: 'Manage your documents with powerful PDF utilities.', icon: 'fa-solid fa-file-pdf', color: 'rose', gradient: 'from-rose-600 to-orange-500' },
             'Calc': { title: 'Calculators & Finance', subtitle: 'Quick calculations for finance, health, and math.', icon: 'fa-solid fa-calculator', color: 'emerald', gradient: 'from-emerald-600 to-teal-500' },
             'Dev': { title: 'Developer Utilities', subtitle: 'Essential tools for coding, formatting, and debugging.', icon: 'fa-solid fa-code', color: 'indigo', gradient: 'from-indigo-600 to-purple-500' },
-            'Utility': { title: 'General Utilities', subtitle: 'Handy everyday tools to boost your productivity.', icon: 'fa-solid fa-bolt-lightning', color: 'amber', gradient: 'from-amber-500 to-yellow-400' }
+            'Utility': { title: 'General Utilities', subtitle: 'Handy everyday tools to boost your productivity.', icon: 'fa-solid fa-bolt-lightning', color: 'amber', gradient: 'from-amber-500 to-yellow-400' },
+            'Converter': { title: 'Converters', subtitle: 'Convert files and media between useful formats.', icon: 'fa-solid fa-arrows-rotate', color: 'purple', gradient: 'from-purple-600 to-fuchsia-500' },
+            'Learn': { title: 'Learn & Practice', subtitle: 'Interactive tools for learning, practice, and exploration.', icon: 'fa-solid fa-graduation-cap', color: 'emerald', gradient: 'from-emerald-600 to-cyan-500' }
         };
 
         function renderTools(filterCat = 'all', query = '') {

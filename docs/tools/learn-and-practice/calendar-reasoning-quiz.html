@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>कैलेंडर रीजनिंग क्विज़ - 30 प्रश्न स्पेशल (साउंड सपोर्ट)</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+        body { font-family: 'Hind', 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen text-slate-100 flex flex-col items-stretch selection:bg-indigo-500 selection:text-white">
+
+<nav class="sticky top-0 z-50 w-full shrink-0 border-b border-white/10 bg-white/70 backdrop-blur-xl saturate-150 no-print transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Left: Logo & Branding -->
+            <div class="flex items-center gap-3">
+                <a href="../../index.html" class="flex items-center gap-3 group">
+                    <!-- Ab yahan aapka favicon.svg render hoga -->
+                    <div class="relative flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl shadow-lg shadow-indigo-500/30 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 overflow-hidden p-1.5">
+                        <img src="../../assets/img/favicon.svg" class="w-full h-full object-contain" alt="Logo">
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-black text-xl tracking-tight text-slate-900 leading-none">GenTools<span class="text-indigo-600">.</span></span>
+                        <span class="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Smart Utilities</span>
+                    </div>
+                </a>
+            </div>
+            <!-- Right: Navigation -->
+            <div class="flex items-center gap-6 text-sm font-bold">
+                <a href="../../index.html" class="text-slate-500 hover:text-indigo-600 transition-all">Home</a>
+                <a href="../../pages/contact.html" class="text-slate-500 hover:text-indigo-600 transition-all">Contact</a>
+                <div class="h-6 w-[1px] bg-slate-200 mx-1"></div>
+                <a href="https://github.com/nkd2000" target="_blank" class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-900 hover:text-white transition-all shadow-sm border border-slate-100">
+                    <i class="fa-brands fa-github text-lg"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+    <!-- Background Decoration -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="relative z-10 w-full max-w-2xl mx-auto my-8 sm:my-10 bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/60 p-5 sm:p-8">
+        
+        <!-- Audio Control Toggle (Global) -->
+        <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-20">
+            <button type="button" id="sound-toggle-btn" onclick="toggleSound()" title="ध्वनि चालू/बंद करें"
+                    class="p-2.5 bg-slate-900/80 hover:bg-slate-700 border border-slate-700/80 rounded-full text-slate-300 transition flex items-center justify-center shadow">
+                <!-- Sound On Icon -->
+                <svg id="sound-on-icon" class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                </svg>
+                <!-- Sound Off Icon (Hidden Initially) -->
+                <svg id="sound-off-icon" class="w-5 h-5 text-slate-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- ================= START SCREEN ================= -->
+        <div id="start-screen" class="text-center pt-2">
+            <div class="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold px-4 py-1.5 rounded-full mb-4">
+                <span>🗓️</span> रीजनिंग महा क्विज़ (30 प्रश्न)
+            </div>
+            
+            <h1 class="text-2xl sm:text-4xl font-bold mb-3 text-white tracking-wide">
+                दिनांक से दिन निकालने की चुनौती
+            </h1>
+            
+            <p class="text-slate-300 text-sm sm:text-base max-w-lg mx-auto mb-8 leading-relaxed">
+                इस क्विज़ में कैलेंडर रीजनिंग के कुल **30 बेहतरीन प्रश्न** हैं। क्विज़ शुरू करने से पहले प्रति प्रश्न का समय (Timer) सेट करें।
+            </p>
+
+            <!-- Timer Config Card -->
+            <div class="bg-slate-900/60 border border-slate-700/80 rounded-2xl p-5 mb-8 max-w-sm mx-auto shadow-inner">
+                <label class="block text-sm font-semibold text-slate-200 mb-3">
+                    प्रति प्रश्न समय चुनें (सेकंड में):
+                </label>
+                
+                <div class="flex items-center justify-center gap-4">
+                    <button type="button" onclick="adjustTimer(-5)" class="w-11 h-11 bg-slate-700 hover:bg-slate-600 active:scale-95 text-white font-bold rounded-xl transition flex items-center justify-center text-xl shadow">
+                        -
+                    </button>
+                    
+                    <div class="relative">
+                        <input type="number" id="timer-input" value="30" min="5" max="180" 
+                               class="w-24 text-center bg-slate-800 border-2 border-indigo-500/60 rounded-xl py-2 text-2xl font-bold text-white focus:outline-none focus:border-indigo-400">
+                        <span class="text-xs text-slate-400 absolute -bottom-5 left-0 right-0">सेकंड</span>
+                    </div>
+
+                    <button type="button" onclick="adjustTimer(5)" class="w-11 h-11 bg-slate-700 hover:bg-slate-600 active:scale-95 text-white font-bold rounded-xl transition flex items-center justify-center text-xl shadow">
+                        +
+                    </button>
+                </div>
+
+                <!-- Quick Select Pills -->
+                <div class="flex justify-center gap-2 mt-7">
+                    <button type="button" onclick="setQuickTimer(15)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1 rounded-lg text-slate-300">15s</button>
+                    <button type="button" onclick="setQuickTimer(30)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1 rounded-lg text-slate-300">30s (अनुशंसित)</button>
+                    <button type="button" onclick="setQuickTimer(45)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1 rounded-lg text-slate-300">45s</button>
+                    <button type="button" onclick="setQuickTimer(60)" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1 rounded-lg text-slate-300">60s</button>
+                </div>
+            </div>
+
+            <button type="button" onclick="startQuiz()" 
+                    class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-lg">
+                क्विज़ शुरू करें 🚀
+            </button>
+        </div>
+
+        <!-- ================= QUIZ SCREEN ================= -->
+        <div id="quiz-screen" class="hidden pt-2">
+            <!-- Header bar -->
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-700/60 pr-10">
+                <div>
+                    <span id="question-count" class="text-xs font-bold text-indigo-400 uppercase tracking-wider">
+                        प्रश्न 1 / 30
+                    </span>
+                    <div class="w-32 sm:w-48 bg-slate-700 h-2 rounded-full mt-1.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-indigo-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Timer Badge -->
+                <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3.5 py-1.5 rounded-full shadow-inner">
+                    <svg class="w-4 h-4 text-amber-400 animate-spin" style="animation-duration: 3s;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span id="timer-display" class="text-base font-extrabold text-amber-300 font-mono">30s</span>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="mb-6">
+                <h2 id="question-text" class="text-lg sm:text-xl font-bold text-white leading-relaxed">
+                    प्रश्न लोड हो रहा है...
+                </h2>
+            </div>
+
+            <!-- Options List -->
+            <div id="options-container" class="space-y-3 mb-6">
+                <!-- Dynamic Options -->
+            </div>
+
+            <!-- Explanation Box -->
+            <div id="explanation-box" class="hidden bg-slate-900/90 border border-indigo-500/40 rounded-2xl p-4 sm:p-5 mb-6 text-sm">
+                <div class="flex items-center gap-2 text-indigo-400 font-bold mb-2">
+                    <span>💡</span> उत्तर की विस्तृत व्याख्या:
+                </div>
+                <p id="explanation-text" class="text-slate-300 leading-relaxed text-xs sm:text-sm whitespace-pre-line"></p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end">
+                <button type="button" id="next-btn" onclick="nextQuestion()" 
+                        class="hidden bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition flex items-center gap-2">
+                    <span>अगला प्रश्न</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= RESULT SCREEN ================= -->
+        <div id="result-screen" class="hidden text-center py-4">
+            <div class="w-24 h-24 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-xl shadow-indigo-500/30 transform rotate-3">
+                <span class="text-5xl">🏆</span>
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">क्विज़ पूरी हुई!</h2>
+            <p class="text-slate-400 text-sm mb-6">कैलेंडर रीजनिंग टेस्ट का अंतिम परिणाम</p>
+
+            <div class="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-6 mb-8 max-w-sm mx-auto shadow-inner">
+                <div class="text-xs text-slate-400 uppercase tracking-widest font-semibold mb-1">आपका स्कोर</div>
+                <div class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-300 mb-3" id="final-score">
+                    0 / 30
+                </div>
+                <div id="accuracy-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 mb-3 border border-slate-700">
+                    सटीकता: 0%
+                </div>
+                <p id="result-message" class="text-sm font-medium text-slate-300 leading-relaxed"></p>
+            </div>
+
+            <button type="button" onclick="restartQuiz()" 
+                    class="px-8 py-3.5 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-white font-bold rounded-xl shadow-lg transition flex items-center gap-2 mx-auto">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                <span>पुनः प्रयास करें</span>
+            </button>
+        </div>
+
+    </main>
+
+    <script>
+        // Web Audio API Sound Generator Utility
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const onIcon = document.getElementById('sound-on-icon');
+            const offIcon = document.getElementById('sound-off-icon');
+            
+            if (soundEnabled) {
+                onIcon.classList.remove('hidden');
+                offIcon.classList.add('hidden');
+                playCorrectSound(); // Play test sound when turned on
+            } else {
+                onIcon.classList.add('hidden');
+                offIcon.classList.remove('hidden');
+            }
+        }
+
+        function playCorrectSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                
+                // Success Tone (Upward Chord: C5 -> E5 -> G5)
+                const freqs = [523.25, 659.25, 783.99];
+                freqs.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                    
+                    gain.gain.setValueAtTime(0.15, now + i * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.25);
+                    
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    
+                    osc.start(now + i * 0.08);
+                    osc.stop(now + i * 0.08 + 0.25);
+                });
+            } catch (e) {
+                console.error("Audio error:", e);
+            }
+        }
+
+        function playWrongSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                
+                // Error Tone (Low frequency saw-tooth wave)
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(90, now + 0.3);
+                
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } catch (e) {
+                console.error("Audio error:", e);
+            }
+        }
+
+        function playTickSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } catch (e) {
+                console.error("Audio error:", e);
+            }
+        }
+
+        function playTimeoutSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.setValueAtTime(200, now + 0.15);
+                
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } catch (e) {
+                console.error("Audio error:", e);
+            }
+        }
+
+        function playFinishSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.1);
+                    
+                    gain.gain.setValueAtTime(0.2, now + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
+                    
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    
+                    osc.start(now + i * 0.1);
+                    osc.stop(now + i * 0.1 + 0.4);
+                });
+            } catch (e) {
+                console.error("Audio error:", e);
+            }
+        }
+
+        const questions = [
+            {
+                question: "1. 15 अगस्त 1947 को सप्ताह का कौन सा दिन था?",
+                options: ["गुरुवार", "शुक्रवार", "शनिवार", "बुधवार"],
+                correct: 1,
+                explanation: "15 अगस्त 1947:\n• तारीख = 15\n• अगस्त कोड = 3\n• 1900 शताब्दी कोड = 0\n• वर्ष = 47, लीप वर्ष (47/4) = 11\n• कुल = 15 + 3 + 0 + 47 + 11 = 76\n• 76 ÷ 7 = 10 सप्ताह, शेष = 5 (5 = शुक्रवार)"
+            },
+            {
+                question: "2. 26 जनवरी 1950 (गणतंत्र दिवस) को कौन सा दिन था?",
+                options: ["मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार"],
+                correct: 2,
+                explanation: "26 जनवरी 1950:\n• तारीख = 26\n• जनवरी कोड = 1 (1950 साधारण वर्ष है)\n• 1900 कोड = 0\n• वर्ष = 50, लीप वर्ष = 12\n• कुल = 26 + 1 + 0 + 50 + 12 = 89\n• 89 ÷ 7 = 12 सप्ताह, शेष = 5 (5 = गुरुवार)"
+            },
+            {
+                question: "3. 2 अक्टूबर 1869 (गांधी जयंती) को कौन सा दिन था?",
+                options: ["शनिवार", "रविवार", "सोमवार", "शुक्रवार"],
+                correct: 0,
+                explanation: "2 अक्टूबर 1869:\n• तारीख = 2\n• अक्टूबर कोड = 1\n• 1800 शताब्दी कोड = 2\n• वर्ष = 69, लीप वर्ष = 17\n• कुल = 2 + 1 + 2 + 69 + 17 = 91\n• 91 ÷ 7 = 13 सप्ताह, शेष = 0 (0 = शनिवार)"
+            },
+            {
+                question: "4. 1 जनवरी 2024 को सप्ताह का कौन सा दिन था?",
+                options: ["सोमवार", "रविवार", "मंगलवार", "शनिवार"],
+                correct: 0,
+                explanation: "1 जनवरी 2024 (लीप वर्ष):\n• तारीख = 1\n• जनवरी कोड = 0 (लीप वर्ष के कारण)\n• 2000 शताब्दी कोड = 6\n• वर्ष = 24, लीप वर्ष = 6\n• कुल = 1 + 0 + 6 + 24 + 6 = 37\n• 37 ÷ 7 = 5 सप्ताह, शेष = 2 (2 = सोमवार)"
+            },
+            {
+                question: "5. 15 अगस्त 2026 को सप्ताह का कौन सा दिन होगा?",
+                options: ["गुरुवार", "शुक्रवार", "शनिवार", "रविवार"],
+                correct: 2,
+                explanation: "15 अगस्त 2026:\n• तारीख = 15\n• अगस्त कोड = 3\n• 2000 कोड = 6\n• वर्ष = 26, लीप वर्ष = 6\n• कुल = 15 + 3 + 6 + 26 + 6 = 56\n• 56 ÷ 7 = 8 पूर्ण सप्ताह, शेष = 0 (0 = शनिवार)"
+            },
+            {
+                question: "6. 10 दिसंबर 1999 को सप्ताह का कौन सा दिन था?",
+                options: ["बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"],
+                correct: 2,
+                explanation: "10 दिसंबर 1999:\n• तारीख = 10\n• दिसंबर कोड = 6\n• 1900 कोड = 0\n• वर्ष = 99, लीप वर्ष = 24\n• कुल = 10 + 6 + 0 + 99 + 24 = 139\n• 139 ÷ 7 = 19 सप्ताह, शेष = 6 (6 = शुक्रवार)"
+            },
+            {
+                question: "7. 26 जनवरी 2001 को कौन सा दिन था?",
+                options: ["शुक्रवार", "शनिवार", "रविवार", "सोमवार"],
+                correct: 0,
+                explanation: "26 जनवरी 2001 (साधारण वर्ष):\n• तारीख = 26, Jan कोड = 1, शताब्दी 2000 कोड = 6, वर्ष = 1, लीप = 0\n• कुल = 26 + 1 + 6 + 1 + 0 = 34\n• 34 ÷ 7 = 4 सप्ताह, शेष = 6 (6 = शुक्रवार)"
+            },
+            {
+                question: "8. 15 जुलाई 1990 को कौन सा दिन था?",
+                options: ["रविवार", "सोमवार", "मंगलवार", "बुधवार"],
+                correct: 0,
+                explanation: "15 जुलाई 1990:\n• तारीख = 15, जुलाई कोड = 0, 1900 कोड = 0, वर्ष = 90, लीप = 22\n• कुल = 15 + 0 + 0 + 90 + 22 = 127\n• 127 ÷ 7 = 18 सप्ताह, शेष = 1 (1 = रविवार)"
+            },
+            {
+                question: "9. 5 नवंबर 2007 को कौन सा दिन था?",
+                options: ["सोमवार", "मंगलवार", "बुधवार", "गुरुवार"],
+                correct: 0,
+                explanation: "5 नवंबर 2007:\n• तारीख = 5, नवंबर कोड = 4, 2000 कोड = 6, वर्ष = 7, लीप = 1\n• कुल = 5 + 4 + 6 + 7 + 1 = 23\n• 23 ÷ 7 = 3 सप्ताह, शेष = 2 (2 = सोमवार)"
+            },
+            {
+                question: "10. 1 जनवरी 2000 को सप्ताह का कौन सा दिन था?",
+                options: ["शनिवार", "रविवार", "सोमवार", "शुक्रवार"],
+                correct: 0,
+                explanation: "1 जनवरी 2000 (2000 एक लीप वर्ष है):\n• तारीख = 1, Jan कोड = 0 (लीप वर्ष), शताब्दी कोड = 6, वर्ष = 0, लीप = 0\n• कुल = 1 + 0 + 6 + 0 + 0 = 7\n• 7 ÷ 7 = 1 सप्ताह, शेष = 0 (0 = शनिवार)"
+            },
+            {
+                question: "11. 14 अप्रैल 1891 (डॉ. बी.आर. आंबेडकर जयंती) को कौन सा दिन था?",
+                options: ["सोमवार", "मंगलवार", "बुधवार", "गुरुवार"],
+                correct: 1,
+                explanation: "14 अप्रैल 1891:\n• तारीख = 14, अप्रैल कोड = 0, 1800 कोड = 2, वर्ष = 91, लीप = 22\n• कुल = 14 + 0 + 2 + 91 + 22 = 129\n• 129 ÷ 7 = 18 सप्ताह, शेष = 3 (3 = मंगलवार)"
+            },
+            {
+                question: "12. 15 जनवरी 1948 को सप्ताह का कौन सा दिन था?",
+                options: ["गुरुवार", "शुक्रवार", "शनिवार", "बुधवार"],
+                correct: 0,
+                explanation: "15 जनवरी 1948 (1948 लीप वर्ष है):\n• तारीख = 15, Jan कोड = 0, 1900 कोड = 0, वर्ष = 48, लीप = 12\n• कुल = 15 + 0 + 0 + 48 + 12 = 75\n• 75 ÷ 7 = 10 सप्ताह, शेष = 5 (5 = गुरुवार)"
+            },
+            {
+                question: "13. 26 नवंबर 1949 (संविधान दिवस) को कौन सा दिन था?",
+                options: ["शुक्रवार", "शनिवार", "रविवार", "सोमवार"],
+                correct: 1,
+                explanation: "26 नवंबर 1949:\n• तारीख = 26, Nov कोड = 4, 1900 कोड = 0, वर्ष = 49, लीप = 12\n• कुल = 26 + 4 + 0 + 49 + 12 = 91\n• 91 ÷ 7 = 13 पूर्ण सप्ताह, शेष = 0 (0 = शनिवार)"
+            },
+            {
+                question: "14. 5 सितंबर 1987 को सप्ताह का कौन सा दिन था?",
+                options: ["शुक्रवार", "शनिवार", "रविवार", "सोमवार"],
+                correct: 1,
+                explanation: "5 सितंबर 1987:\n• तारीख = 5, Sep कोड = 6, 1900 कोड = 0, वर्ष = 87, लीप = 21\n• कुल = 5 + 6 + 0 + 87 + 21 = 119\n• 119 ÷ 7 = 17 पूर्ण सप्ताह, शेष = 0 (0 = शनिवार)"
+            },
+            {
+                question: "15. 23 मार्च 1931 (शहीद दिवस) को सप्ताह का कौन सा दिन था?",
+                options: ["रविवार", "सोमवार", "मंगलवार", "बुधवार"],
+                correct: 1,
+                explanation: "23 मार्च 1931:\n• तारीख = 23, Mar कोड = 4, 1900 कोड = 0, वर्ष = 31, लीप = 7\n• कुल = 23 + 4 + 0 + 31 + 7 = 65\n• 65 ÷ 7 = 9 सप्ताह, शेष = 2 (2 = सोमवार)"
+            },
+            {
+                question: "16. 31 दिसंबर 1999 को सप्ताह का कौन सा दिन था?",
+                options: ["गुरुवार", "शुक्रवार", "शनिवार", "रविवार"],
+                correct: 1,
+                explanation: "31 दिसंबर 1999:\n• तारीख = 31, Dec कोड = 6, 1900 कोड = 0, वर्ष = 99, लीप = 24\n• कुल = 31 + 6 + 0 + 99 + 24 = 160\n• 160 ÷ 7 = 22 सप्ताह, शेष = 6 (6 = शुक्रवार)"
+            },
+            {
+                question: "17. 29 फरवरी 2016 को सप्ताह का कौन सा दिन था?",
+                options: ["रविवार", "सोमवार", "मंगलवार", "बुधवार"],
+                correct: 1,
+                explanation: "29 फरवरी 2016 (लीप वर्ष):\n• तारीख = 29, Feb कोड = 3, 2000 कोड = 6, वर्ष = 16, लीप = 4\n• कुल = 29 + 3 + 6 + 16 + 4 = 58\n• 58 ÷ 7 = 8 सप्ताह, शेष = 2 (2 = सोमवार)"
+            },
+            {
+                question: "18. 15 अगस्त 2030 को सप्ताह का कौन सा दिन होगा?",
+                options: ["मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार"],
+                correct: 2,
+                explanation: "15 अगस्त 2030:\n• तारीख = 15, Aug कोड = 3, 2000 कोड = 6, वर्ष = 30, लीप = 7\n• कुल = 15 + 3 + 6 + 30 + 7 = 61\n• 61 ÷ 7 = 8 सप्ताह, शेष = 5 (5 = गुरुवार)"
+            },
+            {
+                question: "19. 25 दिसंबर 2025 को सप्ताह का कौन सा दिन होगा?",
+                options: ["बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"],
+                correct: 1,
+                explanation: "25 दिसंबर 2025:\n• तारीख = 25, Dec कोड = 6, 2000 कोड = 6, वर्ष = 25, लीप = 6\n• कुल = 25 + 6 + 6 + 25 + 6 = 68\n• 68 ÷ 7 = 9 सप्ताह, शेष = 5 (5 = गुरुवार)"
+            },
+            {
+                question: "20. 2 अक्टूबर 2000 को सप्ताह का कौन सा दिन था?",
+                options: ["रविवार", "सोमवार", "मंगलवार", "बुधवार"],
+                correct: 1,
+                explanation: "2 अक्टूबर 2000 (लीप वर्ष):\n• तारीख = 2, Oct कोड = 1, 2000 कोड = 6, वर्ष = 0, लीप = 0\n• कुल = 2 + 1 + 6 + 0 + 0 = 9\n• 9 ÷ 7 = 1 सप्ताह, शेष = 2 (2 = सोमवार)"
+            },
+            {
+                question: "21. 14 नवंबर 1889 (नेहरू जयंती) को कौन सा दिन था?",
+                options: ["बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"],
+                correct: 2,
+                explanation: "14 नवंबर 1889:\n• तारीख = 14, Nov कोड = 4, 1800 कोड = 2, वर्ष = 89, लीप = 22\n• कुल = 14 + 4 + 2 + 89 + 22 = 131\n• 131 ÷ 7 = 18 सप्ताह, शेष = 5 (5 = शुक्रवार)"
+            },
+            {
+                question: "22. 12 जनवरी 1863 (स्वामी विवेकानंद जयंती) को कौन सा दिन था?",
+                options: ["रविवार", "सोमवार", "मंगलवार", "बुधवार"],
+                correct: 1,
+                explanation: "12 जनवरी 1863:\n• तारीख = 12, Jan कोड = 1, 1800 कोड = 2, वर्ष = 63, लीप = 15\n• कुल = 12 + 1 + 2 + 63 + 15 = 93\n• 93 ÷ 7 = 13 सप्ताह, शेष = 2 (2 = सोमवार)"
+            },
+            {
+                question: "23. 23 जनवरी 1897 (नेताजी सुभाष चंद्र बोस जयंती) को कौन सा दिन था?",
+                options: ["शुक्रवार", "शनिवार", "रविवार", "सोमवार"],
+                correct: 1,
+                explanation: "23 जनवरी 1897:\n• तारीख = 23, Jan कोड = 1, 1800 कोड = 2, वर्ष = 97, लीप = 24\n• कुल = 23 + 1 + 2 + 97 + 24 = 147\n• 147 ÷ 7 = 21 पूर्ण सप्ताह, शेष = 0 (0 = शनिवार)"
+            },
+            {
+                question: "24. 15 अगस्त 1900 को सप्ताह का कौन सा दिन था?",
+                options: ["मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार"],
+                correct: 1,
+                explanation: "15 अगस्त 1900 (1900 साधारण वर्ष है):\n• तारीख = 15, Aug कोड = 3, 1900 कोड = 0, वर्ष = 0, लीप = 0\n• कुल = 15 + 3 + 0 + 0 + 0 = 18\n• 18 ÷ 7 = 2 सप्ताह, शेष = 4 (4 = बुधवार)"
+            },
+            {
+                question: "25. 1 मई 2020 को सप्ताह का कौन सा दिन था?",
+                options: ["गुरुवार", "शुक्रवार", "शनिवार", "रविवार"],
+                correct: 1,
+                explanation: "1 मई 2020:\n• तारीख = 1, May कोड = 2, 2000 कोड = 6, वर्ष = 20, लीप = 5\n• कुल = 1 + 2 + 6 + 20 + 5 = 34\n• 34 ÷ 7 = 4 सप्ताह, शेष = 6 (6 = शुक्रवार)"
+            },
+            {
+                question: "26. 15 अगस्त 2040 को सप्ताह का कौन सा दिन होगा?",
+                options: ["बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"],
+                correct: 0,
+                explanation: "15 अगस्त 2040 (2040 एक लीप वर्ष है):\n• तारीख = 15, Aug कोड = 3, 2000 कोड = 6, वर्ष = 40, लीप = 10\n• कुल = 15 + 3 + 6 + 40 + 10 = 74\n• 74 ÷ 7 = 10 सप्ताह, शेष = 4 (4 = बुधवार)"
+            },
+            {
+                question: "27. 28 फरवरी 2019 को सप्ताह का कौन सा दिन था?",
+                options: ["बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"],
+                correct: 1,
+                explanation: "28 फरवरी 2019 (साधारण वर्ष):\n• तारीख = 28, Feb कोड = 4, 2000 कोड = 6, वर्ष = 19, लीप = 4\n• कुल = 28 + 4 + 6 + 19 + 4 = 61\n• 61 ÷ 7 = 8 सप्ताह, शेष = 5 (5 = गुरुवार)"
+            },
+            {
+                question: "28. 26 जनवरी 1947 को सप्ताह का कौन सा दिन था?",
+                options: ["शुक्रवार", "शनिवार", "रविवार", "सोमवार"],
+                correct: 2,
+                explanation: "26 जनवरी 1947:\n• तारीख = 26, Jan कोड = 1, 1900 कोड = 0, वर्ष = 47, लीप = 11\n• कुल = 26 + 1 + 0 + 47 + 11 = 85\n• 85 ÷ 7 = 12 सप्ताह, शेष = 1 (1 = रविवार)"
+            },
+            {
+                question: "29. 14 नवंबर 2014 को सप्ताह का कौन सा दिन था?",
+                options: ["गुरुवार", "शुक्रवार", "शनिवार", "रविवार"],
+                correct: 1,
+                explanation: "14 नवंबर 2014:\n• तारीख = 14, Nov कोड = 4, 2000 कोड = 6, वर्ष = 14, लीप = 3\n• कुल = 14 + 4 + 6 + 14 + 3 = 41\n• 41 ÷ 7 = 5 सप्ताह, शेष = 6 (6 = शुक्रवार)"
+            },
+            {
+                question: "30. 15 अगस्त 2015 को सप्ताह का कौन सा दिन था?",
+                options: ["गुरुवार", "शुक्रवार", "शनिवार", "रविवार"],
+                correct: 2,
+                explanation: "15 अगस्त 2015:\n• तारीख = 15, Aug कोड = 3, 2000 कोड = 6, वर्ष = 15, लीप = 3\n• कुल = 15 + 3 + 6 + 15 + 3 = 42\n• 42 ÷ 7 = 6 पूर्ण सप्ताह, शेष = 0 (0 = शनिवार)"
+            }
+        ];
+
+        let currentIdx = 0;
+        let score = 0;
+        let timerSeconds = 30;
+        let remainingTime = 30;
+        let timerId = null;
+        let hasAnswered = false;
+
+        function adjustTimer(delta) {
+            const input = document.getElementById('timer-input');
+            let val = parseInt(input.value) || 30;
+            val = Math.max(5, Math.min(180, val + delta));
+            input.value = val;
+        }
+
+        function setQuickTimer(val) {
+            document.getElementById('timer-input').value = val;
+        }
+
+        function startQuiz() {
+            // Activate Audio Context on user interaction
+            getAudioContext();
+
+            const inputVal = parseInt(document.getElementById('timer-input').value);
+            timerSeconds = isNaN(inputVal) ? 30 : Math.max(5, Math.min(180, inputVal));
+            
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            currentIdx = 0;
+            score = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            hasAnswered = false;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('explanation-box').classList.add('hidden');
+
+            const q = questions[currentIdx];
+            
+            // Progress Bar & Count
+            document.getElementById('question-count').innerText = `प्रश्न ${currentIdx + 1} / ${questions.length}`;
+            const progressPercent = ((currentIdx + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            document.getElementById('question-text').innerText = q.question;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            const prefixes = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, i) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `option-btn w-full text-left bg-slate-900/60 hover:bg-slate-700/80 border border-slate-700/80 rounded-xl p-4 transition flex items-center justify-between text-white group`;
+                
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 text-xs font-bold flex items-center justify-center group-hover:border-indigo-500 group-hover:text-indigo-400 transition">
+                            ${prefixes[i]}
+                        </span>
+                        <span class="font-semibold text-sm sm:text-base">${optText}</span>
+                    </div>
+                    <div class="status-icon"></div>
+                `;
+                
+                btn.onclick = () => handleAnswer(i);
+                container.appendChild(btn);
+            });
+
+            // Start Timer
+            remainingTime = timerSeconds;
+            updateTimerUI();
+            clearInterval(timerId);
+            timerId = setInterval(tickTimer, 1000);
+        }
+
+        function tickTimer() {
+            remainingTime--;
+            updateTimerUI();
+
+            // Sound alert for final 5 seconds tick
+            if (remainingTime <= 5 && remainingTime > 0) {
+                playTickSound();
+            }
+
+            if (remainingTime <= 0) {
+                clearInterval(timerId);
+                timeOutAnswer();
+            }
+        }
+
+        function updateTimerUI() {
+            const display = document.getElementById('timer-display');
+            display.innerText = `${remainingTime}s`;
+
+            if (remainingTime <= 5) {
+                display.className = 'text-base font-extrabold text-red-400 font-mono animate-pulse';
+            } else {
+                display.className = 'text-base font-extrabold text-amber-300 font-mono';
+            }
+        }
+
+        function handleAnswer(selectedIdx) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+            clearInterval(timerId);
+
+            const q = questions[currentIdx];
+            const buttons = document.querySelectorAll('.option-btn');
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-700/80');
+
+                if (idx === q.correct) {
+                    btn.classList.add('bg-emerald-950/80', 'border-emerald-500', 'text-emerald-200');
+                    btn.querySelector('.status-icon').innerHTML = `<svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+                } else if (idx === selectedIdx) {
+                    btn.classList.add('bg-rose-950/80', 'border-rose-500', 'text-rose-200');
+                    btn.querySelector('.status-icon').innerHTML = `<svg class="w-6 h-6 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                } else {
+                    btn.classList.add('opacity-40');
+                }
+            });
+
+            if (selectedIdx === q.correct) {
+                score++;
+                playCorrectSound();
+            } else {
+                playWrongSound();
+            }
+
+            showExplanation();
+        }
+
+        function timeOutAnswer() {
+            if (hasAnswered) return;
+            hasAnswered = true;
+
+            playTimeoutSound();
+
+            const q = questions[currentIdx];
+            const buttons = document.querySelectorAll('.option-btn');
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-700/80');
+
+                if (idx === q.correct) {
+                    btn.classList.add('bg-emerald-950/80', 'border-emerald-500', 'text-emerald-200');
+                    btn.querySelector('.status-icon').innerHTML = `<span class="text-xs bg-amber-500/20 text-amber-300 px-2 py-1 rounded">समय समाप्त (सही उत्तर)</span>`;
+                } else {
+                    btn.classList.add('opacity-40');
+                }
+            });
+
+            showExplanation();
+        }
+
+        function showExplanation() {
+            const q = questions[currentIdx];
+            document.getElementById('explanation-text').innerText = q.explanation;
+            document.getElementById('explanation-box').classList.remove('hidden');
+
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.remove('hidden');
+
+            if (currentIdx === questions.length - 1) {
+                nextBtn.querySelector('span').innerText = 'परिणाम देखें 🏁';
+            } else {
+                nextBtn.querySelector('span').innerText = 'अगला प्रश्न';
+            }
+        }
+
+        function nextQuestion() {
+            currentIdx++;
+            if (currentIdx < questions.length) {
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            playFinishSound();
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            const scoreDisplay = document.getElementById('final-score');
+            scoreDisplay.innerText = `${score} / ${questions.length}`;
+
+            const accuracy = Math.round((score / questions.length) * 100);
+            document.getElementById('accuracy-badge').innerText = `सटीकता: ${accuracy}%`;
+
+            let msg = "";
+            if (accuracy === 100) {
+                msg = "अद्भूत! आपकी रीजनिंग और कैलेंडर गणना पर 100% महारत है! 🎯";
+            } else if (accuracy >= 80) {
+                msg = "बहुत ही शानदार प्रदर्शन! आपकी रीजनिंग की तैयारी उच्च स्तर की है। 👏";
+            } else if (accuracy >= 50) {
+                msg = "अच्छा प्रयास! नियमित अभ्यास से आप और बेहतर स्कोर हासिल कर सकते हैं। 📚";
+            } else {
+                msg = "निरंतर अभ्यास की आवश्यकता है! कैलेंडर फॉर्मूलों को दोबारा देखकर पुनः प्रयास करें। 💡";
+            }
+
+            document.getElementById('result-message').innerText = msg;
+        }
+
+        function restartQuiz() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+    </script>
+
+<footer class="relative z-10 w-full shrink-0 bg-[#0f172a] text-gray-300 pt-20 pb-10 overflow-hidden no-print">
+    <div class="absolute inset-0 z-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 2px 2px, #4f46e5 1px, transparent 0); background-size: 40px 40px;"></div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+            <div class="md:col-span-5">
+                <div class="flex items-center gap-3 mb-6">
+                    <!-- Footer Logo using favicon.svg -->
+                    <div class="w-11 h-11 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/20 p-0">
+                        <img src="../../assets/img/favicon.svg" class="w-full h-full object-contain" alt="Logo">
+                    </div>
+                    <span class="font-extrabold text-2xl text-white tracking-tight">GenTools<span class="text-indigo-500">.</span></span>
+                </div>
+                <p class="text-gray-400 text-sm leading-relaxed max-w-md">Helping you simplify complex digital tasks since 2023. Fast, Secure, and 100% Client-Side.</p>
+                <div class="flex gap-4 mt-8">
+                    <a href="https://github.com/nkd2000" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-indigo-600 transition-all"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-400 transition-all"><i class="fa-brands fa-x-twitter"></i></a>
+                </div>
+            </div>
+            <div class="md:col-span-2 md:col-start-7">
+                <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Platform</h4>
+                <ul class="space-y-4 text-sm text-gray-400">
+                    <li><a href="../../index.html" class="hover:text-indigo-400 transition-colors">All Tools</a></li>
+                    <li><a href="../../pages/privacy.html" class="hover:text-indigo-400 transition-colors">Privacy Policy</a></li>
+                    <li><a href="../../pages/contact.html" class="hover:text-indigo-400 transition-colors">Contact</a></li>
+                </ul>
+            </div>
+            <div class="md:col-span-4">
+                <h4 class="text-white font-bold mb-6 text-sm uppercase tracking-widest">Contribute</h4>
+                <div class="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md">
+                    <p class="text-gray-400 text-xs mb-4 uppercase tracking-tighter">Found a bug or need a feature?</p>
+                    <a href="https://github.com/nkd2000/Daily_tools/issues" class="w-full inline-flex items-center justify-center py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition-all">Submit Issue</a>
+                </div>
+            </div>
+        </div>
+        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+                <p class="text-gray-500 text-sm">&copy; 2025 <span class="text-white font-semibold">GenTools Pro</span>.</p>
+                <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-tighter">Systems Operational</span>
+                </div>
+            </div>
+            
+            <div class="text-gray-500 text-sm font-medium">
+                Made with <i class="fa-solid fa-heart text-indigo-500 mx-1"></i> by <span class="text-gray-200">Nkd2000</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
