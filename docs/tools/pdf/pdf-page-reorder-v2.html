@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="hi" class="bg-slate-50 text-slate-800">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Page Reorder Tool</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- PDF-Lib -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <!-- SortableJS Core -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <!-- SortableJS MultiDrag Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/plugins/MultiDrag/Sortable.MultiDrag.min.js"></script>
+
+    <style>
+        .page-card {
+            will-change: transform;
+            transition: box-shadow 0.2s, border-color 0.2s, background-color 0.2s;
+            touch-action: none;
+        }
+        /* Selection Highlight Styling */
+        .page-card.selected {
+            border-color: #4f46e5 !important;
+            background-color: #f5f3ff !important;
+            box-shadow: 0 0 0 2px #4f46e5, 0 4px 12px rgba(79, 70, 229, 0.15) !important;
+        }
+        .sortable-ghost {
+            opacity: 0.3;
+            border: 2px dashed #4f46e5 !important;
+            background: #eef2ff !important;
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        /* Dynamic Grid Minmix for Zoom */
+        #pages-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width, 150px), 1fr));
+            gap: 1rem;
+        }
+        .preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-6 antialiased relative min-h-screen pb-24">
+
+    <!-- PDF Tool Container (No Header / No Footer) -->
+    <div id="pdf-reorder-app" class="max-w-7xl mx-auto space-y-6">
+
+        <!-- Upload Zone -->
+        <div id="upload-section" class="border-2 border-dashed border-slate-300 hover:border-indigo-500 bg-white rounded-2xl p-10 text-center transition cursor-pointer shadow-sm">
+            <input type="file" id="file-input" accept="application/pdf" class="hidden">
+            <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                <i class="fa-solid fa-file-circle-plus"></i>
+            </div>
+            <h2 class="text-lg font-bold text-slate-800 mb-1">अपनी PDF फ़ाइल यहाँ ड्रॉप करें या ब्राउज़ करें</h2>
+            <p class="text-xs text-slate-500 mb-5">100% सुरक्षित और तेज़ प्रोसेसिंग। आपकी फ़ाइल ब्राउज़र में ही रहती है।</p>
+            <button onclick="document.getElementById('file-input').click()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-6 py-2.5 rounded-xl font-semibold shadow-md shadow-indigo-600/20 transition">
+                PDF चुनिए
+            </button>
+        </div>
+
+        <!-- Progress Loader -->
+        <div id="loader" class="hidden text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-indigo-600 border-t-transparent mb-3"></div>
+            <p id="loader-text" class="text-xs text-slate-600 font-medium">पेजों को प्रोसेस किया जा रहा है...</p>
+        </div>
+
+        <!-- Workspace & Controls (Hidden Initially) -->
+        <div id="editor-section" class="hidden space-y-5">
+
+            <!-- Smart Range & Controls Bar -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
+                
+                <!-- Range Input + Export Actions -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    
+                    <!-- Range Box -->
+                    <div class="flex-grow flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <div class="relative flex-grow">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            </span>
+                            <input type="text" id="range-input" placeholder="रेंज दर्ज करें (उदा: 3-4, 2-1, 14-5)" class="w-full bg-slate-50 border border-slate-300 focus:border-indigo-600 focus:bg-white rounded-xl pl-9 pr-4 py-2 text-xs font-mono text-slate-800 focus:outline-none transition">
+                        </div>
+                        <button id="btn-apply-range" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs px-5 py-2 rounded-xl shadow-sm transition flex items-center justify-center gap-2 whitespace-nowrap">
+                            <i class="fa-solid fa-bolt"></i> रीऑर्डर करें
+                        </button>
+                    </div>
+
+                    <!-- Export Controls -->
+                    <div class="flex items-center gap-2 w-full lg:w-auto">
+                        <input type="text" id="output-filename" value="reordered.pdf" class="bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-xl px-3 py-2 w-full sm:w-48 focus:outline-none focus:border-indigo-600">
+                        <button id="btn-download" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-5 py-2 rounded-xl shadow-md shadow-emerald-600/20 transition flex items-center gap-2 whitespace-nowrap">
+                            <i class="fa-solid fa-download"></i> सेव करें
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Secondary Quick Buttons + Zoom Controls -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                    
+                    <!-- Action Presets -->
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button id="btn-select-all" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium px-3 py-1.5 rounded-lg border border-slate-200 transition flex items-center gap-1">
+                            <i class="fa-regular fa-square-check text-indigo-600"></i> <span id="select-all-text">सब सेलेक्ट करें</span>
+                        </button>
+                        <button id="btn-add-blank" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium px-3 py-1.5 rounded-lg border border-slate-200 transition flex items-center gap-1">
+                            <i class="fa-solid fa-plus text-indigo-600"></i> ब्लैंक पेज
+                        </button>
+                        <button onclick="setPreset('reverse')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium px-3 py-1.5 rounded-lg border border-slate-200 transition">
+                            रिवर्स ऑल
+                        </button>
+                        <button onclick="setPreset('odds')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium px-3 py-1.5 rounded-lg border border-slate-200 transition">
+                            विषम पेज
+                        </button>
+                        <button onclick="setPreset('evens')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium px-3 py-1.5 rounded-lg border border-slate-200 transition">
+                            सम पेज
+                        </button>
+                        <button id="btn-reset" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-[11px] font-medium px-3 py-1.5 rounded-lg transition border border-rose-200">
+                            रिसेट
+                        </button>
+                    </div>
+
+                    <!-- Zoom Controls -->
+                    <div class="flex items-center gap-2 bg-slate-100/80 px-3 py-1 rounded-xl border border-slate-200">
+                        <button id="btn-zoom-out" title="Zoom Out" class="text-slate-500 hover:text-indigo-600 text-xs p-1">
+                            <i class="fa-solid fa-magnifying-glass-minus"></i>
+                        </button>
+                        <input type="range" id="zoom-slider" min="110" max="250" value="150" class="w-20 accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg">
+                        <button id="btn-zoom-in" title="Zoom In" class="text-slate-500 hover:text-indigo-600 text-xs p-1">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                        </button>
+                    </div>
+
+                    <!-- Options & Counter -->
+                    <div class="flex items-center gap-3 text-xs text-slate-500">
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" id="append-remaining" checked class="rounded border-slate-300 text-indigo-600 focus:ring-0">
+                            बचे पेज अंत में जोड़ें
+                        </label>
+                        <span>कुल पेज: <strong id="total-pages-count" class="text-indigo-600">0</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Cards Grid -->
+            <div id="pages-container" class="min-h-[300px]">
+                <!-- Cards Load Dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Batch Actions Bar (Shows when 1 or more pages are selected) -->
+    <div id="batch-action-bar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/90 text-white border border-slate-700 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-4 transition-all duration-300 translate-y-28 opacity-0 z-50 backdrop-blur-md">
+        <span class="text-xs font-semibold"><span id="batch-selected-count" class="text-indigo-400 font-bold">0</span> सेलेक्टेड</span>
+        <div class="h-4 w-px bg-slate-700"></div>
+        
+        <button id="batch-rotate-left" title="चुने गए पेजों को बायें घुमाएँ" class="hover:text-indigo-400 text-slate-300 text-xs flex items-center gap-1">
+            <i class="fa-solid fa-rotate-left"></i> बायें रोटेट
+        </button>
+        <button id="batch-rotate-right" title="चुने गए पेजों को दायें घुमाएँ" class="hover:text-indigo-400 text-slate-300 text-xs flex items-center gap-1">
+            <i class="fa-solid fa-rotate-right"></i> दायें रोटेट
+        </button>
+        <button id="batch-delete" title="चुने गए पेज हटाएं" class="hover:text-rose-400 text-rose-300 text-xs flex items-center gap-1">
+            <i class="fa-solid fa-trash"></i> डिलीट करें
+        </button>
+        
+        <div class="h-4 w-px bg-slate-700"></div>
+        <button id="batch-clear" class="text-xs text-slate-400 hover:text-white">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let pdfDoc = null;
+        let originalPdfBytes = null;
+        let pagesState = []; 
+        let observer = null;
+        let sortableInstance = null;
+        let selectedPageIds = new Set();
+
+        const uploadSection = document.getElementById('upload-section');
+        const fileInput = document.getElementById('file-input');
+        const loader = document.getElementById('loader');
+        const editorSection = document.getElementById('editor-section');
+        const pagesContainer = document.getElementById('pages-container');
+        const rangeInput = document.getElementById('range-input');
+        const batchActionBar = document.getElementById('batch-action-bar');
+        const zoomSlider = document.getElementById('zoom-slider');
+
+        // Drag & Drop Upload Handlers
+        uploadSection.addEventListener('dragover', (e) => { e.preventDefault(); uploadSection.classList.add('border-indigo-500', 'bg-indigo-50/20'); });
+        uploadSection.addEventListener('dragleave', () => uploadSection.classList.remove('border-indigo-500', 'bg-indigo-50/20'));
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('border-indigo-500', 'bg-indigo-50/20');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+        fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+        // Initialize SortableJS with MultiDrag Support
+        sortableInstance = new Sortable(pagesContainer, {
+            multiDrag: true,
+            selectedClass: 'selected',
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            handle: '.drag-handle',
+            onSelect: updateBatchUIFromSortable,
+            onDeselect: updateBatchUIFromSortable,
+            onEnd: () => {
+                syncDomToState();
+            }
+        });
+
+        // Zoom In & Zoom Out Controls Logic
+        function updateZoomLevel(val) {
+            zoomSlider.value = val;
+            pagesContainer.style.setProperty('--card-min-width', `${val}px`);
+        }
+        zoomSlider.addEventListener('input', (e) => updateZoomLevel(e.target.value));
+        document.getElementById('btn-zoom-in').addEventListener('click', () => updateZoomLevel(Math.min(250, parseInt(zoomSlider.value) + 20)));
+        document.getElementById('btn-zoom-out').addEventListener('click', () => updateZoomLevel(Math.max(110, parseInt(zoomSlider.value) - 20)));
+
+        // Load PDF File
+        async function handleFile(file) {
+            if (file.type !== 'application/pdf') return alert('कृपया केवल PDF चुनें।');
+
+            document.getElementById('output-filename').value = file.name.replace('.pdf', '') + '-reordered.pdf';
+            uploadSection.classList.add('hidden');
+            loader.classList.remove('hidden');
+
+            try {
+                originalPdfBytes = await file.arrayBuffer();
+                pdfDoc = await pdfjsLib.getDocument({ data: originalPdfBytes.slice(0) }).promise;
+
+                pagesState = [];
+                pagesContainer.innerHTML = '';
+                selectedPageIds.clear();
+
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    pagesState.push({
+                        id: 'page-card-' + Math.random().toString(36).substr(2, 9),
+                        origIndex: i - 1,
+                        origNum: i,
+                        rotation: 0,
+                        isBlank: false,
+                        blobUrl: null,
+                        rendered: false
+                    });
+                }
+
+                document.getElementById('total-pages-count').innerText = pdfDoc.numPages;
+                initIntersectionObserver();
+                renderCardsDOM();
+
+                loader.classList.add('hidden');
+                editorSection.classList.remove('hidden');
+                updateBatchUI();
+
+            } catch (err) {
+                console.error(err);
+                alert('PDF फ़ाइल लोडिंग में समस्या हुई।');
+                loader.classList.add('hidden');
+                uploadSection.classList.remove('hidden');
+            }
+        }
+
+        // Render Card Skeletons
+        function renderCardsDOM() {
+            pagesContainer.innerHTML = '';
+            pagesState.forEach((page, idx) => {
+                const card = document.createElement('div');
+                card.id = page.id;
+                card.dataset.id = page.id;
+                card.className = `page-card bg-white border border-slate-200 rounded-2xl p-3 flex flex-col justify-between shadow-xs hover:shadow-md relative group ${selectedPageIds.has(page.id) ? 'selected' : ''}`;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-1.5">
+                            <input type="checkbox" class="page-checkbox rounded border-slate-300 text-indigo-600 focus:ring-0 cursor-pointer" ${selectedPageIds.has(page.id) ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelect('${page.id}')">
+                            <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-indigo-200/60">
+                                पेज <span class="current-pos">${idx + 1}</span>
+                            </span>
+                        </div>
+                        <span class="drag-handle text-slate-400 hover:text-slate-600 cursor-move text-xs px-1" title="ड्रैग करें">
+                            <i class="fa-solid fa-grip-vertical"></i>
+                        </span>
+                    </div>
+
+                    <div class="preview-box w-full aspect-[1/1.3] rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-200 relative cursor-pointer" onclick="toggleSelect('${page.id}')">
+                        ${page.isBlank ? '<span class="text-xs text-slate-400 font-medium">खाली पेज</span>' : (page.blobUrl ? `<img src="${page.blobUrl}" class="w-full h-full object-contain rounded transition-transform duration-200" style="transform: rotate(${page.rotation}deg)">` : '<div class="skeleton inset-0 absolute"></div>')}
+                    </div>
+
+                    <div class="flex items-center justify-around mt-3 pt-2 border-t border-slate-100 text-slate-400 text-xs">
+                        <button onclick="rotateCard('${page.id}', -90)" title="बायें घुमाएं" class="hover:text-indigo-600 p-1"><i class="fa-solid fa-rotate-left"></i></button>
+                        <button onclick="rotateCard('${page.id}', 90)" title="दायें घुमाएं" class="hover:text-indigo-600 p-1"><i class="fa-solid fa-rotate-right"></i></button>
+                        <button onclick="duplicateCard('${page.id}')" title="डुप्लीकेट" class="hover:text-emerald-600 p-1"><i class="fa-solid fa-copy"></i></button>
+                        <button onclick="deleteCard('${page.id}')" title="हटाएं" class="hover:text-rose-600 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+
+                pagesContainer.appendChild(card);
+                if (!page.rendered && !page.isBlank) observer.observe(card);
+            });
+
+            updatePageBadges();
+        }
+
+        // Memory Safe Intersection Observer (Lazy Loading)
+        function initIntersectionObserver() {
+            if (observer) observer.disconnect();
+            observer = new IntersectionObserver((entries) => {
+                entries.forEach(async (entry) => {
+                    if (entry.isIntersecting) {
+                        const card = entry.target;
+                        const pageObj = pagesState.find(p => p.id === card.dataset.id);
+
+                        if (pageObj && !pageObj.rendered && !pageObj.isBlank) {
+                            await renderThumbnail(pageObj, card);
+                            observer.unobserve(card);
+                        }
+                    }
+                });
+            }, { rootMargin: '100px' });
+        }
+
+        async function renderThumbnail(pageObj, cardElement) {
+            try {
+                // Increased scale to 0.5 for HD Sharpness during Zoom-In
+                const page = await pdfDoc.getPage(pageObj.origIndex + 1);
+                const viewport = page.getViewport({ scale: 0.5 }); 
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                canvas.toBlob((blob) => {
+                    pageObj.blobUrl = URL.createObjectURL(blob);
+                    pageObj.rendered = true;
+                    const previewBox = cardElement.querySelector('.preview-box');
+                    if (previewBox) {
+                        previewBox.innerHTML = `<img src="${pageObj.blobUrl}" class="w-full h-full object-contain rounded transition-transform duration-200" style="transform: rotate(${pageObj.rotation}deg)">`;
+                    }
+                    canvas.width = 0; canvas.height = 0;
+                    page.cleanup();
+                }, 'image/jpeg', 0.85);
+            } catch (err) { console.error(err); }
+        }
+
+        // Selection & Batch Action Engine
+        function toggleSelect(id) {
+            const card = document.getElementById(id);
+            if (!card) return;
+
+            if (selectedPageIds.has(id)) {
+                selectedPageIds.delete(id);
+                Sortable.utils.deselect(card);
+                card.classList.remove('selected');
+            } else {
+                selectedPageIds.add(id);
+                Sortable.utils.select(card);
+                card.classList.add('selected');
+            }
+            updateBatchUI();
+        }
+
+        function updateBatchUIFromSortable() {
+            const selectedCards = pagesContainer.querySelectorAll('.page-card.selected');
+            selectedPageIds.clear();
+            selectedCards.forEach(card => selectedPageIds.add(card.dataset.id));
+            updateBatchUI();
+        }
+
+        function updateBatchUI() {
+            const count = selectedPageIds.size;
+            document.getElementById('batch-selected-count').innerText = count;
+
+            pagesState.forEach(p => {
+                const card = document.getElementById(p.id);
+                if (!card) return;
+                const chk = card.querySelector('.page-checkbox');
+                if (selectedPageIds.has(p.id)) {
+                    card.classList.add('selected');
+                    if (chk) chk.checked = true;
+                } else {
+                    card.classList.remove('selected');
+                    if (chk) chk.checked = false;
+                }
+            });
+
+            if (count > 0) {
+                batchActionBar.classList.remove('translate-y-28', 'opacity-0');
+            } else {
+                batchActionBar.classList.add('translate-y-28', 'opacity-0');
+            }
+
+            document.getElementById('select-all-text').innerText = count === pagesState.length ? 'अन-सेलेक्ट करें' : 'सब सेलेक्ट करें';
+        }
+
+        // Select All / Deselect All
+        document.getElementById('btn-select-all').addEventListener('click', () => {
+            if (selectedPageIds.size === pagesState.length) {
+                pagesState.forEach(p => {
+                    const card = document.getElementById(p.id);
+                    if (card) Sortable.utils.deselect(card);
+                });
+                selectedPageIds.clear();
+            } else {
+                pagesState.forEach(p => {
+                    selectedPageIds.add(p.id);
+                    const card = document.getElementById(p.id);
+                    if (card) Sortable.utils.select(card);
+                });
+            }
+            updateBatchUI();
+        });
+
+        // Batch Action Button Handlers
+        document.getElementById('batch-rotate-left').addEventListener('click', () => {
+            selectedPageIds.forEach(id => rotateCard(id, -90));
+        });
+        document.getElementById('batch-rotate-right').addEventListener('click', () => {
+            selectedPageIds.forEach(id => rotateCard(id, 90));
+        });
+        document.getElementById('batch-delete').addEventListener('click', () => {
+            if (pagesState.length - selectedPageIds.size < 1) return alert('कम से कम 1 पेज होना आवश्यक है।');
+            pagesState = pagesState.filter(p => !selectedPageIds.has(p.id));
+            selectedPageIds.forEach(id => document.getElementById(id)?.remove());
+            selectedPageIds.clear();
+            updatePageBadges();
+            updateBatchUI();
+        });
+        document.getElementById('batch-clear').addEventListener('click', () => {
+            pagesState.forEach(p => {
+                const card = document.getElementById(p.id);
+                if (card) Sortable.utils.deselect(card);
+            });
+            selectedPageIds.clear();
+            updateBatchUI();
+        });
+
+        // Rotate Card
+        window.rotateCard = function(id, angle) {
+            const pageObj = pagesState.find(p => p.id === id);
+            if (pageObj) {
+                pageObj.rotation = (pageObj.rotation + angle) % 360;
+                const card = document.getElementById(id);
+                const img = card.querySelector('img');
+                if (img) img.style.transform = `rotate(${pageObj.rotation}deg)`;
+            }
+        };
+
+        // Duplicate Card
+        window.duplicateCard = function(id) {
+            const index = pagesState.findIndex(p => p.id === id);
+            if (index !== -1) {
+                const source = pagesState[index];
+                const cloneObj = {
+                    ...source,
+                    id: 'page-card-' + Math.random().toString(36).substr(2, 9)
+                };
+                pagesState.splice(index + 1, 0, cloneObj);
+                renderCardsDOM();
+            }
+        };
+
+        // Delete Card
+        window.deleteCard = function(id) {
+            if (pagesState.length <= 1) return alert('कम से कम 1 पेज होना आवश्यक है।');
+            pagesState = pagesState.filter(p => p.id !== id);
+            selectedPageIds.delete(id);
+            document.getElementById(id)?.remove();
+            updatePageBadges();
+            updateBatchUI();
+        };
+
+        // Add Blank Page
+        document.getElementById('btn-add-blank').addEventListener('click', () => {
+            pagesState.push({
+                id: 'page-card-' + Math.random().toString(36).substr(2, 9),
+                origIndex: -1,
+                origNum: 0,
+                rotation: 0,
+                isBlank: true,
+                blobUrl: null,
+                rendered: true
+            });
+            renderCardsDOM();
+        });
+
+        // Reset
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            if (confirm('क्या आप सभी बदलाव रिसेट करना चाहते हैं?')) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+
+        // Sync DOM Order to Memory State
+        function syncDomToState() {
+            const newOrder = [];
+            const cards = Array.from(pagesContainer.children);
+            cards.forEach(card => {
+                const pageObj = pagesState.find(p => p.id === card.dataset.id);
+                if (pageObj) newOrder.push(pageObj);
+            });
+            pagesState = newOrder;
+            updatePageBadges();
+        }
+
+        function updatePageBadges() {
+            Array.from(pagesContainer.children).forEach((card, idx) => {
+                const currentPosSpan = card.querySelector('.current-pos');
+                if (currentPosSpan) currentPosSpan.innerText = idx + 1;
+            });
+            document.getElementById('total-pages-count').innerText = pagesState.length;
+        }
+
+        // Smart Range Parser (Supports 3-4, 2-1, 14-5)
+        function parseRangeString(rangeStr, maxPages, appendRemaining) {
+            if (!rangeStr.trim()) return [];
+
+            const parts = rangeStr.split(',');
+            const newOrderIndexes = [];
+            const usedSet = new Set();
+
+            for (let part of parts) {
+                part = part.trim();
+                if (!part) continue;
+
+                if (part.includes('-')) {
+                    const [startStr, endStr] = part.split('-');
+                    const start = parseInt(startStr, 10);
+                    const end = parseInt(endStr, 10);
+
+                    if (!isNaN(start) && !isNaN(end) && start >= 1 && start <= maxPages && end >= 1 && end <= maxPages) {
+                        if (start <= end) {
+                            for (let i = start; i <= end; i++) {
+                                if (!usedSet.has(i)) { newOrderIndexes.push(i); usedSet.add(i); }
+                            }
+                        } else {
+                            for (let i = start; i >= end; i--) {
+                                if (!usedSet.has(i)) { newOrderIndexes.push(i); usedSet.add(i); }
+                            }
+                        }
+                    }
+                } else {
+                    const num = parseInt(part, 10);
+                    if (!isNaN(num) && num >= 1 && num <= maxPages && !usedSet.has(num)) {
+                        newOrderIndexes.push(num);
+                        usedSet.add(num);
+                    }
+                }
+            }
+
+            if (appendRemaining) {
+                for (let i = 1; i <= maxPages; i++) {
+                    if (!usedSet.has(i)) newOrderIndexes.push(i);
+                }
+            }
+
+            return newOrderIndexes;
+        }
+
+        // FLIP Animation Logic for Range Input
+        function applyRangeWithFLIPAnimation() {
+            const rangeStr = rangeInput.value;
+            const maxPages = pagesState.length;
+            const appendRemaining = document.getElementById('append-remaining').checked;
+
+            const targetPageSequence = parseRangeString(rangeStr, maxPages, appendRemaining);
+            if (!targetPageSequence.length) return;
+
+            // 1. FIRST: Record bounding rectangles
+            const cardRectsMap = new Map();
+            Array.from(pagesContainer.children).forEach(card => {
+                cardRectsMap.set(card.dataset.id, card.getBoundingClientRect());
+            });
+
+            // Reorder Memory Array
+            const newPagesState = [];
+            targetPageSequence.forEach(pos => {
+                if (pagesState[pos - 1]) newPagesState.push(pagesState[pos - 1]);
+            });
+            
+            pagesState.forEach(p => {
+                if (!newPagesState.includes(p)) newPagesState.push(p);
+            });
+            pagesState = newPagesState;
+
+            // Re-append DOM Elements
+            pagesState.forEach(pageObj => {
+                const card = document.getElementById(pageObj.id);
+                if (card) pagesContainer.appendChild(card);
+            });
+
+            updatePageBadges();
+
+            // 2. LAST & INVERT & PLAY: FLIP Animation
+            Array.from(pagesContainer.children).forEach(card => {
+                const firstRect = cardRectsMap.get(card.dataset.id);
+                if (!firstRect) return;
+
+                const lastRect = card.getBoundingClientRect();
+                const deltaX = firstRect.left - lastRect.left;
+                const deltaY = firstRect.top - lastRect.top;
+
+                if (deltaX !== 0 || deltaY !== 0) {
+                    card.animate([
+                        { transform: `translate(${deltaX}px, ${deltaY}px)` },
+                        { transform: 'translate(0, 0)' }
+                    ], {
+                        duration: 400,
+                        easing: 'cubic-bezier(0.2, 0, 0.2, 1)'
+                    });
+                }
+            });
+        }
+
+        // Quick Preset Ranges
+        function setPreset(type) {
+            const max = pagesState.length;
+            if (type === 'reverse') {
+                rangeInput.value = `${max}-1`;
+            } else if (type === 'odds') {
+                const odds = [];
+                for(let i=1; i<=max; i+=2) odds.push(i);
+                rangeInput.value = odds.join(', ');
+            } else if (type === 'evens') {
+                const evens = [];
+                for(let i=2; i<=max; i+=2) evens.push(i);
+                rangeInput.value = evens.join(', ');
+            }
+            applyRangeWithFLIPAnimation();
+        }
+
+        document.getElementById('btn-apply-range').addEventListener('click', applyRangeWithFLIPAnimation);
+
+        // Debounced Range Input Typing
+        let debounceTimer;
+        rangeInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                applyRangeWithFLIPAnimation();
+            }, 600);
+        });
+
+        // Generate & Save Reordered PDF
+        document.getElementById('btn-download').addEventListener('click', async () => {
+            if (!originalPdfBytes) return;
+
+            document.getElementById('loader-text').innerText = 'नई PDF एक्सपोर्ट की जा रही है...';
+            loader.classList.remove('hidden');
+            editorSection.classList.add('hidden');
+
+            try {
+                const srcDoc = await PDFLib.PDFDocument.load(originalPdfBytes);
+                const newDoc = await PDFLib.PDFDocument.create();
+
+                for (const pageObj of pagesState) {
+                    if (pageObj.isBlank) {
+                        newDoc.addPage([595.28, 841.89]);
+                    } else {
+                        const [copiedPage] = await newDoc.copyPages(srcDoc, [pageObj.origIndex]);
+                        if (pageObj.rotation !== 0) {
+                            const currentAngle = copiedPage.getRotation().angle;
+                            copiedPage.setRotation(PDFLib.degrees((currentAngle + pageObj.rotation) % 360));
+                        }
+                        newDoc.addPage(copiedPage);
+                    }
+                }
+
+                const pdfBytes = await newDoc.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = document.getElementById('output-filename').value || 'reordered.pdf';
+                link.click();
+
+            } catch (err) {
+                console.error(err);
+                alert('PDF एक्सपोर्ट करने में समस्या आई।');
+            } finally {
+                loader.classList.add('hidden');
+                editorSection.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
